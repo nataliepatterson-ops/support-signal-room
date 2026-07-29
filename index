@@ -355,18 +355,18 @@
     <div class="page-head">
       <div class="eyebrow">Executive Overview</div>
       <h2>Knowledge Base Scorecard</h2>
-      <p>Self-service deflection, search behavior, and content health. Reporting month: May 2026 vs. April 2026. Workbook last cleaned Jun 3, 2026. June rows are excluded from normalized outputs until the June refresh is complete.</p>
+      <p>Self-service deflection, search behavior, and content health. Reporting month: June 2026 vs. May 2026. Workbook last refreshed for the June reporting period.</p>
     </div>
 
     <section class="block">
-      <div class="block-head"><h3><span class="idx">01</span> Headline metrics — May vs. April</h3></div>
+      <div class="block-head"><h3><span class="idx">01</span> Headline metrics — June vs. May</h3></div>
       <div class="kpi-row" id="kpi-kb-headline"></div>
     </section>
 
     <section class="block">
       <div class="block-head">
         <h3><span class="idx">02</span> Month-over-month trend, Jan – Jun 2026</h3>
-        <div class="note">June is shown for context but excluded from the normalized MoM comparison.</div>
+        <div class="note">June is the current reporting month and May is the comparison month.</div>
       </div>
       <div class="card">
         <div class="chart-wrap tall"><canvas id="chartMomTrend"></canvas></div>
@@ -379,14 +379,14 @@
       <div class="grid-2">
         <div class="card"><table id="tblSegments"></table></div>
         <div class="card">
-          <div class="subhead">Assumed deflections by segment — May</div>
+          <div class="subhead">Assumed deflections by segment — June</div>
           <div class="chart-wrap"><canvas id="chartSegments"></canvas></div>
         </div>
       </div>
     </section>
 
     <section class="block">
-      <div class="block-head"><h3><span class="idx">04</span> Support impact — May view</h3></div>
+      <div class="block-head"><h3><span class="idx">04</span> Support impact — June view</h3></div>
       <div class="card"><table id="tblSupportImpact"></table></div>
     </section>
 
@@ -651,11 +651,11 @@ function defaultState(){
         'Finance Accounts Receivable':[141,162,154,163,137,178],
       },
       priorities: [
-        {n:1, what:'Review May support-impact movement', why:'May is now refreshed using the corrected Zendesk Search Actions import; review official deflection and search-containment movement with Support.', kpi:'KB Scorecard; MoM Trend', owner:'Support Ops / KB Owner', status:'Updated May'},
+        {n:1, what:'Review May support-impact movement', why:'June is now the active reporting month; review official deflection and search-containment movement against May with Support.', kpi:'KB Scorecard; MoM Trend', owner:'Support Ops / KB Owner', status:'Updated June'},
         {n:2, what:'Use proxy stack with final-May caveat', why:'Deflection proxy metrics remain directional and should be paired with official Zendesk deflection counts.', kpi:'Search Deflection Proxy; Search Containment Count; Result-Click Containment Proxy', owner:'KB Owner', status:'Ready'},
-        {n:3, what:'Investigate May movement', why:'May shows movement in deflections, article views, and search behavior; isolate drivers before Support review.', kpi:'Confirmed/Assumed Deflections; Article Views; Search metrics', owner:'Content Ops', status:'Watch'},
+        {n:3, what:'Investigate May movement', why:'June shows movement in deflections, article views, and search behavior; isolate drivers before Support review.', kpi:'Confirmed/Assumed Deflections; Article Views; Search metrics', owner:'Content Ops', status:'Watch'},
         {n:4, what:'Keep caveats visible', why:'All deflection metrics are directional proxies because article-view-to-ticket linkage is unavailable.', kpi:'Metric Definitions and Scorecard notes', owner:'Dashboard Owner', status:'Ready'},
-        {n:5, what:'Maintain clean raw refresh', why:'Raw Search Monthly Metrics uses the corrected Jan–May import; June is excluded from normalized outputs until the June refresh.', kpi:'Data Sources and raw tab filters', owner:'Dashboard Owner', status:'Ready'},
+        {n:5, what:'Maintain clean raw refresh', why:'Raw Search Monthly Metrics includes the completed June refresh and uses May as the comparison month.', kpi:'Data Sources and raw tab filters', owner:'Dashboard Owner', status:'Ready'},
       ],
       dataNeeded: [
         {area:'True Self-Service Success Rate', missing:'Session/article journey outcome: article viewed or search clicked, then no ticket within attribution window.', why:'Turns directional proxies into a defensible customer-success metric.'},
@@ -841,7 +841,7 @@ function renderKbView(){
   renderMomLegend();
 
   document.getElementById('tblSegments').innerHTML = `
-    <tr><th>Segment</th><th class="num">May Confirmed</th><th class="num">Apr Confirmed</th><th class="num">MoM</th><th class="num">May Assumed</th><th class="num">Apr Assumed</th><th class="num">MoM</th></tr>
+    <tr><th>Segment</th><th class="num">June Confirmed</th><th class="num">May Confirmed</th><th class="num">MoM</th><th class="num">June Assumed</th><th class="num">May Assumed</th><th class="num">MoM</th></tr>
     ${k.segments.map(s=>`<tr><td>${s.seg}</td><td class="num">${fmtNum(s.mayConf)}</td><td class="num">${fmtNum(s.aprConf)}</td><td class="num">${momTag(s.confMom)}</td><td class="num">${fmtNum(s.mayAssumed)}</td><td class="num">${fmtNum(s.aprAssumed)}</td><td class="num">${momTag(s.assumedMom)}</td></tr>`).join('')}
   `;
   destroyChart('segments');
