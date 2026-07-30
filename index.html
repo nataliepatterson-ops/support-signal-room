@@ -1,47 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Support Signal Room — Widget, Ticket QA &amp; KB Console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';document.head.appendChild(s);"></script>
 <style>
+  /* =====================================================================
+     Redis 2024 Digital UI tokens — Midnight/Dusk surfaces, Hyper Red accent.
+     Local variable names below are kept so the rest of the stylesheet and
+     the render logic don't need to change; each one now aliases a --rds-*
+     token, so the whole screen re-themes from a single source of truth.
+     ===================================================================== */
   :root{
-    --bg:#0A0C0F;
-    --panel:#12151A;
-    --panel-alt:#171B21;
-    --border:#242931;
-    --border-soft:#1C2026;
-    --text:#EBEDF0;
-    --muted:#868D99;
-    --muted-dim:#5B6169;
-    --red:#FF5A46;
-    --red-dim:#492420;
-    --green:#3ECF8E;
-    --green-dim:#173226;
-    --amber:#F2B84B;
-    --amber-dim:#3A2E15;
-    --blue:#5FA8FF;
-    --blue-dim:#182839;
+    --rds-font-sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --rds-font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+
+    --rds-hyper:#FF4438; --rds-mars:#8A221C; --rds-midnight:#091A23;
+    --rds-lily:#DCFF1E; --rds-sky:#33C2FB; --rds-violet:#C795E3;
+  }
+  :root[data-theme="dark"]{
+    --rds-bg:#091A23; --rds-surface:#0D2733; --rds-surface-2:#163341;
+    --rds-surface-hover:#2D4754; --rds-border:#163341; --rds-text:#F3F3F3;
+    --rds-muted:#8A99A0; --rds-muted-2:#5C707A; --rds-grid:#2D4754;
+    --rds-accent:var(--rds-hyper); --rds-accent-soft:rgba(255,68,56,0.16);
+    --rds-good:var(--rds-lily); --rds-info:var(--rds-sky); --rds-link:var(--rds-sky);
+    --rds-shadow:0 4px 18px rgba(9,26,35,0.50); --rds-shadow-hover:0 8px 26px rgba(255,68,56,0.18);
+    --rds-card-inset:inset 0 1px 0 rgba(255,255,255,0.04); --rds-cta-fill:#351D22;
+  }
+
+  :root{
+    /* App-level aliases onto the Redis tokens above. */
+    --bg:var(--rds-bg);
+    --panel:var(--rds-surface);
+    --panel-alt:var(--rds-surface-2);
+    --border:var(--rds-border);
+    --border-soft:var(--rds-border);
+    --text:var(--rds-text);
+    --muted:var(--rds-muted);
+    --muted-dim:var(--rds-muted-2);
+    --red:var(--rds-accent);
+    --red-dim:var(--rds-accent-soft);
+    --green:var(--rds-good);
+    --green-dim:color-mix(in srgb, var(--rds-good) 14%, transparent);
+    --amber:var(--rds-violet);
+    --amber-dim:color-mix(in srgb, var(--rds-violet) 16%, transparent);
+    --blue:var(--rds-info);
+    --blue-dim:color-mix(in srgb, var(--rds-info) 16%, transparent);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:var(--bg);
     color:var(--text);
-    font-family:'Inter',sans-serif;
+    font-family:var(--rds-font-sans);
+    font-feature-settings:"cv11","ss01";
     -webkit-font-smoothing:antialiased;
     min-height:100vh;
   }
-  .mono{font-family:'IBM Plex Mono',monospace;}
-  .display{font-family:'Fraunces',serif;}
+  * { scrollbar-width: thin; scrollbar-color: var(--rds-surface-hover) transparent; }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb { background: var(--rds-surface-hover); border-radius: 999px; }
+  :focus-visible{ outline:2px solid var(--rds-accent); outline-offset:2px; }
+
+  .mono{font-family:var(--rds-font-mono);}
+  .display{font-family:var(--rds-font-sans); font-weight:600; letter-spacing:-0.01em;}
 
   /* ---------- Top bar ---------- */
   header.topbar{
     position:sticky; top:0; z-index:50;
-    background:rgba(10,12,15,0.92);
+    background:rgba(9,26,35,0.92);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--border);
     padding:16px 28px;
@@ -49,44 +79,40 @@
     gap:20px;
     flex-wrap:wrap;
   }
-  .brand{display:flex; align-items:baseline; gap:12px;}
-  .brand .mark{
-    width:10px; height:10px; border-radius:2px;
-    background:var(--red);
-    display:inline-block;
-    box-shadow:0 0 0 3px var(--red-dim);
-    transform:rotate(45deg);
-  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand svg{height:20px; width:auto; flex-shrink:0;}
+  .brand .divider{width:1px; height:16px; background:var(--border); display:inline-block;}
   .brand h1{
-    font-family:'Fraunces',serif;
-    font-size:19px; font-weight:600; letter-spacing:0.01em; margin:0;
+    font-family:var(--rds-font-sans);
+    font-size:17px; font-weight:600; letter-spacing:-0.01em; margin:0;
     display:flex; align-items:center; gap:10px;
   }
-  .brand .sub{color:var(--muted); font-size:12.5px; font-family:'IBM Plex Mono',monospace; margin-left:2px;}
+  .brand .sub{color:var(--muted); font-size:12.5px; font-family:var(--rds-font-mono); margin-left:2px;}
 
   nav.tabs{display:flex; gap:6px; background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:4px;}
   nav.tabs button{
     appearance:none; border:none; background:transparent; color:var(--muted);
-    font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:0.02em;
+    font-family:var(--rds-font-sans); font-weight:500; font-size:12.5px; letter-spacing:0.01em;
     padding:8px 14px; border-radius:7px; cursor:pointer; transition:all .15s ease;
   }
-  nav.tabs button.active{background:var(--panel-alt); color:var(--text); box-shadow:inset 0 0 0 1px var(--border);}
-  nav.tabs button:hover:not(.active){color:var(--text);}
+  nav.tabs button.active{background:var(--red); color:#fff;}
+  nav.tabs button.active:hover{background:var(--rds-mars);}
+  nav.tabs button:hover:not(.active){color:var(--text); background:var(--rds-surface-hover);}
 
   .meta-strip{
-    font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--muted-dim);
+    font-family:var(--rds-font-mono); font-size:11.5px; color:var(--muted-dim);
     text-align:right;
   }
   .meta-strip span{color:var(--muted);}
 
   .sync-block{display:flex; align-items:center; gap:14px;}
   .sync-btn{
-    appearance:none; border:1px solid var(--border); background:var(--panel); color:var(--text);
-    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.02em;
-    padding:8px 14px; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:8px;
-    transition:border-color .15s ease, background .15s ease;
+    appearance:none; border:1px solid var(--red); background:transparent; color:var(--text);
+    font-family:var(--rds-font-sans); font-weight:500; font-size:12px; letter-spacing:0.01em;
+    padding:8px 14px; border-radius:5px; cursor:pointer; display:flex; align-items:center; gap:8px;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
   }
-  .sync-btn:hover{border-color:var(--muted-dim);}
+  .sync-btn:hover{background:var(--red); color:#fff;}
   .sync-btn:disabled{cursor:default; opacity:0.7;}
   .sync-dot{width:7px; height:7px; border-radius:50%; background:var(--muted-dim); display:inline-block; transition:background .2s ease;}
   .sync-dot.loading{background:var(--amber); animation:pulse 0.9s ease-in-out infinite;}
@@ -103,17 +129,17 @@
 
   .page-head{margin-bottom:28px;}
   .page-head .eyebrow{
-    font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:0.12em; text-transform:uppercase;
+    font-family:var(--rds-font-mono); font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase;
     color:var(--red); margin-bottom:8px; display:flex; align-items:center; gap:8px;
   }
   .page-head .eyebrow::before{content:''; width:16px; height:1px; background:var(--red); display:inline-block;}
-  .page-head h2{font-family:'Fraunces',serif; font-size:30px; font-weight:600; margin:0 0 8px;}
+  .page-head h2{font-family:var(--rds-font-sans); font-size:28px; font-weight:600; letter-spacing:-0.01em; margin:0 0 8px;}
   .page-head p{color:var(--muted); font-size:14px; max-width:720px; line-height:1.6; margin:0;}
 
   section.block{margin-bottom:44px;}
   .block-head{display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:16px; flex-wrap:wrap;}
-  .block-head h3{font-family:'Fraunces',serif; font-size:19px; font-weight:600; margin:0; display:flex; align-items:center; gap:10px;}
-  .block-head h3 .idx{color:var(--muted-dim); font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:400;}
+  .block-head h3{font-family:var(--rds-font-sans); font-size:17px; font-weight:600; letter-spacing:-0.01em; margin:0; display:flex; align-items:center; gap:10px;}
+  .block-head h3 .idx{color:var(--muted-dim); font-family:var(--rds-font-mono); font-size:13px; font-weight:400;}
   .block-head .note{font-size:12.5px; color:var(--muted-dim); max-width:420px; text-align:right; line-height:1.5;}
 
   /* ---------- KPI cards ---------- */
@@ -122,52 +148,54 @@
   .kpi{
     background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px 16px 14px;
     position:relative; overflow:hidden;
+    box-shadow: var(--rds-card-inset), var(--rds-shadow);
   }
-  .kpi::before{content:''; position:absolute; top:0; left:0; width:100%; height:2px; background:var(--status);}
+  .kpi::before{content:''; position:absolute; top:0; left:0; bottom:0; width:3px; background:var(--status);}
   .kpi.good{--status:var(--green);}
   .kpi.watch{--status:var(--amber);}
   .kpi.bad{--status:var(--red);}
   .kpi.neutral{--status:var(--blue);}
-  .kpi .label{font-size:11.5px; color:var(--muted); font-family:'IBM Plex Mono',monospace; letter-spacing:0.01em; margin-bottom:10px; min-height:28px;}
-  .kpi .value{font-family:'Fraunces',serif; font-size:30px; font-weight:600; line-height:1; margin-bottom:6px;}
-  .kpi .value .unit{font-size:16px; color:var(--muted); font-weight:400;}
+  .kpi .label{font-size:11.5px; color:var(--muted); font-family:var(--rds-font-sans); font-weight:600; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px; min-height:28px;}
+  .kpi .value{font-family:var(--rds-font-mono); font-size:28px; font-weight:700; line-height:1; margin-bottom:6px;}
+  .kpi .value .unit{font-size:15px; color:var(--muted); font-weight:400;}
   .kpi .sub{font-size:11.5px; color:var(--muted-dim); line-height:1.4;}
   .kpi .dot{position:absolute; top:14px; right:14px; width:6px; height:6px; border-radius:50%; background:var(--status);}
 
   /* ---------- generic cards / panels ---------- */
-  .card{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:20px;}
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:20px; box-shadow: var(--rds-card-inset), var(--rds-shadow);}
   .grid-2{display:grid; grid-template-columns:1.1fr 0.9fr; gap:16px;}
   .grid-2b{display:grid; grid-template-columns:0.9fr 1.1fr; gap:16px;}
   @media (max-width:900px){.grid-2, .grid-2b{grid-template-columns:1fr;}}
 
   table{width:100%; border-collapse:collapse; font-size:13px;}
   th{
-    text-align:left; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.05em; text-transform:uppercase;
-    color:var(--muted-dim); font-weight:500; padding:0 10px 10px 0; border-bottom:1px solid var(--border);
+    text-align:left; font-family:var(--rds-font-sans); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--muted); font-weight:600; padding:0 10px 10px 0; border-bottom:1px solid var(--border);
   }
   td{padding:9px 10px 9px 0; border-bottom:1px solid var(--border-soft); vertical-align:top; color:var(--text);}
   tr:last-child td{border-bottom:none;}
-  td.num, th.num{text-align:right; font-family:'IBM Plex Mono',monospace;}
+  tr:hover td{background:var(--rds-surface-hover);}
+  td.num, th.num{text-align:right; font-family:var(--rds-font-mono); font-variant-numeric:tabular-nums;}
   .tag{
-    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10.5px; padding:2px 7px; border-radius:5px;
+    display:inline-block; font-family:var(--rds-font-mono); font-size:10.5px; padding:2px 7px; border-radius:999px;
     background:var(--panel-alt); color:var(--muted); border:1px solid var(--border);
   }
-  .tag.up{color:var(--green); border-color:var(--green-dim); background:var(--green-dim);}
-  .tag.down{color:var(--red); border-color:var(--red-dim); background:var(--red-dim);}
+  .tag.up{color:var(--green); border-color:transparent; background:color-mix(in srgb, var(--green) 14%, transparent);}
+  .tag.down{color:var(--red); border-color:transparent; background:var(--red-dim);}
   .tag.flat{color:var(--muted);}
 
   .bar-list .row{display:grid; grid-template-columns:170px 1fr 56px; align-items:center; gap:10px; margin-bottom:12px;}
   .bar-list .row .name{font-size:12.5px; color:var(--text);}
   .bar-list .row .track{height:8px; background:var(--panel-alt); border-radius:4px; overflow:hidden; border:1px solid var(--border-soft);}
   .bar-list .row .fill{height:100%; border-radius:4px; background:var(--red);}
-  .bar-list .row .pct{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); text-align:right;}
+  .bar-list .row .pct{font-family:var(--rds-font-mono); font-size:12px; color:var(--muted); text-align:right;}
 
   .readout{
     background:var(--panel-alt); border:1px solid var(--border); border-left:3px solid var(--red);
     border-radius:0 10px 10px 0; padding:18px 20px;
   }
   .readout .head{
-    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+    font-family:var(--rds-font-mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
     color:var(--red); margin-bottom:12px;
   }
   .readout ul{margin:0; padding:0; list-style:none;}
@@ -182,7 +210,7 @@
   .chart-wrap.tall{height:280px;}
 
   .legend-inline{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px;}
-  .legend-inline span{font-size:11.5px; color:var(--muted); display:flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace;}
+  .legend-inline span{font-size:11.5px; color:var(--muted); display:flex; align-items:center; gap:6px; font-family:var(--rds-font-mono);}
   .legend-inline .sw{width:9px; height:9px; border-radius:2px; display:inline-block;}
 
   .signal-strip{display:flex; gap:3px; margin-top:14px; flex-wrap:wrap;}
@@ -190,16 +218,16 @@
 
   footer{
     max-width:1240px; margin:0 auto; padding:0 28px 60px; color:var(--muted-dim); font-size:11.5px;
-    font-family:'IBM Plex Mono',monospace; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-family:var(--rds-font-mono); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
   }
 
   .two-col-cards{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
   @media (max-width:900px){.two-col-cards{grid-template-columns:1fr;}}
 
-  .subhead{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-dim); margin:0 0 12px;}
+  .subhead{font-family:var(--rds-font-sans); font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-dim); margin:0 0 12px;}
 
   .priority-num{
-    font-family:'IBM Plex Mono',monospace; color:var(--muted-dim); font-size:12px; width:20px; display:inline-block;
+    font-family:var(--rds-font-mono); color:var(--muted-dim); font-size:12px; width:20px; display:inline-block;
   }
 </style>
 </head>
@@ -207,12 +235,16 @@
 
 <header class="topbar">
   <div class="brand">
-    <h1><span class="mark"></span>Support Signal Room</h1>
-    <span class="sub">redis / support ops</span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 85 27" fill="none" role="img" aria-label="Redis">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M75.2909 13.8125C75.2909 10.8448 77.4892 9.12284 80.2371 9.12284C82.2888 9.12284 84.1207 10.1121 85 12.5668C84.7435 13.8125 83.2047 15.2047 82.5453 15.4246C81.9957 14.2522 81.3728 13.556 80.7866 13.556C80.0539 13.556 80.0172 14.069 80.0172 14.7284C80.0172 15.1955 80.151 15.8834 80.3119 16.7112C80.5549 17.9615 80.8599 19.5309 80.8599 21.1401C80.8599 24.0711 78.8082 26.2328 75.6573 26.2328C72.7721 26.2328 71.1778 24.3414 70.4665 21.3198C68.5818 24.6972 65.8257 26.2328 63.7134 26.2328C60.411 26.2328 59.6338 23.7919 59.7121 21.3161C58.3852 23.6612 55.831 26.2328 53.3815 26.2328C50.8809 26.2328 49.9976 24.0563 50.2002 21.5215C48.702 24.3122 45.9919 26.2328 43.3793 26.2328C40.5442 26.2328 39.141 23.9806 39.5951 21.189C37.6878 23.5333 34.1374 26.2328 30.4461 26.2328C26.2373 26.2328 24.4053 23.9632 24.1882 21.1193C22.1568 24.375 19.4187 26.3427 16.1573 26.3427C11.4493 26.3427 9.76537 22.1561 9.52032 18.7315C7.77547 21.0681 5.81377 23.4923 3.40733 26.1961C3.15086 26.4526 2.93103 26.5991 2.67457 26.5991C1.8319 26.5991 0.109914 22.8621 0 21.4698C0.723099 20.3478 5.28119 15.3398 8.95093 11.3079C10.2409 9.89066 11.4211 8.594 12.2863 7.6291C10.0389 8.30726 7.72169 9.65975 4.79957 11.7608C4.28664 12.1272 2.85776 8.7931 2.8944 6.22845C6.26509 3.73707 11.3944 2.16164 15.5345 2.16164C21.3233 2.16164 24.6573 5.38578 24.6573 9.8556C24.6573 13.5927 21.5431 17.6961 17 17.8427C14.6377 17.904 13.1237 16.578 12.3494 14.9405C12.4419 17.473 13.7587 20.5905 17.2931 20.5905C21.1462 20.5905 22.9965 18.2646 25.7559 14.7958C25.9352 14.5704 26.1183 14.3403 26.306 14.1056C28.6509 11.2112 31.3621 8.64655 35.319 8.64655C37.7371 8.64655 39.3858 10.1487 39.3858 12.4203C39.3858 15.1681 36.1616 18.9784 31.6552 18.9784C30.8855 18.9784 30.1839 18.877 29.5917 18.6766C29.5768 18.7921 29.5668 18.9058 29.5668 19.0151C29.5668 20.2974 30.0431 21.0668 32.1315 21.0668C35.2091 21.0668 38.1034 19.2349 41.6207 14.9483C45.0647 10.7349 47.6659 8.90302 50.4138 8.90302C52.2687 8.90302 53.6765 9.90832 54.2969 11.6014C57.9796 6.28253 61.1038 2.51388 63.75 0C66.3513 1.09914 68.2198 3.26078 67.7069 3.70043C65.7651 5.45905 59.2802 12.5302 56.7155 16.7435C56.056 17.8427 55.4332 19.0517 55.4332 19.6379C55.4332 20.1875 55.7629 20.3707 56.1293 20.3707C57.8898 20.3707 61.4176 16.2147 64.4645 12.6253C65.6026 11.2845 66.6736 10.0228 67.5603 9.08621C69.6121 9.92888 71.7004 11.7241 71.1875 12.347C68.4763 15.5711 66.4246 18.2091 66.4246 19.7112C66.4246 20.1142 66.5711 20.3707 67.1207 20.3707C68.1466 20.3707 69.0991 19.4547 70.6746 17.5129C71.0043 17.1099 71.4073 17.1099 71.6638 17.7328C72.3599 19.4181 73.3858 20.3341 74.1918 20.3341C75.1444 20.3341 75.6207 19.4914 75.6207 18.2091C75.6207 17.3327 75.5137 16.3138 75.4217 15.4365C75.3521 14.7733 75.2909 14.191 75.2909 13.8125ZM16.194 13.3362C18.1358 13.3362 20.2608 12.2737 20.2608 10.1121C20.2608 8.80024 19.4466 7.59084 17.2708 7.22257C17.156 7.40192 17.042 7.58017 16.9287 7.75739C15.8231 9.4858 14.7804 11.116 13.7281 12.7095C14.3586 13.0636 15.156 13.3362 16.194 13.3362ZM35.8319 13.9957C35.8319 13.4095 35.4655 13.0065 34.8793 13.0065C33.4094 13.0065 31.1923 15.0693 30.149 17.0613C30.5341 17.2101 30.9862 17.2931 31.472 17.2931C34.0733 17.2931 35.8319 15.3147 35.8319 13.9957ZM45.4677 19.3082C45.4677 19.9677 45.834 20.4073 46.6034 20.4073C48.9849 20.4073 51.9526 16.0841 51.9526 14.3254C51.9526 13.5927 51.5496 13.153 50.8901 13.153C48.7285 13.153 45.4677 17.2565 45.4677 19.3082ZM76.0599 6.08207C75.2172 7.47431 73.9349 9.04974 73.4586 9.52603C71.2603 8.61008 69.2086 6.77819 69.5017 6.26525C70.3077 4.83638 71.6267 3.29758 72.103 2.82129C74.3012 3.73724 76.353 5.60577 76.0599 6.08207Z" fill="#FF4438"/>
+    </svg>
+    <span class="divider"></span>
+    <h1>Support Signal Room</h1>
+    <span class="sub">support ops</span>
   </div>
   <nav class="tabs">
-    <button class="tab-btn active" data-view="widget">Widget &amp; Ticket QA</button>
-    <button class="tab-btn" data-view="kb">Knowledge Base Scorecard</button>
+    <button class="tab-btn active" data-view="widget">Widget &amp; ticket QA</button>
+    <button class="tab-btn" data-view="kb">Knowledge base scorecard</button>
   </nav>
   <div class="sync-block">
     <button id="syncBtn" class="sync-btn">
@@ -221,7 +253,7 @@
     </button>
     <div class="meta-strip">
       <span id="syncMeta">snapshot compiled <span id="snapDate"></span></span><br>
-      sources: Forethought Widget QA · KB Scorecard
+      sources: Forethought widget QA, KB scorecard
     </div>
   </div>
 </header>
@@ -232,8 +264,8 @@
   <div class="view active" id="view-widget">
 
     <div class="page-head">
-      <div class="eyebrow">Executive Overview</div>
-      <h2>Forethought Widget Performance</h2>
+      <div class="eyebrow">Executive overview</div>
+      <h2>Forethought widget performance</h2>
       <p>Conversation volume, containment, and QA across the widget. All 500 QA rows are reviewed; 43 System Updates are excluded from technical quality rates. Source period Apr 27 – Jul 24, 2026. Last refreshed Jul 27, 2026.</p>
     </div>
 
@@ -302,7 +334,7 @@
     </section>
 
     <section class="block">
-      <div class="block-head"><h3><span class="idx">08</span> Management readout — Widget</h3></div>
+      <div class="block-head"><h3><span class="idx">08</span> Management readout, widget</h3></div>
       <div class="readout">
         <div class="head">Executive summary</div>
         <ul id="readoutWidget"></ul>
@@ -310,8 +342,8 @@
     </section>
 
     <div class="page-head" style="margin-top:56px; border-top:1px solid var(--border); padding-top:36px;">
-      <div class="eyebrow">Channel Deep Dive</div>
-      <h2>Email Ticket Intake QA</h2>
+      <div class="eyebrow">Channel deep dive</div>
+      <h2>Email ticket intake QA</h2>
       <p>Email QA quality, exclusion mix, and follow-up workload. Technical rates exclude Test and Backend/process-update rows. Raw period Jul 6 – Jul 15, 2026. QA last pulled Jul 16, 2026.</p>
     </div>
 
@@ -340,7 +372,7 @@
     </section>
 
     <section class="block">
-      <div class="block-head"><h3><span class="idx">12</span> Management readout — Email</h3></div>
+      <div class="block-head"><h3><span class="idx">12</span> Management readout, email</h3></div>
       <div class="readout">
         <div class="head">Executive summary</div>
         <ul id="readoutEmail"></ul>
@@ -353,13 +385,13 @@
   <div class="view" id="view-kb">
 
     <div class="page-head">
-      <div class="eyebrow">Executive Overview</div>
-      <h2>Knowledge Base Scorecard</h2>
+      <div class="eyebrow">Executive overview</div>
+      <h2>Knowledge base scorecard</h2>
       <p>Self-service deflection, search behavior, and content health. Reporting month: June 2026 vs. May 2026. Workbook last refreshed for the June reporting period.</p>
     </div>
 
     <section class="block">
-      <div class="block-head"><h3><span class="idx">01</span> Headline metrics — June vs. May</h3></div>
+      <div class="block-head"><h3><span class="idx">01</span> Headline metrics, June vs. May</h3></div>
       <div class="kpi-row" id="kpi-kb-headline"></div>
     </section>
 
@@ -379,14 +411,14 @@
       <div class="grid-2">
         <div class="card"><table id="tblSegments"></table></div>
         <div class="card">
-          <div class="subhead">Assumed deflections by segment — June</div>
+          <div class="subhead">Assumed deflections by segment, June</div>
           <div class="chart-wrap"><canvas id="chartSegments"></canvas></div>
         </div>
       </div>
     </section>
 
     <section class="block">
-      <div class="block-head"><h3><span class="idx">04</span> Support impact — June view</h3></div>
+      <div class="block-head"><h3><span class="idx">04</span> Support impact, June view</h3></div>
       <div class="card"><table id="tblSupportImpact"></table></div>
     </section>
 
@@ -426,7 +458,7 @@
 </main>
 
 <footer>
-  <span>Static snapshot — figures reflect the source sheets at time of export.</span>
+  <span>Static snapshot, figures reflect the source sheets at time of export.</span>
   <span>Widget/QA period: Apr 27 – Jul 24, 2026 · KB period: Jan – Jun 2026</span>
 </footer>
 
@@ -436,14 +468,15 @@ document.getElementById('snapDate').textContent = new Date().toISOString().slice
 /* ---------------- shared chart theming ---------------- */
 const CHARTS_AVAILABLE = typeof Chart !== 'undefined';
 if (CHARTS_AVAILABLE) {
-  Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+  Chart.defaults.font.family = "'Space Mono', monospace";
   Chart.defaults.font.size = 11.5;
-  Chart.defaults.color = '#868D99';
+  Chart.defaults.color = '#8A99A0';
 } else {
   console.warn('Chart.js failed to load from both CDNs — charts will be skipped, tables/KPIs still render.');
 }
-const COLORS = {red:'#FF5A46', green:'#3ECF8E', amber:'#F2B84B', blue:'#5FA8FF', muted:'#4A505A', grid:'#1C2026', text:'#EBEDF0'};
-const palette = [COLORS.red, COLORS.amber, COLORS.blue, COLORS.green, COLORS.muted, '#B98BFF'];
+/* Redis 2024 Digital UI chart palette — official series order, do not invent colors. */
+const COLORS = {red:'#FF4438', green:'#DCFF1E', amber:'#C795E3', blue:'#33C2FB', muted:'#5C707A', grid:'#2D4754', text:'#F3F3F3'};
+const palette = ['#FF4438','#33C2FB','#C795E3','#DCFF1E','#FF8A82','#9B5DE5','#80D8FB','#A8C814'];
 
 /* Safe chart constructor: no-ops (and shows a small placeholder note) if Chart.js isn't available */
 function safeChart(canvasId, config){
@@ -452,7 +485,7 @@ function safeChart(canvasId, config){
     if (el && el.parentElement && !el.parentElement.querySelector('.chart-fallback-note')) {
       const note = document.createElement('div');
       note.className = 'chart-fallback-note';
-      note.style.cssText = 'color:var(--muted-dim); font-size:11.5px; font-family:\'IBM Plex Mono\',monospace; padding:8px 0;';
+      note.style.cssText = 'color:var(--muted-dim); font-size:11.5px; font-family:var(--rds-font-mono); padding:8px 0;';
       note.textContent = 'Chart unavailable (script failed to load) — see table for the same data.';
       el.parentElement.appendChild(note);
     }
@@ -719,7 +752,7 @@ function renderWidgetView(){
   destroyChart('partialDrivers');
   charts.partialDrivers = safeChart('chartPartialDrivers', {
     type:'doughnut',
-    data:{ labels:w.drivers.map(d=>d.cat), datasets:[{data:w.drivers.map(d=>d.count), backgroundColor:palette, borderColor:'#0A0C0F', borderWidth:2}] },
+    data:{ labels:w.drivers.map(d=>d.cat), datasets:[{data:w.drivers.map(d=>d.count), backgroundColor:palette, borderColor:'#0D2733', borderWidth:2}] },
     options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, padding:14, color:COLORS.text}}}, cutout:'62%' }
   });
   document.getElementById('tblPartialDrivers').innerHTML = `
@@ -784,7 +817,7 @@ function renderWidgetView(){
   destroyChart('emailMix');
   charts.emailMix = safeChart('chartEmailMix', {
     type:'doughnut',
-    data:{ labels:e.mix.map(m=>m.cat), datasets:[{data:e.mix.map(m=>m.count), backgroundColor:[COLORS.green, COLORS.amber, COLORS.red, COLORS.muted], borderColor:'#0A0C0F', borderWidth:2}] },
+    data:{ labels:e.mix.map(m=>m.cat), datasets:[{data:e.mix.map(m=>m.count), backgroundColor:[COLORS.green, COLORS.amber, COLORS.red, COLORS.muted], borderColor:'#0D2733', borderWidth:2}] },
     options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, padding:14, color:COLORS.text}}}, cutout:'62%' }
   });
   document.getElementById('tblEmailSignals').innerHTML = `
@@ -796,7 +829,7 @@ function renderWidgetView(){
 
 const seriesColors = {
   'Article Views': COLORS.blue, 'Confirmed Deflections': COLORS.red, 'Assumed Deflections': COLORS.amber,
-  'End-user Sessions': COLORS.muted, 'Total Deflection Rate %': COLORS.green, 'Search Deflection Proxy %': '#B98BFF',
+  'End-user Sessions': COLORS.muted, 'Total Deflection Rate %': COLORS.green, 'Search Deflection Proxy %': '#9B5DE5',
 };
 function buildMomDatasets(){
   const k = state.kb;
