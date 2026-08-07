@@ -29,6 +29,18 @@
     --rds-good:var(--rds-lily); --rds-info:var(--rds-sky); --rds-link:var(--rds-sky);
     --rds-shadow:0 4px 18px rgba(9,26,35,0.50); --rds-shadow-hover:0 8px 26px rgba(255,68,56,0.18);
     --rds-card-inset:inset 0 1px 0 rgba(255,255,255,0.04); --rds-cta-fill:#351D22;
+    --topbar-bg:rgba(9,26,35,0.92);
+  }
+  :root[data-theme="light"]{
+    --rds-bg:#FFFFFF; --rds-surface:#FBFCFC; --rds-surface-2:#F0F3F4;
+    --rds-surface-hover:#E5EBED; --rds-border:#DCE4E7; --rds-text:#091A23;
+    --rds-muted:#5C707A; --rds-muted-2:#8A99A0; --rds-grid:#DCE4E7;
+    --rds-accent:var(--rds-hyper); --rds-accent-soft:rgba(255,68,56,0.10);
+    --rds-good:#7FA800; --rds-info:#0C7BB3; --rds-link:#0C7BB3;
+    --rds-violet:#9A5BC7;
+    --rds-shadow:0 4px 14px rgba(9,26,35,0.08); --rds-shadow-hover:0 8px 22px rgba(255,68,56,0.14);
+    --rds-card-inset:inset 0 1px 0 rgba(255,255,255,0.6); --rds-cta-fill:#FFE9E7;
+    --topbar-bg:rgba(255,255,255,0.94);
   }
 
   :root{
@@ -68,10 +80,12 @@
   .mono{font-family:var(--rds-font-mono);}
   .display{font-family:var(--rds-font-sans); font-weight:600; letter-spacing:-0.01em;}
 
+  html{ scroll-behavior:smooth; }
+
   /* ---------- Top bar ---------- */
   header.topbar{
     position:sticky; top:0; z-index:50;
-    background:rgba(9,26,35,0.92);
+    background:var(--topbar-bg);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--border);
     padding:16px 28px;
@@ -121,13 +135,41 @@
   @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.25;}}
   #syncMeta.err{color:var(--red);}
 
+  /* ---------- Jump nav (section quick-links) ---------- */
+  .jumpnav-wrap{
+    position:sticky; top:65px; z-index:40;
+    background:var(--topbar-bg);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .jumpnav{
+    max-width:1240px; margin:0 auto; padding:10px 28px;
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  }
+  .jumpnav .jn-label{
+    font-family:var(--rds-font-mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--muted-dim); margin-right:4px; flex-shrink:0;
+  }
+  .jumpnav a.jn-pill{
+    font-family:var(--rds-font-mono); font-size:11px; color:var(--muted);
+    background:var(--panel); border:1px solid var(--border); border-radius:999px;
+    padding:5px 11px; text-decoration:none; white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .jumpnav a.jn-pill:hover{ color:var(--text); border-color:var(--red); background:var(--rds-surface-hover); }
+  .jumpnav a.jn-pill.jn-divider{
+    background:transparent; border:none; color:var(--muted-dim); padding:5px 2px; cursor:default;
+  }
+
   main{max-width:1240px; margin:0 auto; padding:36px 28px 90px;}
 
   .view{display:none;}
   .view.active{display:block; animation:fadein .25s ease;}
   @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
 
-  .page-head{margin-bottom:28px;}
+  section.block{ scroll-margin-top:120px; }
+
+  .page-head{margin-bottom:28px; scroll-margin-top:120px;}
   .page-head .eyebrow{
     font-family:var(--rds-font-mono); font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase;
     color:var(--red); margin-bottom:8px; display:flex; align-items:center; gap:8px;
@@ -142,15 +184,33 @@
   .block-head h3 .idx{color:var(--muted-dim); font-family:var(--rds-font-mono); font-size:13px; font-weight:400;}
   .block-head .note{font-size:12.5px; color:var(--muted-dim); max-width:420px; text-align:right; line-height:1.5;}
 
+  /* ---------- range filter control (charts) ---------- */
+  .range-filter{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    font-family:var(--rds-font-mono); font-size:11px; color:var(--muted);
+  }
+  .range-filter select{
+    background:var(--panel-alt); color:var(--text); border:1px solid var(--border);
+    border-radius:6px; padding:5px 8px; font-family:var(--rds-font-mono); font-size:11px;
+    cursor:pointer;
+  }
+  .range-filter select:hover{ border-color:var(--red); }
+  .range-filter .rf-reset{
+    background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:6px; padding:5px 9px; font-family:var(--rds-font-mono); font-size:10.5px;
+    cursor:pointer;
+  }
+  .range-filter .rf-reset:hover{ color:var(--text); border-color:var(--red); }
+
   /* ---------- KPI cards ---------- */
   .kpi-row{display:grid; grid-template-columns:repeat(5,1fr); gap:12px;}
   @media (max-width:1000px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
   .kpi{
     background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px 16px 14px;
-    position:relative; overflow:hidden;
+    position:relative; overflow:visible;
     box-shadow: var(--rds-card-inset), var(--rds-shadow);
   }
-  .kpi::before{content:''; position:absolute; top:0; left:0; bottom:0; width:3px; background:var(--status);}
+  .kpi::before{content:''; position:absolute; top:0; left:0; bottom:0; width:3px; background:var(--status); border-radius:12px 0 0 12px;}
   .kpi.good{--status:var(--green);}
   .kpi.watch{--status:var(--amber);}
   .kpi.bad{--status:var(--red);}
@@ -229,6 +289,77 @@
   .priority-num{
     font-family:var(--rds-font-mono); color:var(--muted-dim); font-size:12px; width:20px; display:inline-block;
   }
+
+
+  /* ---------- narrative staleness banner ---------- */
+  .narrative-banner{
+    display:none;
+    background:color-mix(in srgb, var(--amber) 14%, transparent);
+    border-bottom:1px solid var(--amber);
+    color:var(--text); font-size:12.5px; line-height:1.5;
+    padding:10px 28px; text-align:center;
+  }
+  .narrative-banner strong{color:var(--amber);}
+
+  /* ---------- tab period badges ---------- */
+  nav.tabs button .tab-period{
+    display:block; font-family:var(--rds-font-mono); font-size:9px; letter-spacing:0.05em;
+    opacity:0.7; margin-top:2px; font-weight:400; text-transform:none;
+  }
+
+  /* ---------- scroll-spy active pill ---------- */
+  .jumpnav a.jn-pill.active{ color:#fff; background:var(--red); border-color:var(--red); }
+
+  /* ---------- section takeaway line ---------- */
+  .takeaway{
+    font-size:12.5px; color:var(--muted); font-style:italic;
+    margin:-6px 0 14px; display:flex; gap:8px; align-items:baseline; line-height:1.5;
+  }
+  .takeaway::before{content:'\2192'; color:var(--red); font-style:normal; font-family:var(--rds-font-mono); flex-shrink:0;}
+
+  /* ---------- KPI info tooltip ---------- */
+  .info-dot{
+    display:inline-flex; align-items:center; justify-content:center;
+    margin-left:6px; width:14px; height:14px; border-radius:50%;
+    border:1px solid var(--muted-dim); color:var(--muted-dim); font-size:9px;
+    cursor:help; position:relative; font-family:var(--rds-font-mono);
+    letter-spacing:0; vertical-align:middle; font-weight:400; text-transform:lowercase;
+  }
+  .info-dot .tip{
+    display:none; position:absolute; top:calc(100% + 8px); left:50%; transform:translateX(-50%);
+    width:230px; background:var(--panel-alt); border:1px solid var(--border); border-radius:8px;
+    padding:10px 12px; font-size:11.5px; line-height:1.5; color:var(--text); z-index:70;
+    box-shadow:var(--rds-shadow); font-family:var(--rds-font-sans); font-style:normal;
+    text-transform:none; letter-spacing:normal; text-align:left; font-weight:400; white-space:normal;
+  }
+  .info-dot:hover .tip{display:block;}
+
+  /* ---------- overview cards ---------- */
+  .three-col-cards{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:900px){.three-col-cards{grid-template-columns:1fr;}}
+  .ov-card .big{font-family:var(--rds-font-mono); font-size:28px; font-weight:700; margin:6px 0 12px;}
+  .ov-card ul{margin:0 0 16px; padding-left:16px; color:var(--muted); font-size:12.5px; line-height:1.65;}
+  .ov-card li{margin-bottom:6px;}
+  .goto-btn{
+    appearance:none; border:1px solid var(--red); background:transparent; color:var(--text);
+    font-family:var(--rds-font-sans); font-weight:500; font-size:12px;
+    padding:7px 13px; border-radius:5px; cursor:pointer; transition:all .15s ease;
+  }
+  .goto-btn:hover{background:var(--red); color:#fff;}
+  .kpi-row.autofit{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));}
+
+  /* ---------- mobile pass ---------- */
+  @media (max-width:640px){
+    main{padding:24px 16px 70px;}
+    header.topbar{padding:12px 16px;}
+    .kpi-row{grid-template-columns:1fr 1fr; gap:10px;}
+    .kpi{padding:13px 13px 12px;}
+    .kpi .value{font-size:21px;}
+    .kpi .label{min-height:0; font-size:10.5px;}
+    .jumpnav{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .page-head h2{font-size:22px;}
+    .block-head .note{text-align:left;}
+  }
 </style>
 </head>
 <body>
@@ -243,10 +374,13 @@
     <span class="sub">support ops</span>
   </div>
   <nav class="tabs">
-    <button class="tab-btn active" data-view="widget">Widget &amp; ticket QA</button>
-    <button class="tab-btn" data-view="kb">Knowledge base scorecard</button>
+    <button class="tab-btn active" data-view="overview">Overview<span class="tab-period">all periods</span></button>
+    <button class="tab-btn" data-view="widget">Widget QA<span class="tab-period">Apr 27 – Jul 24</span></button>
+    <button class="tab-btn" data-view="ticket">Ticket QA<span class="tab-period">Jul 6 – 15</span></button>
+    <button class="tab-btn" data-view="kb">KB scorecard<span class="tab-period" id="kbTabPeriod">Jan – Jun</span></button>
   </nav>
   <div class="sync-block">
+    <button id="themeBtn" class="sync-btn" style="border-color:var(--border); padding:8px 11px;" title="Toggle light / dark theme">☀</button>
     <button id="syncBtn" class="sync-btn">
       <span class="sync-dot" id="syncDot"></span>
       <span id="syncLabel">Sync live data</span>
@@ -258,32 +392,111 @@
   </div>
 </header>
 
+<div class="jumpnav-wrap" id="jumpnavWrap" style="display:none;">
+  <div class="jumpnav" id="jumpnav-widget">
+    <span class="jn-label">Jump to</span>
+    <a class="jn-pill" href="#head-widget">Overview</a>
+    <a class="jn-pill" href="#sec-w-01">Headline</a>
+    <a class="jn-pill" href="#sec-w-01b">Program impact</a>
+    <a class="jn-pill" href="#sec-w-02">Quality &amp; risk</a>
+    <a class="jn-pill" href="#sec-w-03">Partial drivers</a>
+    <a class="jn-pill" href="#sec-w-03b">By topic</a>
+    <a class="jn-pill" href="#sec-w-04">Journey risk</a>
+    <a class="jn-pill" href="#sec-w-04b">Handoff necessity</a>
+    <a class="jn-pill" href="#sec-w-04c">Duration</a>
+    <a class="jn-pill" href="#sec-w-05">Risk register</a>
+    <a class="jn-pill" href="#sec-w-06">Reclassification</a>
+    <a class="jn-pill" href="#sec-w-07">QA highlights</a>
+    <a class="jn-pill" href="#sec-w-07b">QA → KB pipeline</a>
+    <a class="jn-pill" href="#sec-w-08">Readout</a>
+  </div>
+  <div class="jumpnav" id="jumpnav-ticket" style="display:none;">
+    <span class="jn-label">Jump to</span>
+    <a class="jn-pill" href="#head-email">Overview</a>
+    <a class="jn-pill" href="#sec-w-09">Headline</a>
+    <a class="jn-pill" href="#sec-w-10">Quality &amp; exclusions</a>
+    <a class="jn-pill" href="#sec-w-11">Mix &amp; signals</a>
+    <a class="jn-pill" href="#sec-w-12">Readout</a>
+  </div>
+  <div class="jumpnav" id="jumpnav-kb" style="display:none;">
+    <span class="jn-label">Jump to</span>
+    <a class="jn-pill" href="#head-kb">Overview</a>
+    <a class="jn-pill" href="#sec-k-01">Headline</a>
+    <a class="jn-pill" href="#sec-k-02">MoM trend</a>
+    <a class="jn-pill" href="#sec-k-02b">Success vs tickets</a>
+    <a class="jn-pill" href="#sec-k-03">Segments</a>
+    <a class="jn-pill" href="#sec-k-04">Support impact</a>
+    <a class="jn-pill" href="#sec-k-05">Content &amp; search</a>
+    <a class="jn-pill" href="#sec-k-05b">Content backlog</a>
+    <a class="jn-pill" href="#sec-k-06">Ticket volume</a>
+    <a class="jn-pill" href="#sec-k-07">Priorities</a>
+    <a class="jn-pill" href="#sec-k-08">Data needed</a>
+  </div>
+</div>
+
+
+<div class="narrative-banner" id="narrativeBanner"></div>
+
 <main>
 
-  <!-- ===================== VIEW 1: WIDGET + TICKET QA ===================== -->
-  <div class="view active" id="view-widget">
+  <!-- ===================== VIEW 0: OVERVIEW ===================== -->
+  <div class="view active" id="view-overview">
 
-    <div class="page-head">
+    <div class="page-head" id="head-overview">
+      <div class="eyebrow">Executive summary</div>
+      <h2>Support signal overview</h2>
+      <p>The one-screen story across the widget, email ticket intake, and the knowledge base. Each card opens its full tab. Note: the three areas cover different reporting periods — compare within a tab, not across tabs.</p>
+    </div>
+
+    <section class="block" id="sec-o-01">
+      <div class="block-head"><h3>Cross-channel headline</h3></div>
+      <div class="kpi-row autofit" id="kpi-overview"></div>
+    </section>
+
+    <section class="block" id="sec-o-02">
+      <div class="block-head"><h3>The story in three readouts</h3></div>
+      <div class="three-col-cards" id="overviewCards"></div>
+    </section>
+
+  </div>
+
+  <!-- ===================== VIEW 1: WIDGET QA ===================== -->
+  <div class="view" id="view-widget">
+
+    <div class="page-head" id="head-widget">
       <div class="eyebrow">Executive overview</div>
       <h2>Forethought widget performance</h2>
       <p>Conversation volume, containment, and QA across the widget. All 500 QA rows are reviewed; 43 System Updates are excluded from technical quality rates. Source period Apr 27 – Jul 24, 2026. Last refreshed Jul 27, 2026.</p>
     </div>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">01</span> Headline performance</h3></div>
+    <section class="block" id="sec-w-01">
+      <div class="block-head"><h3>Headline performance</h3></div>
+      <div class="takeaway">Deflection is strong — the gap is answer completeness, not coverage.</div>
       <div class="kpi-row" id="kpi-widget-headline"></div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">02</span> Quality &amp; risk</h3></div>
+    <section class="block" id="sec-w-01b">
+      <div class="block-head">
+        <h3>Program impact &amp; coverage</h3>
+        <div class="note">The leadership view: how much of the ticket stream Forethought touches, and the manual work the approved automation removes.</div>
+      </div>
+      <div class="takeaway">Coverage and touch reduction are the leadership story — these populate once the program-impact metrics are added to the widget sheet.</div>
+      <div class="kpi-row" id="kpi-widget-impact" style="grid-template-columns:repeat(4,1fr);"></div>
+      <div class="card" style="margin-top:12px;"><table id="tblImpact"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-02">
+      <div class="block-head"><h3>Quality &amp; risk</h3></div>
+      <div class="takeaway">Partial passes, not outright failures, drive the improvement backlog.</div>
       <div class="kpi-row" id="kpi-widget-quality"></div>
     </section>
 
-    <section class="block">
+    <section class="block" id="sec-w-03">
       <div class="block-head">
-        <h3><span class="idx">03</span> Partial-pass drivers</h3>
+        <h3>Partial-pass drivers</h3>
         <div class="note">What's behind the 145 "useful but incomplete" responses.</div>
       </div>
+      <div class="takeaway">Nearly half of incomplete answers trace back to KB gaps — content work, not bot work.</div>
       <div class="grid-2">
         <div class="card">
           <div class="subhead">Share of partial passes by root cause</div>
@@ -296,11 +509,27 @@
       </div>
     </section>
 
-    <section class="block">
+    <section class="block" id="sec-w-03b">
       <div class="block-head">
-        <h3><span class="idx">04</span> Customer journey risk</h3>
+        <h3>Performance by topic</h3>
+        <div class="note">Pass / partial / fail split by Support Type, tallied from every classified QA row.</div>
+      </div>
+      <div class="takeaway">Pass rate by topic shows where the widget wins and where it needs guardrails before wider rollout.</div>
+      <div class="grid-2b">
+        <div class="card"><table id="tblTopics"></table></div>
+        <div class="card">
+          <div class="subhead">Technical pass rate by topic</div>
+          <div class="chart-wrap"><canvas id="chartTopics"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-w-04">
+      <div class="block-head">
+        <h3>Customer journey risk</h3>
         <div class="note">Drop-off pattern across 144 conversations that ended without a resolution signal.</div>
       </div>
+      <div class="takeaway">Most drop-offs show no follow-up at all — consistent with self-resolution, but closure signals are missing.</div>
       <div class="grid-2b">
         <div class="card">
           <div class="subhead">Drop-off signal breakdown</div>
@@ -313,52 +542,99 @@
       </div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">05</span> Risk signal register</h3></div>
+    <section class="block" id="sec-w-04b">
+      <div class="block-head">
+        <h3>Handoff necessity check</h3>
+        <div class="note">Of conversations handed to L1, how many actually needed a human — i.e. the customer replied back.</div>
+      </div>
+      <div class="takeaway">The question this section answers once sampled: did the human touch actually change the outcome, or had the widget already resolved it?</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="subhead">Sampled L1 handoffs: did the customer reply?</div>
+          <div class="chart-wrap"><canvas id="chartHandoffNecessity"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="subhead">What this means</div>
+          <table id="tblHandoffNecessity"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-w-04c">
+      <div class="block-head">
+        <h3>Conversation duration</h3>
+        <div class="note">Median time spent in the widget, split by whether the conversation deflected or handed off.</div>
+      </div>
+      <div class="takeaway">Time-in-widget for deflected vs. handed-off conversations shows what self-service saves — populated from the conversation log.</div>
+      <div class="card"><table id="tblDurations"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-05">
+      <div class="block-head"><h3>Risk signal register</h3></div>
+      <div class="takeaway">One number to watch: 43.8% of graded responses need technical improvement.</div>
       <div class="card">
         <table id="tblRiskSignals"></table>
       </div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">06</span> Partial-intake reclassification</h3><div class="note">Manual QA re-split of the 55 sampled partial-intake rows.</div></div>
+    <section class="block" id="sec-w-06">
+      <div class="block-head"><h3>Partial-intake reclassification</h3><div class="note">Manual QA re-split of the 55 sampled partial-intake rows.</div></div>
+      <div class="takeaway">Manual review says partials skew worse — nearly half should count as full misses.</div>
       <div class="grid-2">
         <div class="card"><div class="chart-wrap"><canvas id="chartReclass"></canvas></div></div>
         <div class="card"><table id="tblReclass"></table></div>
       </div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">07</span> Ticket intake QA highlights</h3></div>
+    <section class="block" id="sec-w-07">
+      <div class="block-head"><h3>Ticket intake QA highlights</h3></div>
+      <div class="takeaway">Coverage is complete at 500 rows; the pass/partial mix is the story.</div>
       <div class="card"><table id="tblHighlights"></table></div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">08</span> Management readout, widget</h3></div>
+    <section class="block" id="sec-w-07b">
+      <div class="block-head">
+        <h3>QA → KB pipeline</h3>
+        <div class="note">From gap flagged in QA to content shipped: the loop that proves QA drives the knowledge base.</div>
+      </div>
+      <div class="takeaway">Flagged gaps only count if they close — the closure rate is the proof the QA loop produces content, not just findings.</div>
+      <div class="card"><table id="tblPipeline"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-08">
+      <div class="block-head"><h3>Management readout, widget</h3></div>
       <div class="readout">
         <div class="head">Executive summary</div>
         <ul id="readoutWidget"></ul>
       </div>
     </section>
 
-    <div class="page-head" style="margin-top:56px; border-top:1px solid var(--border); padding-top:36px;">
-      <div class="eyebrow">Channel deep dive</div>
+  </div>
+
+  <!-- ===================== VIEW 2: TICKET QA (EMAIL) ===================== -->
+  <div class="view" id="view-ticket">
+
+    <div class="page-head" id="head-email">
+      <div class="eyebrow">Executive overview</div>
       <h2>Email ticket intake QA</h2>
       <p>Email QA quality, exclusion mix, and follow-up workload. Technical rates exclude Test and Backend/process-update rows. Raw period Jul 6 – Jul 15, 2026. QA last pulled Jul 16, 2026.</p>
     </div>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">09</span> Headline performance</h3></div>
+    <section class="block" id="sec-w-09">
+      <div class="block-head"><h3>Headline performance</h3></div>
+      <div class="takeaway">Email intake is healthy at 92.7% pass — but the scorable sample is small.</div>
       <div class="kpi-row" id="kpi-email-headline"></div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">10</span> Quality &amp; exclusions</h3></div>
+    <section class="block" id="sec-w-10">
+      <div class="block-head"><h3>Quality &amp; exclusions</h3></div>
+      <div class="takeaway">Nearly half the sample is test or process noise — tagging hygiene is the real gap.</div>
       <div class="kpi-row" id="kpi-email-quality"></div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">11</span> Email QA mix &amp; operational signals</h3></div>
+    <section class="block" id="sec-w-11">
+      <div class="block-head"><h3>Email QA mix &amp; operational signals</h3></div>
+      <div class="takeaway">Test grading and review-status tagging disagree on more than half of test rows.</div>
       <div class="grid-2">
         <div class="card">
           <div class="subhead">Classification of all 77 reviewed rows</div>
@@ -371,8 +647,8 @@
       </div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">12</span> Management readout, email</h3></div>
+    <section class="block" id="sec-w-12">
+      <div class="block-head"><h3>Management readout, email</h3></div>
       <div class="readout">
         <div class="head">Executive summary</div>
         <ul id="readoutEmail"></ul>
@@ -381,49 +657,67 @@
 
   </div>
 
-  <!-- ===================== VIEW 2: KB SCORECARD ===================== -->
+  <!-- ===================== VIEW 3: KB SCORECARD ===================== -->
   <div class="view" id="view-kb">
 
-    <div class="page-head">
+    <div class="page-head" id="head-kb">
       <div class="eyebrow">Executive overview</div>
       <h2>Knowledge base scorecard</h2>
-      <p>Self-service deflection, search behavior, and content health. Reporting month: June 2026 vs. May 2026. Workbook last refreshed for the June reporting period.</p>
+      <p id="kbPageDesc">Self-service deflection, search behavior, and content health. Reporting month: June 2026 vs. May 2026. Workbook last refreshed for the June reporting period.</p>
     </div>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">01</span> Headline metrics, June vs. May</h3></div>
+    <section class="block" id="sec-k-01">
+      <div class="block-head"><h3>Headline metrics, <span id="kbHeadMonths">June vs. May</span></h3></div>
+      <div class="takeaway">Official June deflections improved (confirmed doubled), but every search proxy fell hard — and June's tickets-after-search methodology changed, so verify before reacting.</div>
       <div class="kpi-row" id="kpi-kb-headline"></div>
     </section>
 
-    <section class="block">
+    <section class="block" id="sec-k-02">
       <div class="block-head">
-        <h3><span class="idx">02</span> Month-over-month trend, Jan – Jun 2026</h3>
-        <div class="note">June is the current reporting month and May is the comparison month.</div>
+        <h3>Month-over-month trend, <span id="kbTrendRange">Jan – Jun 2026</span></h3>
+        <div class="note" id="kbTrendNote">June is the current reporting month and May is the comparison month.</div>
       </div>
+      <div class="takeaway">Sessions and searches are declining together — watch whether deflection holds as volume falls.</div>
       <div class="card">
+        <div class="range-filter" id="momRangeFilter" style="margin-bottom:14px;"></div>
         <div class="chart-wrap tall"><canvas id="chartMomTrend"></canvas></div>
         <div class="legend-inline" id="momLegend"></div>
       </div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">03</span> Deflections by user segment</h3></div>
+    <section class="block" id="sec-k-02b">
+      <div class="block-head">
+        <h3>KB success vs. ticket volume</h3>
+        <div class="note">Total deflections as a share of (tickets created + deflections). Survives volume swings in a way raw deflection counts don't.</div>
+      </div>
+      <div class="takeaway">Deflections held up while ticket volume fell — June's 15.9% success rate is the second-best month this year.</div>
+      <div class="card">
+        <div class="chart-wrap tall"><canvas id="chartKbSuccess"></canvas></div>
+      </div>
+      <div class="card" style="margin-top:12px;"><table id="tblKbSuccess"></table></div>
+    </section>
+
+    <section class="block" id="sec-k-03">
+      <div class="block-head"><h3>Deflections by user segment</h3><div class="note" id="kbSegNote">June's Deflections-by-Role export currently includes End user only; other segments show — until it's refreshed.</div></div>
+      <div class="takeaway">Anonymous users drive most assumed deflections (May, last complete export) — June role data covers end users only.</div>
       <div class="grid-2">
         <div class="card"><table id="tblSegments"></table></div>
         <div class="card">
-          <div class="subhead">Assumed deflections by segment, June</div>
+          <div class="subhead" id="kbSegChartSub">Assumed deflections by segment, May (last complete role export)</div>
           <div class="chart-wrap"><canvas id="chartSegments"></canvas></div>
         </div>
       </div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">04</span> Support impact, June view</h3></div>
+    <section class="block" id="sec-k-04">
+      <div class="block-head"><h3>Support impact, <span id="kbSupportMonth">June</span> view</h3></div>
+      <div class="takeaway">Linked-article tickets keep climbing (40 → 51) — KB is referenced more even when a ticket still happens.</div>
       <div class="card"><table id="tblSupportImpact"></table></div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">05</span> Content health &amp; search / findability</h3></div>
+    <section class="block" id="sec-k-05">
+      <div class="block-head"><h3>Content health &amp; search / findability</h3></div>
+      <div class="takeaway">Searches nearly halved and CTR fell in June — but the tickets-after-search methodology changed, so treat the search story as unverified.</div>
       <div class="two-col-cards">
         <div class="card">
           <div class="subhead">Content health</div>
@@ -436,20 +730,43 @@
       </div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">06</span> Ticket volume by group, Jan – Jun 2026</h3></div>
+    <section class="block" id="sec-k-05b">
+      <div class="block-head">
+        <h3>Content backlog signals</h3>
+        <div class="note">What customers searched and didn't find, and which drivers keep generating tickets even with a linked article. Auto-updates with the reporting month.</div>
+      </div>
+      <div class="takeaway">Failed searches and driver-linked tickets are next month's article list, straight from the data.</div>
+      <div class="two-col-cards">
+        <div class="card">
+          <div class="subhead">Top failed searches, current month</div>
+          <table id="tblFailedQueries"></table>
+        </div>
+        <div class="card">
+          <div class="subhead">Ticket drivers vs. KB coverage, current month</div>
+          <table id="tblTicketDrivers"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-k-06">
+      <div class="block-head">
+        <h3>Ticket volume by group, <span id="kbTicketRange">Jan – Jun 2026</span></h3>
+        <div class="range-filter" id="ticketRangeFilter"></div>
+      </div>
+      <div class="takeaway">CSE ICP volume has collapsed by design; L2 is ramping and absorbing share.</div>
       <div class="card">
         <div class="chart-wrap tall"><canvas id="chartTicketGroups"></canvas></div>
       </div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">07</span> Improvement priorities</h3></div>
+    <section class="block" id="sec-k-07">
+      <div class="block-head"><h3>Improvement priorities</h3></div>
       <div class="card"><table id="tblPriorities"></table></div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h3><span class="idx">08</span> Remaining data needed</h3><div class="note">Gaps between what the scorecard proxies today and a fully defensible impact story.</div></div>
+    <section class="block" id="sec-k-08">
+      <div class="block-head"><h3>Remaining data needed</h3><div class="note">Gaps between what the scorecard proxies today and a fully defensible impact story.</div></div>
+      <div class="takeaway">These gaps separate directional proxies from a defensible ROI story.</div>
       <div class="card"><table id="tblDataNeeded"></table></div>
     </section>
 
@@ -459,7 +776,7 @@
 
 <footer>
   <span>Static snapshot, figures reflect the source sheets at time of export.</span>
-  <span>Widget/QA period: Apr 27 – Jul 24, 2026 · KB period: Jan – Jun 2026</span>
+  <span>Widget/QA period: Apr 27 – Jul 24, 2026 · KB period: <span id="kbFooterRange">Jan – Jun 2026</span></span>
 </footer>
 
 <script>
@@ -475,7 +792,7 @@ if (CHARTS_AVAILABLE) {
   console.warn('Chart.js failed to load from both CDNs — charts will be skipped, tables/KPIs still render.');
 }
 /* Redis 2024 Digital UI chart palette — official series order, do not invent colors. */
-const COLORS = {red:'#FF4438', green:'#DCFF1E', amber:'#C795E3', blue:'#33C2FB', muted:'#5C707A', grid:'#2D4754', text:'#F3F3F3'};
+const COLORS = {red:'#FF4438', green:'#DCFF1E', amber:'#C795E3', blue:'#33C2FB', muted:'#5C707A', grid:'#2D4754', text:'#F3F3F3', ring:'#0D2733'};
 const palette = ['#FF4438','#33C2FB','#C795E3','#DCFF1E','#FF8A82','#9B5DE5','#80D8FB','#A8C814'];
 
 /* Safe chart constructor: no-ops (and shows a small placeholder note) if Chart.js isn't available */
@@ -499,6 +816,14 @@ function safeChart(canvasId, config){
   }
 }
 
+function fmtDur(sec){
+  if(sec===null||sec===undefined) return '—';
+  const s = Math.round(Number(sec));
+  return s >= 60 ? `${Math.floor(s/60)}m ${s%60}s` : `${s}s`;
+}
+function syncPendingRow(cols){
+  return `<tr><td colspan="${cols}" style="color:var(--muted-dim); font-style:italic;">Populates on the first live sync — this section is tallied from the full QA sheet by the data feed.</td></tr>`;
+}
 function fmtPct(v, d=1){ return (v===null||v===undefined) ? '—' : Number(v).toFixed(d)+'%'; }
 function fmtNum(v){ return (v===null||v===undefined) ? '—' : Number(v).toLocaleString(); }
 function momTag(v){
@@ -517,14 +842,43 @@ function statusFromRate(rate, goodAbove, badBelow){
 /* =========================================================================
    VIEW SWITCH
    ========================================================================= */
+let currentView = 'overview';
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
+    currentView = btn.dataset.view;
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    document.getElementById('view-'+currentView).classList.add('active');
+    document.getElementById('jumpnavWrap').style.display = currentView==='overview' ? 'none' : 'block';
+    ['widget','ticket','kb'].forEach(v=>{
+      const jn = document.getElementById('jumpnav-'+v);
+      if(jn) jn.style.display = currentView===v ? 'flex' : 'none';
+    });
+    window.scrollTo(0,0);
+    updateScrollSpy();
   });
 });
+
+/* =========================================================================
+   SCROLL-SPY — highlights the jump-nav pill for the section currently in
+   view, so the nav doubles as a "you are here" indicator.
+   ========================================================================= */
+function updateScrollSpy(){
+  if(currentView==='overview') return;
+  const jn = document.getElementById('jumpnav-'+currentView);
+  if(!jn) return;
+  const pills = [...jn.querySelectorAll('a.jn-pill[href^="#"]')];
+  let activeHref = null;
+  pills.forEach(p=>{
+    const el = document.getElementById(p.getAttribute('href').slice(1));
+    if(el && el.getBoundingClientRect().top <= 170) activeHref = p.getAttribute('href');
+  });
+  pills.forEach(p=>p.classList.toggle('active', p.getAttribute('href')===activeHref));
+}
+window.addEventListener('scroll', updateScrollSpy, {passive:true});
+
+
 
 /* =========================================================================
    STATE — everything the page renders from.
@@ -573,6 +927,33 @@ function defaultState(){
         {outcome:'Complete fails', count:'25 / 55', share:45.5, interp:'Partial cases that should be treated as full misses or failed experiences.'},
         {outcome:'Keep partial', count:'11 / 55', share:20.0, interp:'Mixed cases that should remain partial after review.'},
       ],
+      /* Feed-computed sections: these start empty and populate on the first
+         successful live sync (the feed tallies them from the full QA sheet,
+         tracker, and conversation log, which are too large to snapshot here). */
+      topics: [],
+      durations: [],
+      kbPipeline: {flagged:94, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
+      /* Program impact — populated ONLY from the widget sheet. Add these
+         labels to the sheet (label cell, value one row below, sub-text two
+         rows below, same pattern as the headline KPIs) and the feed picks
+         them up: "FT Coverage Rate", "Projected Coverage Rate",
+         "Support Nudges per Month", "L1 Touches Removed". Until then the
+         section shows em-dashes. */
+      impact: {
+        coverageNowPct:null,
+        coverageProjectedPct:null,
+        nudgesPerMonth:null,
+        touchesRemovedActual:null,
+        measurement:'Count L1 public replies on Forethought-covered tickets before vs. after the automation go-live; report monthly next to coverage.',
+      },
+      /* Populates once the handoff-reply sample lives in the widget sheet
+         (rows: outcome, count, share). Not shown until then — the dashboard
+         only presents numbers that exist in a source spreadsheet. */
+      handoffNecessity: {
+        sampleSize: null,
+        rows: [],
+        note:'Pending: add the L1 handoff-reply sample (handed-off conversations and whether the customer replied) to the widget sheet, and the feed will populate this section.',
+      },
       highlights: [
         {signal:'Reviewed QA rows', count:500, rate:100.0, meaning:'Classified QA rows divided by unique conversation IDs present on the QA sheet.'},
         {signal:'Pass', count:257, rate:56.2, meaning:'Technically acceptable widget responses.'},
@@ -586,7 +967,7 @@ function defaultState(){
         'Partial-pass priorities: 66 KB/content (45.5%), 54 technical precision (37.2%), and 24 billing/account (16.6%).',
         'Customer journey: 144 drop-offs (31.0%), with 103 showing no follow-up and 28 ending during incomplete handoff.',
       ],
-      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through July 24, 2026.',
+      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through July 24, 2026. Open QA ask: split L1 replies into "confirmed the same answer" vs. "had to change the response" — not yet sampled.',
     },
     email: {
       headline: {
@@ -624,53 +1005,67 @@ function defaultState(){
       readoutCaveat: 'Data note: 14 of 27 Test rows are not marked Excluded from scoring in review_action_status.',
     },
     kb: {
+      /* reportingMonth is overwritten by the live feed; every month label in
+         the KB tab renders from it, so rolling the sheet forward re-labels the
+         dashboard automatically. narrativeMonth is NOT sent by the feed: bump
+         it by hand after you've reviewed the takeaway lines, readouts, and
+         overview text for a new month. If it lags reportingMonth, a warning
+         banner appears. */
+      reportingMonth: {current:'June', prior:'May', currentAbbr:'Jun', priorAbbr:'May', year:'2026'},
+      narrativeMonth: 'June',
       headline: [
-        {label:'Confirmed Deflection Rate', current:1.0, prior:1.7, mom:-42.4, isPct:true},
-        {label:'Assumed Deflection Rate', current:17.8, prior:16.7, mom:6.2, isPct:true},
-        {label:'Total Deflection Rate', current:18.7, prior:18.4, mom:1.7, isPct:true},
-        {label:'Search Deflection Proxy', current:95.8, prior:96.8, mom:-1.0, isPct:true},
-        {label:'Article Views', current:254, prior:278, mom:-8.6, isPct:false},
+        /* June 2026 current vs May 2026 prior — matches KB Scorecard reporting month. num/den are explicit so the count+% pairing never drifts from the rate. */
+        {label:'Confirmed Deflection Rate', current:2.1, prior:1.0, mom:115.6, isPct:true, num:22, den:1049, denLabel:'sessions'},
+        {label:'Assumed Deflection Rate', current:18.6, prior:17.8, mom:4.6, isPct:true, num:195, den:1049, denLabel:'sessions'},
+        {label:'Total Deflection Rate', current:20.7, prior:18.7, mom:10.4, isPct:true, num:217, den:1049, denLabel:'sessions'},
+        {label:'Search Deflection Proxy', current:86.4, prior:95.8, mom:-9.9, isPct:true, num:146, den:169, denLabel:'searches'},
+        {label:'Article Views', current:197, prior:254, mom:-22.4, isPct:false},
       ],
-      momMonths: ['Jan','Feb','Mar','Apr','May'],
+      momMonths: ['Jan','Feb','Mar','Apr','May','Jun'],
       momSeries: {
-        'Article Views': [393,329,286,278,254],
-        'Confirmed Deflections': [31,18,29,21,11],
-        'Assumed Deflections': [191,254,228,208,201],
-        'End-user Sessions': [1187,1251,1227,1243,1131],
-        'Total Deflection Rate %': [18.7,21.7,20.9,18.4,18.7],
-        'Search Deflection Proxy %': [97.5,96.6,97.1,96.8,95.8],
+        'Article Views': [393,329,286,278,254,197],
+        'Confirmed Deflections': [31,18,29,21,11,22],
+        'Assumed Deflections': [191,254,228,208,201,195],
+        'End-user Sessions': [1187,1251,1227,1243,1131,1049],
+        'Total Deflection Rate %': [18.7,21.7,20.9,18.4,18.7,20.7],
+        'Search Deflection Proxy %': [97.5,96.6,97.1,96.8,95.8,86.4],
       },
+      /* Field names read may/apr but mean current/prior (kept for feed compatibility).
+         Current = June 2026, prior = May 2026. June's Deflections-by-Role export
+         currently includes End user only; other roles are null until refreshed. */
       segments: [
-        {seg:'End user', mayConf:11, aprConf:21, confMom:-47.6, mayAssumed:201, aprAssumed:208, assumedMom:-3.4},
-        {seg:'Anonymous', mayConf:0, aprConf:1, confMom:-100.0, mayAssumed:612, aprAssumed:727, assumedMom:-15.8},
-        {seg:'Agent', mayConf:0, aprConf:0, confMom:null, mayAssumed:11, aprAssumed:20, assumedMom:-45.0},
-        {seg:'Admin', mayConf:0, aprConf:0, confMom:null, mayAssumed:31, aprAssumed:27, assumedMom:14.8},
-        {seg:'Total', mayConf:11, aprConf:22, confMom:-50.0, mayAssumed:855, aprAssumed:982, assumedMom:-12.9},
+        {seg:'End user', mayConf:22, aprConf:11, confMom:100.0, mayAssumed:195, aprAssumed:201, assumedMom:-3.0},
+        {seg:'Anonymous', mayConf:null, aprConf:0, confMom:null, mayAssumed:null, aprAssumed:612, assumedMom:null},
+        {seg:'Agent', mayConf:null, aprConf:0, confMom:null, mayAssumed:null, aprAssumed:11, assumedMom:null},
+        {seg:'Admin', mayConf:null, aprConf:0, confMom:null, mayAssumed:null, aprAssumed:31, assumedMom:null},
+        {seg:'Total', mayConf:null, aprConf:11, confMom:null, mayAssumed:null, aprAssumed:855, assumedMom:null},
       ],
       supportImpact: [
-        {metric:'End-user Sessions', current:1131, prior:1243, mom:-9.0, isPct:false},
-        {metric:'Confirmed Deflection Rate', current:1.0, prior:1.7, mom:-42.4, isPct:true},
-        {metric:'Assumed Deflection Rate', current:17.8, prior:16.7, mom:6.2, isPct:true},
-        {metric:'Total Deflection Rate', current:18.7, prior:18.4, mom:1.7, isPct:true},
-        {metric:'Search Deflection Proxy', current:95.8, prior:96.8, mom:-1.0, isPct:true},
-        {metric:'Search Containment Count', current:299, prior:396, mom:-24.5, isPct:false},
-        {metric:'Result-Click Containment Proxy', current:92.5, prior:94.9, mom:-2.5, isPct:true},
-        {metric:'Article Views', current:254, prior:278, mom:-8.6, isPct:false},
-        {metric:'Linked-Article Tickets', current:40, prior:16, mom:150.0, isPct:false},
-        {metric:'Driver-Linked Article Tickets', current:52, prior:35, mom:48.6, isPct:false},
+        {metric:'End-user Sessions', current:1049, prior:1131, mom:-7.3, isPct:false},
+        {metric:'Confirmed Deflection Rate', current:2.1, prior:1.0, mom:115.6, isPct:true},
+        {metric:'Assumed Deflection Rate', current:18.6, prior:17.8, mom:4.6, isPct:true},
+        {metric:'Total Deflection Rate', current:20.7, prior:18.7, mom:10.4, isPct:true},
+        {metric:'Search Deflection Proxy', current:86.4, prior:95.8, mom:-9.9, isPct:true},
+        {metric:'Search Containment Count', current:146, prior:299, mom:-51.2, isPct:false},
+        {metric:'Result-Click Containment Proxy', current:66.2, prior:92.5, mom:-28.4, isPct:true},
+        {metric:'Article Views', current:197, prior:254, mom:-22.4, isPct:false},
+        {metric:'Linked-Article Tickets', current:51, prior:40, mom:27.5, isPct:false},
+        {metric:'KB Influence on Tickets', current:3.0, prior:2.3, mom:31.7, isPct:true},
       ],
       contentHealth: [
         {metric:'Live Articles Total', current:'220', prior:'—', mom:null},
-        {metric:'New Articles Published', current:'1', prior:'14', mom:-92.86},
+        {metric:'New Articles Published', current:'0', prior:'1', mom:-100.0},
         {metric:'Monthly Article Review Backlog', current:'8', prior:'—', mom:null},
       ],
+      /* No-Result Search % intentionally omitted: the workbook flags its definition
+         as unverified (user-run Zendesk report disagrees) and says not to present it.
+         The raw no-result count stays. */
       searchFind: [
-        {metric:'Search Exit Rate', current:44.6, prior:38.1, mom:16.8, isPct:true},
-        {metric:'No-Result Search %', current:7.7, prior:10.5, mom:-26.8, isPct:true},
-        {metric:'Total Searches', current:312, prior:409, mom:-23.7, isPct:false},
-        {metric:'Search CTR', current:55.4, prior:61.9, mom:-10.4, isPct:true},
-        {metric:'Tickets Created After Search', current:13, prior:13, mom:0.0, isPct:false},
-        {metric:'Searches with No Results', current:24, prior:43, mom:-44.2, isPct:false},
+        {metric:'Search Exit Rate', current:30.8, prior:44.6, mom:-30.9, isPct:true},
+        {metric:'Total Searches', current:169, prior:312, mom:-45.8, isPct:false},
+        {metric:'Search CTR', current:40.2, prior:55.4, mom:-27.4, isPct:true},
+        {metric:'Tickets Created After Search', current:23, prior:13, mom:76.9, isPct:false},
+        {metric:'Searches with No Results', current:24, prior:24, mom:0.0, isPct:false},
       ],
       ticketGroupMonths: ['Jan','Feb','Mar','Apr','May','Jun'],
       ticketGroups: {
@@ -688,7 +1083,31 @@ function defaultState(){
         {n:2, what:'Use proxy stack with final-May caveat', why:'Deflection proxy metrics remain directional and should be paired with official Zendesk deflection counts.', kpi:'Search Deflection Proxy; Search Containment Count; Result-Click Containment Proxy', owner:'KB Owner', status:'Ready'},
         {n:3, what:'Investigate May movement', why:'June shows movement in deflections, article views, and search behavior; isolate drivers before Support review.', kpi:'Confirmed/Assumed Deflections; Article Views; Search metrics', owner:'Content Ops', status:'Watch'},
         {n:4, what:'Keep caveats visible', why:'All deflection metrics are directional proxies because article-view-to-ticket linkage is unavailable.', kpi:'Metric Definitions and Scorecard notes', owner:'Dashboard Owner', status:'Ready'},
-        {n:5, what:'Maintain clean raw refresh', why:'Raw Search Monthly Metrics includes the completed June refresh and uses May as the comparison month.', kpi:'Data Sources and raw tab filters', owner:'Dashboard Owner', status:'Ready'},
+        {n:5, what:'Maintain clean raw refresh', why:'Raw Search Monthly Metrics includes the completed June refresh. June\u2019s Tickets After Search uses a different methodology than Jan\u2013May, so treat pre-June search comparisons as directional.', kpi:'Data Sources and raw tab filters', owner:'Dashboard Owner', status:'Ready'},
+      ],
+      /* KB Success vs Tickets — from the workbook's monthly table:
+         total deflections / (tickets created + deflections). */
+      kbSuccess: {
+        months:['Jan','Feb','Mar','Apr','May','Jun'],
+        tickets:[1404,1293,1272,1291,1280,1151],
+        deflections:[222,272,257,229,212,217],
+        rate:[13.7,17.4,16.8,15.1,14.2,15.9],
+      },
+      topFailedQueries: [
+        {query:'163914', count:1},
+        {query:'faas', count:1},
+      ],
+      ticketDrivers: [
+        {origin:'', article:'Enable Clustering on a Redis Cloud Database', tickets:2},
+        {origin:'', article:'Cancel a Redis Cloud Subscription', tickets:1},
+        {origin:'', article:'Cluster and Database Recovery', tickets:1},
+        {origin:'', article:'Delete a Database in Redis Cloud', tickets:1},
+        {origin:'', article:'Delete a Redis Cloud Account', tickets:1},
+        {origin:'', article:'Free Redis Cloud Database Deleted Due to Inactivity', tickets:1},
+        {origin:'', article:'Introduction to Redis Software', tickets:1},
+        {origin:'', article:'Node Maintenance & OS Patching', tickets:1},
+        {origin:'', article:'Redis Cloud Essentials vs Pro: When to Upgrade and What Changes', tickets:1},
+        {origin:'', article:'Safely Take a Node Offline for Upgrade or Patching', tickets:1},
       ],
       dataNeeded: [
         {area:'True Self-Service Success Rate', missing:'Session/article journey outcome: article viewed or search clicked, then no ticket within attribution window.', why:'Turns directional proxies into a defensible customer-success metric.'},
@@ -706,6 +1125,11 @@ let state = defaultState();
 const charts = {}; // registry so we can destroy + recreate on every render
 let activeMomSeries = ['Total Deflection Rate %','Search Deflection Proxy %','Assumed Deflections'];
 
+// Quick-win #3: time-range filters for the two multi-month trend charts.
+// Ranges are indices into the respective month-label arrays; null = full range.
+let momRange = {from:0, to:null};
+let ticketRange = {from:0, to:null};
+
 function destroyChart(key){ if(charts[key]){ charts[key].destroy(); delete charts[key]; } }
 
 /* =========================================================================
@@ -720,15 +1144,56 @@ function kpiStatus(group, key, value){
   return 'neutral';
 }
 
+/* Hover definitions for KPI labels — stops the "wait, what counts as
+   assumed?" question in every review meeting. */
+const KPI_DEFS = {
+  'Total Conversations':'Unique widget conversations in the source period.',
+  'Deflection Rate':'Share of widget conversations that ended without a handoff to a human.',
+  'Handoff Rate':'Share of widget conversations passed to L1 or another human queue.',
+  'Technical QA Pass Rate':'Passes divided by scorable QA rows. System Updates and test rows are excluded from the denominator.',
+  'Technical Improvement Rate':'Partial passes plus fails as a share of scorable rows.',
+  'Partial Pass Rate':'Responses judged useful but incomplete.',
+  'True Fail Rate':'Responses graded as failed experiences.',
+  'Drop-off Rate':'Conversations that ended without a clear resolution signal.',
+  'Low / Failed Relevance':'Answers rated as not clearly matching the customer issue.',
+  'KB Updates Needed':'QA rows explicitly flagged as needing knowledge-base work.',
+  'Total QA Rows':'All email QA rows classified in the sample period.',
+  'Scorable Email Responses':'Rows remaining after excluding test and process-update rows.',
+  'Review Complete':'Share of the QA sample fully reviewed.',
+  'Test Traffic':'Internal test rows, excluded from technical scoring.',
+  'Process Updates':'Backend / process-update rows, excluded from technical scoring.',
+  'Captured Follow-ups':'QA rows with an improvement or process follow-up logged.',
+  'Confirmed Deflection Rate':'Sessions where the user explicitly confirmed the article answered their question.',
+  'Assumed Deflection Rate':'Sessions with article views or search clicks and no ticket — a directional proxy, not a confirmed outcome.',
+  'Total Deflection Rate':'Confirmed plus assumed deflections per end-user session.',
+  'Search Deflection Proxy':'Searches that did not lead to a ticket — a directional proxy.',
+  'Article Views':'Total knowledge-base article views in the reporting month.',
+  'Widget Deflection':'Share of widget conversations that ended without a handoff to a human.',
+  'Widget Needs Improvement':'Partial passes plus fails as a share of scorable widget QA rows.',
+  'KB Success Rate':'Total deflections as a share of tickets created plus deflections, from the workbook monthly table.',
+  'Email QA Pass':'Passes divided by scorable email QA rows, after test/process exclusions.',
+  'KB Total Deflection':'Confirmed plus assumed deflections per end-user session.',
+  'KB Updates Flagged':'Widget QA rows explicitly flagged as needing knowledge-base work.',
+  'FT Coverage Today':'Share of eligible tickets that received a Forethought first response. Reads the "FT Coverage Rate" label from the widget sheet.',
+  'Coverage After Expansion':'Projected coverage after the plan-tier expansion. Reads "Projected Coverage Rate" from the widget sheet.',
+  'Support Nudges / Month':'Public support replies chasing a customer who had not yet responded. Reads "Support Nudges per Month" from the widget sheet.',
+  'L1 Touches Removed':'Actual reduction in L1 follow-up replies on Forethought-covered tickets, measured post go-live.',
+};
+function setText(id, text){ const el = document.getElementById(id); if(el) el.textContent = text; }
+
 function renderKpis(containerId, items){
   const el = document.getElementById(containerId);
-  el.innerHTML = items.map(k=>`
+  el.innerHTML = items.map(k=>{
+    const def = KPI_DEFS[k.label];
+    const info = def ? `<span class="info-dot">i<span class="tip">${def}</span></span>` : '';
+    return `
     <div class="kpi ${k.status}">
       <div class="dot"></div>
-      <div class="label">${k.label}</div>
+      <div class="label">${k.label}${info}</div>
       <div class="value">${k.value}<span class="unit">${k.unit}</span></div>
       <div class="sub">${k.sub}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function renderWidgetView(){
@@ -752,7 +1217,7 @@ function renderWidgetView(){
   destroyChart('partialDrivers');
   charts.partialDrivers = safeChart('chartPartialDrivers', {
     type:'doughnut',
-    data:{ labels:w.drivers.map(d=>d.cat), datasets:[{data:w.drivers.map(d=>d.count), backgroundColor:palette, borderColor:'#0D2733', borderWidth:2}] },
+    data:{ labels:w.drivers.map(d=>d.cat), datasets:[{data:w.drivers.map(d=>d.count), backgroundColor:palette, borderColor:COLORS.ring, borderWidth:2}] },
     options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, padding:14, color:COLORS.text}}}, cutout:'62%' }
   });
   document.getElementById('tblPartialDrivers').innerHTML = `
@@ -792,12 +1257,79 @@ function renderWidgetView(){
     ${w.reclass.map(r=>`<tr><td>${r.outcome}</td><td class="num">${r.count}</td><td class="num">${fmtPct(r.share)}</td><td style="color:var(--muted); font-size:12px;">${r.interp}</td></tr>`).join('')}
   `;
 
+  destroyChart('handoffNecessity');
+  const hn = w.handoffNecessity;
+  if(hn.rows.length){
+    charts.handoffNecessity = safeChart('chartHandoffNecessity', {
+      type:'doughnut',
+      data:{ labels:hn.rows.map(r=>r.outcome), datasets:[{data:hn.rows.map(r=>r.count), backgroundColor:[COLORS.red, COLORS.muted], borderColor:COLORS.ring, borderWidth:2}] },
+      options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, padding:14, color:COLORS.text}}}, cutout:'62%' }
+    });
+  }
+  document.getElementById('tblHandoffNecessity').innerHTML = `
+    <tr><th>Outcome</th><th class="num">Count</th><th class="num">Share</th><th>What it means</th></tr>
+    ${hn.rows.length ? hn.rows.map(r=>`<tr><td>${r.outcome}</td><td class="num">${fmtNum(r.count)} / ${fmtNum(hn.sampleSize)}</td><td class="num">${fmtPct(r.share)}</td><td style="color:var(--muted); font-size:12px;">${r.interp}</td></tr>`).join('') : ''}
+    <tr><td colspan="4" style="color:var(--muted-dim); font-size:11.5px; font-style:italic; padding-top:12px;">${hn.note}</td></tr>
+  `;
+
   document.getElementById('tblHighlights').innerHTML = `
     <tr><th>QA signal</th><th class="num">Count</th><th class="num">Rate</th><th>What it means</th></tr>
     ${w.highlights.map(h=>`<tr><td>${h.signal}</td><td class="num">${fmtNum(h.count)}</td><td class="num">${fmtPct(h.rate)}</td><td style="color:var(--muted); font-size:12px;">${h.meaning}</td></tr>`).join('')}
   `;
 
   document.getElementById('readoutWidget').innerHTML = w.readout.map(t=>`<li>${t}</li>`).join('') + `<li class="caveat">${w.readoutCaveat}</li>`;
+
+  // ---- Program impact & coverage (sheet-fed; em-dashes until the metrics exist there) ----
+  const im = w.impact;
+  const dash = v => (v===null||v===undefined) ? '—' : v;
+  renderKpis('kpi-widget-impact', [
+    {label:'FT Coverage Today', value:dash(im.coverageNowPct), unit:im.coverageNowPct!==null?'%':'', sub:'From widget sheet', status:'neutral'},
+    {label:'Coverage After Expansion', value:dash(im.coverageProjectedPct), unit:im.coverageProjectedPct!==null?'%':'', sub:'From widget sheet', status:'neutral'},
+    {label:'Support Nudges / Month', value:im.nudgesPerMonth===null?'—':fmtNum(im.nudgesPerMonth), unit:'', sub:'From widget sheet', status:'neutral'},
+    {label:'L1 Touches Removed', value:im.touchesRemovedActual===null?'—':fmtNum(im.touchesRemovedActual), unit:'', sub:'Actual, measured post go-live', status:'neutral'},
+  ]);
+  document.getElementById('tblImpact').innerHTML = `
+    <tr><th>Item</th><th>Detail</th></tr>
+    <tr><td>Data source</td><td style="color:var(--muted); font-size:12px;">Populates from the widget sheet once these label cells exist: "FT Coverage Rate", "Projected Coverage Rate", "Support Nudges per Month", "L1 Touches Removed" (same label/value/sub layout as the headline KPIs).</td></tr>
+    <tr><td>Measurement plan</td><td style="color:var(--muted); font-size:12px;">${im.measurement}</td></tr>
+  `;
+
+  // ---- Performance by topic (feed-computed) ----
+  const tp = w.topics || [];
+  destroyChart('topics');
+  if(!tp.length){
+    document.getElementById('tblTopics').innerHTML = `<tr><th>Topic</th><th class="num">Scorable</th><th class="num">Pass</th><th class="num">Partial</th><th class="num">Fail</th><th class="num">Pass rate</th></tr>` + syncPendingRow(6);
+  } else {
+    document.getElementById('tblTopics').innerHTML = `
+      <tr><th>Topic</th><th class="num">Scorable</th><th class="num">Pass</th><th class="num">Partial</th><th class="num">Fail</th><th class="num">Pass rate</th></tr>
+      ${tp.map(t=>`<tr><td>${t.topic}</td><td class="num">${fmtNum(t.scorable)}</td><td class="num">${fmtNum(t.pass)}</td><td class="num">${fmtNum(t.partial)}</td><td class="num">${fmtNum(t.fail)}</td><td class="num">${fmtPct(t.passRate)}</td></tr>`).join('')}
+    `;
+    charts.topics = safeChart('chartTopics', {
+      type:'bar',
+      data:{ labels:tp.map(t=>t.topic), datasets:[{data:tp.map(t=>t.passRate), backgroundColor:palette, borderRadius:4, maxBarThickness:44}] },
+      options:{ plugins:{legend:{display:false}}, scales:{ y:{max:100, grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} } }
+    });
+  }
+
+  // ---- Conversation duration (feed-computed) ----
+  const du = w.durations || [];
+  document.getElementById('tblDurations').innerHTML = `
+    <tr><th>Outcome</th><th class="num">Median time in widget</th><th class="num">Conversations</th></tr>
+    ${du.length ? du.map(r=>`<tr><td>${r.group}</td><td class="num">${fmtDur(r.median)}</td><td class="num">${fmtNum(r.n)}</td></tr>`).join('') : syncPendingRow(3)}
+  `;
+
+  // ---- QA -> KB pipeline (flagged from snapshot; statuses feed-computed) ----
+  const pl = w.kbPipeline || {};
+  const closable = (pl.completed!==null && pl.actions!==null && pl.actions>0);
+  document.getElementById('tblPipeline').innerHTML = `
+    <tr><th>Stage</th><th class="num">Count</th><th>What it means</th></tr>
+    <tr><td>QA rows flagged "KB update needed"</td><td class="num">${fmtNum(pl.flagged)}</td><td style="color:var(--muted); font-size:12px;">Gaps identified during QA review.</td></tr>
+    <tr><td>Tracker actions logged</td><td class="num">${fmtNum(pl.actions)}</td><td style="color:var(--muted); font-size:12px;">Flagged gaps converted into a tracked content action.</td></tr>
+    <tr><td>Proposed</td><td class="num">${fmtNum(pl.proposed)}</td><td style="color:var(--muted); font-size:12px;">Waiting on drafting or approval.</td></tr>
+    <tr><td>In progress</td><td class="num">${fmtNum(pl.inProgress)}</td><td style="color:var(--muted); font-size:12px;">Being written or in review.</td></tr>
+    <tr><td>Completed</td><td class="num">${fmtNum(pl.completed)}</td><td style="color:var(--muted); font-size:12px;">Shipped to the knowledge base.</td></tr>
+    <tr><td><strong>Closure rate</strong></td><td class="num">${closable ? fmtPct(pl.completed/pl.actions*100) : '—'}</td><td style="color:var(--muted); font-size:12px;">Completed ÷ tracker actions. ${pl.actions===null ? 'Populates on first live sync.' : ''}</td></tr>
+  `;
 
   renderKpis('kpi-email-headline', [
     {label:'Total QA Rows', value:e.headline.totalRows.value, unit:'', sub:e.headline.totalRows.sub, status:'neutral'},
@@ -817,7 +1349,7 @@ function renderWidgetView(){
   destroyChart('emailMix');
   charts.emailMix = safeChart('chartEmailMix', {
     type:'doughnut',
-    data:{ labels:e.mix.map(m=>m.cat), datasets:[{data:e.mix.map(m=>m.count), backgroundColor:[COLORS.green, COLORS.amber, COLORS.red, COLORS.muted], borderColor:'#0D2733', borderWidth:2}] },
+    data:{ labels:e.mix.map(m=>m.cat), datasets:[{data:e.mix.map(m=>m.count), backgroundColor:[COLORS.green, COLORS.amber, COLORS.red, COLORS.muted], borderColor:COLORS.ring, borderWidth:2}] },
     options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, padding:14, color:COLORS.text}}}, cutout:'62%' }
   });
   document.getElementById('tblEmailSignals').innerHTML = `
@@ -831,10 +1363,46 @@ const seriesColors = {
   'Article Views': COLORS.blue, 'Confirmed Deflections': COLORS.red, 'Assumed Deflections': COLORS.amber,
   'End-user Sessions': COLORS.muted, 'Total Deflection Rate %': COLORS.green, 'Search Deflection Proxy %': '#9B5DE5',
 };
+
+/* ---- range-filter helpers (quick win #3) ---- */
+function clampRange(range, maxIdx){
+  let from = Math.max(0, Math.min(range.from ?? 0, maxIdx));
+  let to = range.to===null||range.to===undefined ? maxIdx : Math.max(from, Math.min(range.to, maxIdx));
+  return {from, to};
+}
+function renderRangeFilter(containerId, months, range, onChange){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const {from, to} = clampRange(range, months.length-1);
+  el.innerHTML = `
+    <span>Show</span>
+    <select data-role="from">${months.map((m,i)=>`<option value="${i}" ${i===from?'selected':''}>${m}</option>`).join('')}</select>
+    <span>to</span>
+    <select data-role="to">${months.map((m,i)=>`<option value="${i}" ${i===to?'selected':''}>${m}</option>`).join('')}</select>
+    <button class="rf-reset" type="button">Reset to full range</button>
+  `;
+  el.querySelector('[data-role="from"]').addEventListener('change', (ev)=>{
+    range.from = Number(ev.target.value);
+    if(range.to !== null && range.to < range.from) range.to = range.from;
+    onChange();
+  });
+  el.querySelector('[data-role="to"]').addEventListener('change', (ev)=>{
+    range.to = Number(ev.target.value);
+    if(range.to < range.from) range.from = range.to;
+    onChange();
+  });
+  el.querySelector('.rf-reset').addEventListener('click', ()=>{
+    range.from = 0; range.to = null;
+    onChange();
+    renderRangeFilter(containerId, months, range, onChange);
+  });
+}
+
 function buildMomDatasets(){
   const k = state.kb;
+  const {from, to} = clampRange(momRange, k.momMonths.length-1);
   return activeMomSeries.map(key=>({
-    label:key, data:k.momSeries[key], borderColor:seriesColors[key], backgroundColor:seriesColors[key],
+    label:key, data:k.momSeries[key].slice(from, to+1), borderColor:seriesColors[key], backgroundColor:seriesColors[key],
     tension:0.35, pointRadius:3, borderWidth:2, fill:false,
   }));
 }
@@ -857,31 +1425,68 @@ function renderMomLegend(){
 
 function renderKbView(){
   const k = state.kb;
+
+  // ---- All month labels derive from reportingMonth / the month arrays, so a
+  //      synced sheet roll-forward re-labels the whole tab automatically. ----
+  const rm = k.reportingMonth || {};
+  const yr = rm.year ? ' ' + rm.year : '';
+  const momSpan = k.momMonths.length ? `${k.momMonths[0]} \u2013 ${k.momMonths[k.momMonths.length-1]}` : '';
+  const tgSpan = k.ticketGroupMonths.length ? `${k.ticketGroupMonths[0]} \u2013 ${k.ticketGroupMonths[k.ticketGroupMonths.length-1]}` : '';
+  setText('kbPageDesc', `Self-service deflection, search behavior, and content health. Reporting month: ${rm.current}${yr} vs. ${rm.prior}${yr}. Workbook last refreshed for the ${rm.current} reporting period.`);
+  setText('kbHeadMonths', `${rm.current} vs. ${rm.prior}`);
+  setText('kbTrendRange', `${momSpan}${yr}`);
+  setText('kbTrendNote', `${rm.current} is the current reporting month and ${rm.prior} is the comparison month.`);
+  setText('kbSupportMonth', rm.current);
+  setText('kbTicketRange', `${tgSpan}${yr}`);
+  setText('kbTabPeriod', momSpan);
+  setText('kbFooterRange', `${momSpan}${yr}`);
+
   const hl = {}; k.headline.forEach(h=>hl[h.label]=h);
+
+  // Each headline rate carries its own numerator/denominator in state, so the
+  // count+% pairing can never drift out of sync with the rate itself.
+  const kbSub = h => (h.num!==undefined && h.den!==undefined)
+    ? `${fmtNum(h.num)} of ${fmtNum(h.den)} ${h.denLabel||''} \u00b7 MoM ${h.mom>0?'+':''}${h.mom}%`
+    : `Prior ${h.prior} \u00b7 MoM ${h.mom>0?'+':''}${h.mom}%`;
+
   renderKpis('kpi-kb-headline', [
-    {label:'Confirmed Deflection Rate', value:hl['Confirmed Deflection Rate'].current, unit:'%', sub:`Prior ${hl['Confirmed Deflection Rate'].prior}% · MoM ${hl['Confirmed Deflection Rate'].mom>0?'+':''}${hl['Confirmed Deflection Rate'].mom}%`, status:'bad'},
-    {label:'Assumed Deflection Rate', value:hl['Assumed Deflection Rate'].current, unit:'%', sub:`Prior ${hl['Assumed Deflection Rate'].prior}% · MoM ${hl['Assumed Deflection Rate'].mom>0?'+':''}${hl['Assumed Deflection Rate'].mom}%`, status:'good'},
-    {label:'Total Deflection Rate', value:hl['Total Deflection Rate'].current, unit:'%', sub:`Prior ${hl['Total Deflection Rate'].prior}% · MoM ${hl['Total Deflection Rate'].mom>0?'+':''}${hl['Total Deflection Rate'].mom}%`, status:'good'},
-    {label:'Search Deflection Proxy', value:hl['Search Deflection Proxy'].current, unit:'%', sub:`Prior ${hl['Search Deflection Proxy'].prior}% · MoM ${hl['Search Deflection Proxy'].mom}%`, status:'watch'},
-    {label:'Article Views', value:hl['Article Views'].current, unit:'', sub:`Prior ${hl['Article Views'].prior} · MoM ${hl['Article Views'].mom}%`, status:'watch'},
+    {label:'Confirmed Deflection Rate', value:hl['Confirmed Deflection Rate'].current, unit:'%', sub:kbSub(hl['Confirmed Deflection Rate']), status:'good'},
+    {label:'Assumed Deflection Rate', value:hl['Assumed Deflection Rate'].current, unit:'%', sub:kbSub(hl['Assumed Deflection Rate']), status:'good'},
+    {label:'Total Deflection Rate', value:hl['Total Deflection Rate'].current, unit:'%', sub:kbSub(hl['Total Deflection Rate']), status:'good'},
+    {label:'Search Deflection Proxy', value:hl['Search Deflection Proxy'].current, unit:'%', sub:kbSub(hl['Search Deflection Proxy']), status:'watch'},
+    {label:'Article Views', value:hl['Article Views'].current, unit:'', sub:kbSub(hl['Article Views']), status:'watch'},
   ]);
 
+  renderRangeFilter('momRangeFilter', k.momMonths, momRange, ()=>{
+    if(charts.mom){ charts.mom.data.labels = k.momMonths.slice(clampRange(momRange,k.momMonths.length-1).from, clampRange(momRange,k.momMonths.length-1).to+1); charts.mom.data.datasets = buildMomDatasets(); charts.mom.update(); }
+  });
   destroyChart('mom');
+  const momClamped = clampRange(momRange, k.momMonths.length-1);
   charts.mom = safeChart('chartMomTrend', {
-    type:'line', data:{ labels:k.momMonths, datasets:buildMomDatasets() },
+    type:'line', data:{ labels:k.momMonths.slice(momClamped.from, momClamped.to+1), datasets:buildMomDatasets() },
     options:{ plugins:{legend:{display:false}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:COLORS.grid}} }, interaction:{mode:'index', intersect:false} }
   });
   renderMomLegend();
 
   document.getElementById('tblSegments').innerHTML = `
-    <tr><th>Segment</th><th class="num">June Confirmed</th><th class="num">May Confirmed</th><th class="num">MoM</th><th class="num">June Assumed</th><th class="num">May Assumed</th><th class="num">MoM</th></tr>
+    <tr><th>Segment</th><th class="num">${rm.current} Confirmed</th><th class="num">${rm.prior} Confirmed</th><th class="num">MoM</th><th class="num">${rm.current} Assumed</th><th class="num">${rm.prior} Assumed</th><th class="num">MoM</th></tr>
     ${k.segments.map(s=>`<tr><td>${s.seg}</td><td class="num">${fmtNum(s.mayConf)}</td><td class="num">${fmtNum(s.aprConf)}</td><td class="num">${momTag(s.confMom)}</td><td class="num">${fmtNum(s.mayAssumed)}</td><td class="num">${fmtNum(s.aprAssumed)}</td><td class="num">${momTag(s.assumedMom)}</td></tr>`).join('')}
   `;
   destroyChart('segments');
   const segNoTotal = k.segments.filter(s=>s.seg!=='Total');
+  // If any non-End-user segment lacks a current-month value, the role export
+  // hasn't fully landed: chart the prior (complete) month and say so; once
+  // the export is complete the chart flips to the current month automatically.
+  const roleGapped = segNoTotal.some(s=>s.seg!=='End user' && (s.mayAssumed===null || s.mayAssumed===undefined));
+  const segNote = document.getElementById('kbSegNote');
+  if(segNote) segNote.style.display = roleGapped ? '' : 'none';
+  setText('kbSegNote', `${rm.current}'s Deflections-by-Role export currently includes End user only; other segments show \u2014 until it's refreshed.`);
+  setText('kbSegChartSub', roleGapped
+    ? `Assumed deflections by segment, ${rm.prior} (last complete role export)`
+    : `Assumed deflections by segment, ${rm.current}`);
   charts.segments = safeChart('chartSegments', {
     type:'bar',
-    data:{ labels:segNoTotal.map(s=>s.seg), datasets:[{ data:segNoTotal.map(s=>s.mayAssumed), backgroundColor:palette, borderRadius:4, maxBarThickness:44 }] },
+    data:{ labels:segNoTotal.map(s=>s.seg), datasets:[{ data:segNoTotal.map(s=>roleGapped ? s.aprAssumed : s.mayAssumed), backgroundColor:palette, borderRadius:4, maxBarThickness:44 }] },
     options:{ plugins:{legend:{display:false}}, scales:{ y:{grid:{color:COLORS.grid}}, x:{grid:{display:false}} } }
   });
 
@@ -898,14 +1503,39 @@ function renderKbView(){
     ${k.searchFind.map(m=>`<tr><td>${m.metric}</td><td class="num">${m.isPct? fmtPct(m.current): fmtNum(m.current)}</td><td class="num">${m.isPct? fmtPct(m.prior): fmtNum(m.prior)}</td><td class="num">${momTag(m.mom)}</td></tr>`).join('')}
   `;
 
-  destroyChart('ticketGroups');
-  charts.ticketGroups = safeChart('chartTicketGroups', {
-    type:'line',
-    data:{ labels:k.ticketGroupMonths, datasets:Object.keys(k.ticketGroups).map((g,i)=>({
-      label:g, data:k.ticketGroups[g], borderColor:palette[i%palette.length], backgroundColor:palette[i%palette.length],
-      tension:0.3, pointRadius:2, borderWidth:2, fill:false })) },
-    options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:COLORS.grid}} } }
+  // ---- KB success vs ticket volume ----
+  const ks = k.kbSuccess;
+  destroyChart('kbSuccess');
+  charts.kbSuccess = safeChart('chartKbSuccess', {
+    type:'bar',
+    data:{ labels:ks.months, datasets:[
+      { type:'bar', label:'Tickets created', data:ks.tickets, backgroundColor:COLORS.muted, borderRadius:4, maxBarThickness:38, yAxisID:'y' },
+      { type:'bar', label:'Total deflections', data:ks.deflections, backgroundColor:COLORS.blue, borderRadius:4, maxBarThickness:38, yAxisID:'y' },
+      { type:'line', label:'KB success rate %', data:ks.rate, borderColor:COLORS.red, backgroundColor:COLORS.red, tension:0.35, pointRadius:3, borderWidth:2, yAxisID:'y1' },
+    ]},
+    options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
+      scales:{ y:{grid:{color:COLORS.grid}}, y1:{position:'right', grid:{display:false}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} },
+      interaction:{mode:'index', intersect:false} }
   });
+  document.getElementById('tblKbSuccess').innerHTML = `
+    <tr><th>Month</th><th class="num">Tickets created</th><th class="num">Total deflections</th><th class="num">KB success rate</th></tr>
+    ${ks.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(ks.tickets[i])}</td><td class="num">${fmtNum(ks.deflections[i])}</td><td class="num">${fmtPct(ks.rate[i])}</td></tr>`).join('')}
+  `;
+
+  // ---- Content backlog signals ----
+  const fq = k.topFailedQueries || [];
+  document.getElementById('tblFailedQueries').innerHTML = `
+    <tr><th>Search query</th><th class="num">No-result searches</th></tr>
+    ${fq.length ? fq.map(q=>`<tr><td>${q.query}</td><td class="num">${fmtNum(q.count)}</td></tr>`).join('') : `<tr><td colspan="2" style="color:var(--muted-dim); font-style:italic;">No failed searches recorded for the reporting month.</td></tr>`}
+  `;
+  const td = k.ticketDrivers || [];
+  document.getElementById('tblTicketDrivers').innerHTML = `
+    <tr><th>Issue origin</th><th>Linked article</th><th class="num">Tickets</th></tr>
+    ${td.length ? td.map(r=>`<tr><td>${r.origin || '—'}</td><td style="color:var(--muted); font-size:12px;">${r.article}</td><td class="num">${fmtNum(r.tickets)}</td></tr>`).join('') : `<tr><td colspan="3" style="color:var(--muted-dim); font-style:italic;">No driver-linked tickets recorded for the reporting month.</td></tr>`}
+  `;
+
+  renderRangeFilter('ticketRangeFilter', k.ticketGroupMonths, ticketRange, renderTicketGroupsChart);
+  renderTicketGroupsChart();
 
   document.getElementById('tblPriorities').innerHTML = `
     <tr><th></th><th>What to improve</th><th>Why it matters</th><th>Suggested KPI / view</th><th>Owner</th><th>Status</th></tr>
@@ -917,7 +1547,70 @@ function renderKbView(){
   `;
 }
 
-function renderAll(){ renderWidgetView(); renderKbView(); }
+function renderTicketGroupsChart(){
+  const k = state.kb;
+  const clamped = clampRange(ticketRange, k.ticketGroupMonths.length-1);
+  destroyChart('ticketGroups');
+  charts.ticketGroups = safeChart('chartTicketGroups', {
+    type:'line',
+    data:{ labels:k.ticketGroupMonths.slice(clamped.from, clamped.to+1), datasets:Object.keys(k.ticketGroups).map((g,i)=>({
+      label:g, data:k.ticketGroups[g].slice(clamped.from, clamped.to+1), borderColor:palette[i%palette.length], backgroundColor:palette[i%palette.length],
+      tension:0.3, pointRadius:2, borderWidth:2, fill:false })) },
+    options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:COLORS.grid}} } }
+  });
+}
+
+function renderOverview(){
+  const w = state.widget, e = state.email, k = state.kb;
+  const hl = {}; k.headline.forEach(h=>hl[h.label]=h);
+  renderKpis('kpi-overview', [
+    {label:'Widget Deflection', value:w.headline.deflection.value, unit:'%', sub:w.headline.deflection.sub, status:'good'},
+    {label:'Widget Needs Improvement', value:w.headline.improvement.value, unit:'%', sub:w.headline.improvement.sub, status:'bad'},
+    {label:'KB Success Rate', value:k.kbSuccess.rate[k.kbSuccess.rate.length-1], unit:'%', sub:'Deflections ÷ (tickets + deflections), current month', status:'good'},
+    {label:'Email QA Pass', value:e.headline.qaPass.value, unit:'%', sub:e.headline.qaPass.sub, status:'good'},
+    {label:'KB Total Deflection', value:hl['Total Deflection Rate'].current, unit:'%', sub:`MoM ${hl['Total Deflection Rate'].mom>0?'+':''}${hl['Total Deflection Rate'].mom}%`, status:'good'},
+    {label:'KB Updates Flagged', value:w.quality.kbUpdates.value, unit:'', sub:w.quality.kbUpdates.sub, status:'bad'},
+  ]);
+  const cards = [
+    {title:'Widget QA', big:fmtPct(w.headline.deflection.value,1)+' deflection', goto:'widget', points:[
+      `${w.headline.improvement.value}% of graded responses still need improvement — mostly KB/content gaps, not bot failures.`,
+      `${w.quality.kbUpdates.value} QA rows are flagged as needing KB updates — the content backlog is quantified.`,
+    ]},
+    {title:'Ticket QA', big:fmtPct(e.headline.qaPass.value,1)+' QA pass', goto:'ticket', points:[
+      `Only ${e.headline.scorable.value} of ${e.headline.totalRows.value} rows are scorable — test/process noise is nearly half the sample.`,
+      `${e.quality.followUps.value} follow-ups captured; tagging alignment is the main hygiene gap.`,
+    ]},
+    {title:'KB scorecard', big:fmtPct(hl['Total Deflection Rate'].current,1)+' total deflection', goto:'kb', points:[
+      `Confirmed deflections doubled in June (11 \u2192 22), lifting total deflection to ${fmtPct(hl['Total Deflection Rate'].current,1)}.`,
+      `Every search proxy fell sharply — June's tickets-after-search methodology changed, so verify before reacting.`,
+    ]},
+  ];
+  document.getElementById('overviewCards').innerHTML = cards.map(c=>`
+    <div class="card ov-card">
+      <div class="subhead">${c.title}</div>
+      <div class="big">${c.big}</div>
+      <ul>${c.points.map(p=>`<li>${p}</li>`).join('')}</ul>
+      <button class="goto-btn" data-goto="${c.goto}">Open ${c.title} →</button>
+    </div>`).join('');
+  document.querySelectorAll('#overviewCards [data-goto]').forEach(b=>b.addEventListener('click', ()=>{
+    const t = document.querySelector('.tab-btn[data-view="'+b.dataset.goto+'"]');
+    if(t) t.click();
+  }));
+}
+
+function checkNarrativeStaleness(){
+  const nb = document.getElementById('narrativeBanner');
+  if(!nb) return;
+  const rm = state.kb.reportingMonth, nm = state.kb.narrativeMonth;
+  if(rm && rm.current && nm && rm.current !== nm){
+    nb.innerHTML = `<strong>Narrative review needed:</strong> data is for ${rm.current}, but the written takeaways, readouts, and overview text were last reviewed for ${nm}. Review the narrative before presenting, then update narrativeMonth in the page source.`;
+    nb.style.display = 'block';
+  } else {
+    nb.style.display = 'none';
+  }
+}
+
+function renderAll(){ renderOverview(); renderWidgetView(); renderKbView(); checkNarrativeStaleness(); }
 renderAll();
 
 /* =========================================================================
@@ -953,7 +1646,11 @@ function mergeDeep(defaults, incoming){
   if(incoming===null || incoming===undefined) return defaults;
   if(Array.isArray(defaults)){
     if(!Array.isArray(incoming)) return defaults;
-    return defaults.map((d,i)=> incoming[i]!==undefined ? mergeDeep(d, incoming[i]) : d);
+    // Incoming array length is authoritative: a fed list that shrinks (e.g.
+    // fewer failed queries next month) fully replaces the defaults, so stale
+    // ghost rows can't linger. Extractors return null (not []) when a section
+    // can't be read, which keeps the defaults via the !Array check above.
+    return incoming.map((inc,i)=> defaults[i]!==undefined ? mergeDeep(defaults[i], inc) : inc);
   }
   if(typeof defaults==='object' && defaults!==null){
     const out = {...defaults};
@@ -1036,6 +1733,35 @@ async function syncLiveData(){
 }
 
 document.getElementById('syncBtn').addEventListener('click', syncLiveData);
+
+/* =========================================================================
+   THEME TOGGLE — Redis light/dark. Chart.js colors are plain constants, so
+   the toggle mutates them and re-renders every chart.
+   ========================================================================= */
+const THEME_CHART = {
+  dark:{grid:'#2D4754', tick:'#8A99A0', text:'#F3F3F3', ring:'#0D2733', good:'#DCFF1E', goodAlt:'#A8C814', muted:'#5C707A'},
+  light:{grid:'#DCE4E7', tick:'#5C707A', text:'#091A23', ring:'#FFFFFF', good:'#7FA800', goodAlt:'#5C8A00', muted:'#8A99A0'},
+};
+let currentTheme = 'dark';
+function applyTheme(t){
+  currentTheme = t;
+  document.documentElement.setAttribute('data-theme', t);
+  const c = THEME_CHART[t];
+  COLORS.grid=c.grid; COLORS.text=c.text; COLORS.green=c.good; COLORS.muted=c.muted; COLORS.ring=c.ring;
+  palette[3]=c.good; palette[7]=c.goodAlt;
+  seriesColors['Total Deflection Rate %']=c.good;
+  seriesColors['End-user Sessions']=c.muted;
+  if(CHARTS_AVAILABLE) Chart.defaults.color = c.tick;
+  document.getElementById('themeBtn').textContent = t==='dark' ? '☀' : '☾';
+  renderAll();
+  try{ localStorage.setItem('ssr-theme', t); }catch(err){ /* storage unavailable in some embeds; theme just won't persist */ }
+}
+document.getElementById('themeBtn').addEventListener('click', ()=>applyTheme(currentTheme==='dark'?'light':'dark'));
+(function(){
+  let saved = null;
+  try{ saved = localStorage.getItem('ssr-theme'); }catch(err){}
+  if(saved==='light') applyTheme('light');
+})();
 
 </script>
 </body>
