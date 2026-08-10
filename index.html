@@ -397,9 +397,9 @@
     <span class="jn-label">Jump to</span>
     <a class="jn-pill" href="#head-widget">Overview</a>
     <a class="jn-pill" href="#sec-w-01">Headline</a>
+    <a class="jn-pill" href="#sec-w-01d">QA trend</a>
     <a class="jn-pill" href="#sec-w-01b">Program impact</a>
     <a class="jn-pill" href="#sec-w-01c">Automation</a>
-    <a class="jn-pill" href="#sec-w-01d">QA trend</a>
     <a class="jn-pill" href="#sec-w-02">Quality &amp; risk</a>
     <a class="jn-pill" href="#sec-w-03">Partial drivers</a>
     <a class="jn-pill" href="#sec-w-03b">By topic</a>
@@ -414,6 +414,7 @@
     <span class="jn-label">Jump to</span>
     <a class="jn-pill" href="#head-email">Overview</a>
     <a class="jn-pill" href="#sec-w-09">Headline</a>
+    <a class="jn-pill" href="#sec-w-09b">MoM trend</a>
     <a class="jn-pill" href="#sec-w-10">Quality &amp; exclusions</a>
     <a class="jn-pill" href="#sec-w-11">Mix &amp; signals</a>
     <a class="jn-pill" href="#sec-w-12">Readout</a>
@@ -476,6 +477,18 @@
       <div class="kpi-row" id="kpi-widget-headline"></div>
     </section>
 
+<section class="block" id="sec-w-01d">
+      <div class="block-head">
+        <h3>Monthly QA trend</h3>
+        <div class="note">QA results grouped by the month the conversation happened (QA rows joined to conversation-log timestamps). Apr* covers Apr 27–30 only and Aug* runs through Aug 7. Deflection here is the log's deflected flag; the headline deflection counts conversations without handoff, so the levels differ by definition.</div>
+      </div>
+      <div class="takeaway">Pass rate has held near 53% since May; August's 40.8% is a partial month with only 49 reviewed rows. Deflection is steady around 90% on the flag-based measure.</div>
+      <div class="card">
+        <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
+      </div>
+      <div class="card" style="margin-top:12px;"><table id="tblMonthly"></table></div>
+    </section>
+
     <section class="block" id="sec-w-01b">
       <div class="block-head">
         <h3>Program impact &amp; coverage</h3>
@@ -495,17 +508,7 @@
       <div class="card"><table id="tblAutomation"></table></div>
     </section>
 
-    <section class="block" id="sec-w-01d">
-      <div class="block-head">
-        <h3>Monthly QA trend</h3>
-        <div class="note">Pass rate and deflection by month, computed from QA rows joined to conversation-log timestamps. Months at the period edges are partial.</div>
-      </div>
-      <div class="takeaway">Snapshots start arguments; trends end them.</div>
-      <div class="card">
-        <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
-      </div>
-      <div class="card" style="margin-top:12px;"><table id="tblMonthly"></table></div>
-    </section>
+    
 
     <section class="block" id="sec-w-02">
       <div class="block-head"><h3>Quality &amp; risk</h3></div>
@@ -632,6 +635,15 @@
       <div class="block-head"><h3>Headline performance</h3></div>
       <div class="takeaway">Email pass rate is 59.7% on a larger scorable sample (77) — the earlier 92.7% was a small-sample read.</div>
       <div class="kpi-row" id="kpi-email-headline"></div>
+    </section>
+
+    <section class="block" id="sec-w-09b">
+      <div class="block-head">
+        <h3>Month-over-month QA trend</h3>
+        <div class="note">Email QA results grouped by the month the conversation happened, joined from the email raw logs. Jun* and Aug* are partial samples.</div>
+      </div>
+      <div class="takeaway">July is the first month with a real sample — 66 scorable rows at 63.6% pass. June and August are too small to read alone.</div>
+      <div class="card"><table id="tblEmailMonthly"></table></div>
     </section>
 
     <section class="block" id="sec-w-10">
@@ -905,7 +917,6 @@ function updateScrollSpy(){
 window.addEventListener('scroll', updateScrollSpy, {passive:true});
 
 
-
 /* =========================================================================
    STATE — everything the page renders from.
    Text/rationale columns are treated as stable and stay static; every
@@ -975,7 +986,7 @@ function defaultState(){
       csat: {csatAvg:null, csatCount:null, relevanceAvg:null, relevanceCount:null},
       /* Monthly QA trend — populates from a "Widget QA Monthly" tab
          (Month | Reviewed | Pass Rate | Deflection Rate). */
-      monthly: {months:[], reviewed:[], passRate:[], deflectionRate:[]},
+      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,301,49], passRate:[90.0,53.0,53.7,52.8,40.8], deflectionRate:[85.0,90.6,90.7,91.5,88.5]},
       /* Populates once the handoff-reply sample lives in the widget sheet
          (rows: outcome, count, share). Not shown until then — the dashboard
          only presents numbers that exist in a source spreadsheet. */
@@ -1025,6 +1036,7 @@ function defaultState(){
         'Exclusions: 64 test or process rows represent 45.4% of reviewed QA rows; 31 follow-ups are captured.',
       ],
       readoutCaveat: 'Data note: 14 of 49 Test rows are not marked Excluded from scoring in review_action_status.',
+      monthly: {months:['Jun*','Jul','Aug*'], scorable:[5,66,8], pass:[2,42,2], partial:[2,17,4], fail:[1,7,2], passRate:[40.0,63.6,25.0]},
     },
     kb: {
       /* reportingMonth is overwritten by the live feed; every month label in
@@ -1398,6 +1410,12 @@ function renderWidgetView(){
     {label:'Process Updates', value:e.quality.processUpdates.value, unit:'%', sub:e.quality.processUpdates.sub, status:'neutral'},
     {label:'Captured Follow-ups', value:e.quality.followUps.value, unit:'', sub:e.quality.followUps.sub, status:'neutral'},
   ]);
+
+  const em = e.monthly;
+  document.getElementById('tblEmailMonthly').innerHTML = `
+    <tr><th>Month</th><th class="num">Scorable</th><th class="num">Pass</th><th class="num">Partial</th><th class="num">Fail</th><th class="num">Pass rate</th></tr>
+    ${em.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(em.scorable[i])}</td><td class="num">${fmtNum(em.pass[i])}</td><td class="num">${fmtNum(em.partial[i])}</td><td class="num">${fmtNum(em.fail[i])}</td><td class="num">${fmtPct(em.passRate[i])}</td></tr>`).join('')}
+  `;
 
   destroyChart('emailMix');
   charts.emailMix = safeChart('chartEmailMix', {
