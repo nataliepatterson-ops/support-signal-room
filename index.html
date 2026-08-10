@@ -494,7 +494,7 @@
         <h3>Program impact &amp; coverage</h3>
         <div class="note">The leadership view: how much of the ticket stream Forethought touches, and the manual work the approved automation removes.</div>
       </div>
-      <div class="takeaway">Coverage and touch reduction are the leadership story — these populate once the program-impact metrics are added to the widget sheet.</div>
+      <div class="takeaway">Coverage is the leadership lever: FT touches 5.6% of the July ticket stream, so quality wins multiply only as coverage expands. Recontact and touches-removed populate once their Zendesk queries are added to the sheet.</div>
       <div class="kpi-row autofit" id="kpi-widget-impact"></div>
       <div class="card" style="margin-top:12px;"><table id="tblImpact"></table></div>
     </section>
@@ -966,9 +966,9 @@ function defaultState(){
          "Support Nudges per Month", "L1 Touches Removed". Until then the
          section shows em-dashes. */
       impact: {
-        coverageNowPct:null,
+        coverageNowPct:5.6,
         coverageProjectedPct:null,
-        nudgesPerMonth:null,
+        nudgesPerMonth:82,
         recontactRatePct:null,
         touchesRemovedActual:null,
         measurement:'Count L1 public replies on Forethought-covered tickets before vs. after the automation go-live; report monthly next to coverage.',
@@ -1300,9 +1300,9 @@ function renderWidgetView(){
   const im = w.impact;
   const dash = v => (v===null||v===undefined) ? '—' : v;
   renderKpis('kpi-widget-impact', [
-    {label:'FT Coverage Today', value:dash(im.coverageNowPct), unit:im.coverageNowPct!==null?'%':'', sub:'From widget sheet', status:'neutral'},
+    {label:'FT Coverage Today', value:dash(im.coverageNowPct), unit:im.coverageNowPct!==null?'%':'', sub:'121 of 2,143 July tickets carried ft-email-automated', status:'neutral'},
     {label:'Coverage After Expansion', value:dash(im.coverageProjectedPct), unit:im.coverageProjectedPct!==null?'%':'', sub:'From widget sheet', status:'neutral'},
-    {label:'Support Nudges / Month', value:im.nudgesPerMonth===null?'—':fmtNum(im.nudgesPerMonth), unit:'', sub:'From widget sheet', status:'neutral'},
+    {label:'Support Nudges / Month', value:im.nudgesPerMonth===null?'—':fmtNum(im.nudgesPerMonth), unit:'', sub:'July: 12 FT + 70 non-FT L1-touched tickets tagged no_response', status:'neutral'},
     {label:'Recontact After Deflection', value:dash(im.recontactRatePct), unit:im.recontactRatePct!==null?'%':'', sub:'7-day ticket recontact · from widget sheet', status:'neutral'},
     {label:'L1 Touches Removed', value:im.touchesRemovedActual===null?'—':fmtNum(im.touchesRemovedActual), unit:'', sub:'Actual, measured post go-live', status:'neutral'},
   ]);
