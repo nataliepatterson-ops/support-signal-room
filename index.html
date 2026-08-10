@@ -375,8 +375,8 @@
   </div>
   <nav class="tabs">
     <button class="tab-btn active" data-view="overview">Overview<span class="tab-period">all periods</span></button>
-    <button class="tab-btn" data-view="widget">Widget QA<span class="tab-period">Apr 27 – Jul 24</span></button>
-    <button class="tab-btn" data-view="ticket">Ticket QA<span class="tab-period">Jul 6 – 15</span></button>
+    <button class="tab-btn" data-view="widget">Widget QA<span class="tab-period">Apr 27 – Aug 7</span></button>
+    <button class="tab-btn" data-view="ticket">Ticket QA<span class="tab-period">Jul 19 – 27</span></button>
     <button class="tab-btn" data-view="kb">KB Scorecard<span class="tab-period" id="kbTabPeriod">Jan – Jun</span></button>
   </nav>
   <div class="sync-block">
@@ -467,7 +467,7 @@
     <div class="page-head" id="head-widget">
       <div class="eyebrow">Executive overview</div>
       <h2>Forethought widget performance</h2>
-      <p>Conversation volume, containment, and QA across the widget. All 500 QA rows are reviewed; 43 System Updates are excluded from technical quality rates. Source period Apr 27 – Jul 24, 2026. Last refreshed Jul 27, 2026.</p>
+      <p>Conversation volume, containment, and QA across the widget. 641 classified QA rows reviewed; 46 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 7, 2026. Last refreshed Aug 10, 2026.</p>
     </div>
 
     <section class="block" id="sec-w-01">
@@ -516,7 +516,7 @@
     <section class="block" id="sec-w-03">
       <div class="block-head">
         <h3>Partial-pass drivers</h3>
-        <div class="note">What's behind the 145 "useful but incomplete" responses.</div>
+        <div class="note">What's behind the 212 "useful but incomplete" responses — 145 categorized to a root cause so far.</div>
       </div>
       <div class="takeaway">Nearly half of incomplete answers trace back to KB gaps — content work, not bot work.</div>
       <div class="grid-2">
@@ -549,7 +549,7 @@
     <section class="block" id="sec-w-04">
       <div class="block-head">
         <h3>Customer journey risk</h3>
-        <div class="note">Drop-off pattern across 144 conversations that ended without a resolution signal.</div>
+        <div class="note">Drop-off pattern across 170 conversations that ended without a resolution signal.</div>
       </div>
       <div class="takeaway">Most drop-offs show no follow-up at all — consistent with self-resolution, but closure signals are missing.</div>
       <div class="grid-2b">
@@ -625,12 +625,12 @@
     <div class="page-head" id="head-email">
       <div class="eyebrow">Executive overview</div>
       <h2>Email ticket intake QA</h2>
-      <p>Email QA quality, exclusion mix, and follow-up workload. Technical rates exclude Test and Backend/process-update rows. Raw period Jul 6 – Jul 15, 2026. QA last pulled Jul 16, 2026.</p>
+      <p>Email QA quality, exclusion mix, and follow-up workload. Technical rates exclude Test and Backend/process-update rows. Raw period Jul 19 – Jul 27, 2026. QA last pulled Jul 27, 2026.</p>
     </div>
 
     <section class="block" id="sec-w-09">
       <div class="block-head"><h3>Headline performance</h3></div>
-      <div class="takeaway">Email intake is healthy at 92.7% pass — but the scorable sample is small.</div>
+      <div class="takeaway">Email pass rate is 59.7% on a larger scorable sample (77) — the earlier 92.7% was a small-sample read.</div>
       <div class="kpi-row" id="kpi-email-headline"></div>
     </section>
 
@@ -642,7 +642,7 @@
 
     <section class="block" id="sec-w-11">
       <div class="block-head"><h3>Email QA mix &amp; operational signals</h3></div>
-      <div class="takeaway">Test grading and review-status tagging disagree on more than half of test rows.</div>
+      <div class="takeaway">Test grading and review-status tagging still disagree on 14 of 49 test rows.</div>
       <div class="grid-2">
         <div class="card">
           <div class="subhead">Classification of all 77 reviewed rows</div>
@@ -793,7 +793,7 @@
 
 <footer>
   <span>Static snapshot, figures reflect the source sheets at time of export.</span>
-  <span>Widget/QA period: Apr 27 – Jul 24, 2026 · KB period: <span id="kbFooterRange">Jan – Jun 2026</span></span>
+  <span>Widget/QA period: Apr 27 – Aug 7, 2026 · KB period: <span id="kbFooterRange">Jan – Jun 2026</span></span>
 </footer>
 
 <script>
@@ -916,18 +916,18 @@ function defaultState(){
   return {
     widget: {
       headline: {
-        conversations: {value:'464', sub:'Unique widget conversations'},
-        deflection:    {value:82.8,  sub:'384 conversations without handoff'},
-        handoff:       {value:17.2,  sub:'80 conversations handed off'},
-        qaPass:        {value:56.2,  sub:'257 passes / 457 scorable QA rows'},
-        improvement:   {value:43.8,  sub:'145 partial + 55 fail; 43 system updates excluded'},
+        conversations: {value:'588', sub:'Unique widget conversations'},
+        deflection:    {value:83.7,  sub:'492 conversations without handoff'},
+        handoff:       {value:16.3,  sub:'96 conversations handed off'},
+        qaPass:        {value:53.8,  sub:'320 passes / 595 scorable QA rows'},
+        improvement:   {value:46.2,  sub:'212 partial + 63 fail; 46 system updates excluded'},
       },
       quality: {
-        partialPass:  {value:31.7, sub:'145 useful but incomplete'},
-        trueFail:     {value:12.0, sub:'55 failed experiences'},
-        dropoff:      {value:31.0, sub:'144 conversations'},
-        lowRelevance: {value:18.2, sub:'76 of 417 rated'},
-        kbUpdates:    {value:90,   sub:'18.0% of QA rows'},
+        partialPass:  {value:35.6, sub:'212 useful but incomplete'},
+        trueFail:     {value:10.6, sub:'63 failed experiences'},
+        dropoff:      {value:28.9, sub:'170 conversations'},
+        lowRelevance: {value:19.7, sub:'108 of 549 rated'},
+        kbUpdates:    {value:114,  sub:'17.8% of QA rows'},
       },
       drivers: [
         {cat:'KB/content gap', count:66, share:45.5, action:'Create or tighten KB and documentation coverage.'},
@@ -936,18 +936,18 @@ function defaultState(){
         {cat:'Uncategorized / review', count:1, share:0.7, action:'Review the QA note and assign the best category.'},
       ],
       journey: [
-        {signal:'Drop-off conversations', count:144, rate:31.0, interp:'Users leave before a clear resolution signal.'},
-        {signal:'No follow-up', count:103, rate:71.5, interp:'Largest drop-off type; review answer closure and CTA.'},
-        {signal:'Incomplete handoff', count:28, rate:19.4, interp:'Tighten required ticket-intake prompts and fields.'},
-        {signal:'Relevant-answer drop-offs', count:88, rate:61.1, interp:'May indicate CTA or resolution-confirmation ambiguity.'},
-        {signal:'Likely true drop-offs', count:139, rate:96.5, interp:'QA validation indicates the drop-off signal is mostly valid.'},
+        {signal:'Drop-off conversations', count:170, rate:28.9, interp:'Users leave before a clear resolution signal.'},
+        {signal:'No follow-up', count:103, rate:60.6, interp:'Largest drop-off type; review answer closure and CTA.'},
+        {signal:'Incomplete handoff', count:28, rate:16.5, interp:'Tighten required ticket-intake prompts and fields.'},
+        {signal:'Relevant-answer drop-offs', count:102, rate:60.0, interp:'May indicate CTA or resolution-confirmation ambiguity.'},
+        {signal:'Likely true drop-offs', count:139, rate:81.8, interp:'QA validation indicates the drop-off signal is mostly valid.'},
       ],
       /* Feed-computed sections: these start empty and populate on the first
          successful live sync (the feed tallies them from the full QA sheet,
          tracker, and conversation log, which are too large to snapshot here). */
       topics: [],
       durations: [],
-      kbPipeline: {flagged:94, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
+      kbPipeline: {flagged:114, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
       /* Program impact — populated ONLY from the widget sheet. Add these
          labels to the sheet (label cell, value one row below, sub-text two
          rows below, same pattern as the headline KPIs) and the feed picks
@@ -985,46 +985,46 @@ function defaultState(){
         note:'Pending: add the L1 handoff-reply sample (handed-off conversations and whether the customer replied) to the widget sheet, and the feed will populate this section.',
       },
       readout: [
-        'Performance: <strong>82.8% deflection</strong>, but <strong>43.8%</strong> of graded responses still need improvement.',
+        'Performance: <strong>83.7% deflection</strong>, but <strong>46.2%</strong> of graded responses still need improvement.',
         'Partial-pass priorities: 66 KB/content (45.5%), 54 technical precision (37.2%), and 24 billing/account (16.6%).',
-        'Customer journey: 144 drop-offs (31.0%), with 103 showing no follow-up and 28 ending during incomplete handoff.',
+        'Customer journey: 170 drop-offs (28.9%), with 103 showing no follow-up and 28 ending during incomplete handoff.',
       ],
-      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through July 24, 2026. Open QA ask: split L1 replies into "confirmed the same answer" vs. "had to change the response" — not yet sampled.',
+      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through August 7, 2026. Open QA ask: split L1 replies into "confirmed the same answer" vs. "had to change the response" — not yet sampled.',
     },
     email: {
       headline: {
-        totalRows: {value:'77', sub:'All 77 QA rows classified'},
-        scorable:  {value:'41', sub:'38 pass + 2 partial + 1 fail'},
-        qaPass:    {value:92.7, sub:'38 passes / 41 scorable rows'},
-        improvement: {value:7.3, sub:'2 partial + 1 fail'},
+        totalRows: {value:'159', sub:'141 of 159 QA rows classified'},
+        scorable:  {value:'77', sub:'46 pass + 22 partial + 9 fail'},
+        qaPass:    {value:59.7, sub:'46 passes / 77 scorable rows'},
+        improvement: {value:40.3, sub:'22 partial + 9 fail'},
         emailCoverage: {value:null, sub:'From email sheet — add the "Email Coverage Rate" label'},
       },
       quality: {
-        partialPass:  {value:4.9,  sub:'2 useful but incomplete'},
-        trueFail:     {value:2.4,  sub:'1 failed experience'},
-        testTraffic:  {value:35.1, sub:'27 test rows excluded'},
-        processUpdates:{value:11.7, sub:'9 process rows excluded'},
-        followUps:    {value:13,   sub:'16.9% of reviewed QA rows'},
+        partialPass:  {value:28.6, sub:'22 useful but incomplete'},
+        trueFail:     {value:11.7, sub:'9 failed experiences'},
+        testTraffic:  {value:30.8, sub:'49 test rows excluded'},
+        processUpdates:{value:9.4, sub:'15 process rows excluded'},
+        followUps:    {value:31,   sub:'22.0% of reviewed QA rows'},
       },
       mix: [
-        {cat:'Pass', count:38, share:49.4},
-        {cat:'Partial pass', count:2, share:2.6},
-        {cat:'Fail', count:1, share:1.3},
-        {cat:'Test + process exclusions', count:36, share:46.8},
+        {cat:'Pass', count:46, share:32.6},
+        {cat:'Partial pass', count:22, share:15.6},
+        {cat:'Fail', count:9, share:6.4},
+        {cat:'Test + process exclusions', count:64, share:45.4},
       ],
       signals: [
-        {signal:'Scorable QA rows', count:41, rate:53.2, interp:'Technical pass, partial, and fail denominator.'},
-        {signal:'Captured follow-ups', count:13, rate:16.9, interp:'Improvement work or process follow-up logged.'},
-        {signal:'Reviewed / no action', count:51, rate:66.2, interp:'No immediate QA or workflow change recorded.'},
-        {signal:'Workflow-tagged exclusions', count:13, rate:16.9, interp:'Rows explicitly excluded by review_action_status.'},
-        {signal:'Test rows missing exclusion status', count:14, rate:51.9, interp:'Test grading and review-status tagging are not fully aligned.'},
+        {signal:'Scorable QA rows', count:77, rate:48.4, interp:'Technical pass, partial, and fail denominator.'},
+        {signal:'Captured follow-ups', count:31, rate:22.0, interp:'Improvement work or process follow-up logged.'},
+        {signal:'Reviewed / no action', count:77, rate:54.6, interp:'No immediate QA or workflow change recorded.'},
+        {signal:'Workflow-tagged exclusions', count:35, rate:24.8, interp:'Rows explicitly excluded by review_action_status.'},
+        {signal:'Test rows missing exclusion status', count:14, rate:28.6, interp:'Test grading and review-status tagging are not fully aligned.'},
       ],
       readout: [
-        'Coverage: 77 email QA rows are reviewed; 41 are technically scorable after exclusions.',
-        'Quality: <strong>92.7% technical pass rate</strong>, with 2 partial passes and 1 fail.',
-        'Exclusions: 36 test or process rows represent 46.8% of the QA sample; 13 follow-ups are captured.',
+        'Coverage: 141 of 159 email QA rows are reviewed; 77 are technically scorable after exclusions.',
+        'Quality: <strong>59.7% technical pass rate</strong>, with 22 partial passes and 9 fails.',
+        'Exclusions: 64 test or process rows represent 45.4% of reviewed QA rows; 31 follow-ups are captured.',
       ],
-      readoutCaveat: 'Data note: 14 of 27 Test rows are not marked Excluded from scoring in review_action_status.',
+      readoutCaveat: 'Data note: 14 of 49 Test rows are not marked Excluded from scoring in review_action_status.',
     },
     kb: {
       /* reportingMonth is overwritten by the live feed; every month label in
