@@ -411,11 +411,15 @@
     <a class="jn-pill" href="#sec-w-01d">QA trend</a>
     <a class="jn-pill" href="#sec-w-01b">Program impact</a>
     <a class="jn-pill" href="#sec-w-01c">Automation</a>
+    <a class="jn-pill" href="#sec-w-01e">Check-in volume</a>
     <a class="jn-pill" href="#sec-w-02">Quality &amp; risk</a>
     <a class="jn-pill" href="#sec-w-03">Partial drivers</a>
     <a class="jn-pill" href="#sec-w-04">Journey risk</a>
+    <a class="jn-pill" href="#sec-w-05">Handoff topics</a>
+    <a class="jn-pill" href="#sec-w-05b">Workflow handoffs</a>
     <a class="jn-pill" href="#sec-w-04c">Duration</a>
     <a class="jn-pill" href="#sec-w-04d">Customer feedback</a>
+    <a class="jn-pill" href="#sec-w-07c">KB backlog</a>
     <a class="jn-pill" href="#sec-w-08">Readout</a>
   </div>
   <div class="jumpnav" id="jumpnav-ticket" style="display:none;">
@@ -423,6 +427,7 @@
     <a class="jn-pill" href="#head-email">Overview</a>
     <a class="jn-pill" href="#sec-w-09">Headline</a>
     <a class="jn-pill" href="#sec-w-09b">MoM trend</a>
+    <a class="jn-pill" href="#sec-w-09c">Funnel</a>
     <a class="jn-pill" href="#sec-w-10">Quality &amp; exclusions</a>
     <a class="jn-pill" href="#sec-w-11">Mix &amp; signals</a>
     <a class="jn-pill" href="#sec-w-12">Readout</a>
@@ -515,6 +520,15 @@
       <div class="card"><table id="tblAutomation"></table></div>
     </section>
 
+    <section class="block" id="sec-w-01e">
+      <div class="block-head">
+        <h3>Follow-up workload (check-in replies)</h3>
+        <div class="note">90-day directional floor estimate of follow-up touches on phrase-matched tickets — May 12 – Aug 10, 2026; 810 flagged tickets, 38-ticket sample. Workload and automation mix, not ticket outcomes.</div>
+      </div>
+      <div class="takeaway">4,448 estimated follow-up touches, 66% automated. CS carries most human replies; L3/L2 carry most automation — that's where auto-close rules pay off first.</div>
+      <div class="card"><table id="tblCheckin"></table></div>
+    </section>
+
     
 
     <section class="block" id="sec-w-02">
@@ -559,12 +573,39 @@
       </div>
     </section>
 
+    <section class="block" id="sec-w-05">
+      <div class="block-head">
+        <h3>Handed-off topics &amp; unanswered questions</h3>
+        <div class="note">Detected topics and first customer question for conversations that were not deflected — computed from the conversation log, Aug 11, 2026.</div>
+      </div>
+      <div class="takeaway">Refunds/credits and payment issues lead the handoff list — billing process, not technical content, drives most escapes.</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="subhead">Topics on handed-off conversations</div>
+          <table id="tblTopicsHandoff"></table>
+        </div>
+        <div class="card">
+          <div class="subhead">Sample handed-off questions</div>
+          <table id="tblHandoffQueries"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-w-05b">
+      <div class="block-head">
+        <h3>Handoff rate by workflow</h3>
+        <div class="note">Unique conversations per detected workflow and how often each handed off. Standard Handoff and Contact Support hand off by design.</div>
+      </div>
+      <div class="takeaway">The two billing clarification workflows hand off at 36–39% — the clearest fix-first targets. Knowledge retrieval holds ~7%.</div>
+      <div class="card"><table id="tblWorkflows"></table></div>
+    </section>
+
     <section class="block" id="sec-w-04c">
       <div class="block-head">
         <h3>Conversation duration</h3>
         <div class="note">Median time spent in the widget, split by whether the conversation deflected or handed off.</div>
       </div>
-      <div class="takeaway">Time-in-widget for deflected vs. handed-off conversations shows what self-service saves — populated from the conversation log.</div>
+      <div class="takeaway">Deflected conversations end in a median 48 seconds; handed-off ones run 7 minutes — when self-service works, it is roughly 9x faster for the customer.</div>
       <div class="card"><table id="tblDurations"></table></div>
     </section>
 
@@ -573,8 +614,17 @@
         <h3>Customer feedback</h3>
         <div class="note">CSAT and relevance ratings from the widget conversation log — the customer's opinion of quality, next to QA's.</div>
       </div>
-      <div class="takeaway">QA grades the answer; the customer grades the experience — present both or someone will present the missing one for you.</div>
+      <div class="takeaway">19.4% of conversations end with negative sentiment — close to QA's 10.4% fail rate plus drop-off signal. CSAT and quick feedback are too sparse to headline yet.</div>
       <div class="card"><table id="tblCsat"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-07c">
+      <div class="block-head">
+        <h3>QA → KB backlog</h3>
+        <div class="note">Content actions logged in the KB Feedback Backlog tab, driven by QA findings. Closure rate excludes the one Optional item.</div>
+      </div>
+      <div class="takeaway">11 of 46 actionable items are shipped (23.9%) — the QA loop is producing content, with 32 items still waiting on drafting.</div>
+      <div class="card"><table id="tblKbBacklog"></table></div>
     </section>
 
     <section class="block" id="sec-w-08">
@@ -611,6 +661,15 @@
       </div>
       <div class="takeaway">July is the first month with a real sample — 66 scorable rows at 63.6% pass. June and August are too small to read alone.</div>
       <div class="card"><table id="tblEmailMonthly"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-09c">
+      <div class="block-head">
+        <h3>Autoresponder funnel</h3>
+        <div class="note">From the autoresponder raw logs (current + archive), Aug 11, 2026. Deflected uses the log's flag; QA quality of the sent responses is graded above.</div>
+      </div>
+      <div class="takeaway">Coverage is the constraint, not execution: only 27.7% of inbound email is eligible, but 98% of eligible emails get a response and 74% of those deflect.</div>
+      <div class="card"><table id="tblFunnel"></table></div>
     </section>
 
     <section class="block" id="sec-w-10">
@@ -896,7 +955,87 @@ function defaultState(){
          successful live sync (the feed tallies them from the full QA sheet,
          tracker, and conversation log, which are too large to snapshot here). */
       topics: [],
-      durations: [],
+      /* Computed Aug 11, 2026 from the conversation log (per unique conversation). */
+      durations: [
+        {group:'Deflected (no handoff)', median:48, n:537},
+        {group:'Handed off to support', median:420, n:57},
+      ],
+      /* Customer signals from the conversation log, Aug 11, 2026. Sentiment is
+         per unique conversation; CSAT and quick feedback are too sparse to
+         treat as representative — shown with sample sizes for honesty. */
+      feedback: {
+        sentiment: {positive:42, neutral:423, negative:112, rated:577},
+        csatAvg:3.6, csatCount:7, quickFeedbackCount:12,
+      },
+      /* Handed-off topics and unanswered questions — detected_topics and first
+         user_query of non-deflected conversations, Aug 11, 2026. */
+      topicsHandoff: [
+        {topic:'Refunds and Credits', handoffs:8, mentions:9},
+        {topic:'Payment Issues', handoffs:5, mentions:11},
+        {topic:'Technical Support — Others', handoffs:5, mentions:29},
+        {topic:'Account Access and Security', handoffs:3, mentions:11},
+        {topic:'General Connectivity Issues', handoffs:3, mentions:10},
+        {topic:'Failover and Recovery Support', handoffs:3, mentions:11},
+        {topic:'Billing Inquiries', handoffs:3, mentions:8},
+      ],
+      sampleHandoffQueries: [
+        'Our prod db is down, what\u2019s happening?',
+        'We need a Redis analyst to help with a production outage on Redis Cloud',
+        'I\u2019m running into DNS errors and I need to speak to an agent immediately',
+        'Authentication error connecting to my database in Redis Insight',
+        'ECONNREFUSED when connecting since last night (sandbox database)',
+        'Trying to replace the credit card on my subscription but the add button fails',
+      ],
+      /* Handoff rate by detected workflow (unique conversations), Aug 11, 2026.
+         Standard Handoff and Contact Support hand off by design. */
+      workflows: [
+        {name:'Standard Handoff', convs:98, handoffs:47, rate:48.0, byDesign:true},
+        {name:'Billing Invoice Clarification', convs:18, handoffs:7, rate:38.9, byDesign:false},
+        {name:'Billing Marketplace CSP', convs:11, handoffs:4, rate:36.4, byDesign:false},
+        {name:'Contact Support', convs:115, handoffs:33, rate:28.7, byDesign:true},
+        {name:'Billing Payment Failure Retry', convs:11, handoffs:1, rate:9.1, byDesign:false},
+        {name:'KR Autoflow', convs:526, handoffs:38, rate:7.2, byDesign:false},
+        {name:'Knowledge Retrieval', convs:496, handoffs:34, rate:6.9, byDesign:false},
+      ],
+      /* FT L1 Touches Removed tracker — from the Automation Baseline tab.
+         June FT volume was confirmed test/pilot tickets; use the non-FT June
+         row as the real before baseline. Note: the tab's July pre/post-rollout
+         L1-touched counts (44 + 22) do not reconcile with its full-month
+         figure (13) — full-month values shown as authoritative. */
+      automationTracker: {
+        months:['Jun 2026*','Jul 2026'],
+        rows:[
+          {metric:'Total tickets created', vals:['1,683','2,143'], note:'All Zendesk tickets in the month.'},
+          {metric:'FT-tagged tickets (ft-email-automated)', vals:['21','121'], note:'June was test/pilot volume, not organic.'},
+          {metric:'FT-tagged: L1-touch rate', vals:['9.5%','10.7%'], note:'13 of 121 FT tickets reached L1 in July.'},
+          {metric:'Non-FT: L1-touch rate', vals:['16.9%','15.1%'], note:'The comparison baseline — FT runs ~4.4pts lower in July.'},
+          {metric:'FT-tagged: nudge count', vals:['2','12'], note:'L1-touched + no_response.'},
+          {metric:'Non-FT: nudge count', vals:['79','70'], note:''},
+          {metric:'Auto-closeable under proposed 4h+72h rule', vals:['0','2'], note:'Simulated against the proposed rule — no live automation yet.'},
+          {metric:'Baseline L1 touches expected', vals:['3.6','18.3'], note:'Non-FT touch rate \u00d7 FT volume.'},
+          {metric:'L1 touches removed (baseline \u2212 actual)', vals:['1.6','5.3'], note:'The reduction story so far.'},
+          {metric:'Hours returned', vals:['\u2014','\u2014'], note:'Blocked on the minutes-per-L1-touch decision with Support leadership.'},
+        ],
+      },
+      /* Check-in Reply Volume tab — 90-day directional floor estimate,
+         May 12 \u2013 Aug 10, 2026; 810 flagged tickets, 38-ticket sample. */
+      checkin: {
+        summary: {touches:4448, automatedShare:66, humanReplies:1518, autoReminders:2930, flagged:810},
+        teams: [
+          {group:'CS', flagged:370, human:1000, auto:815, total:1815, autoShare:45},
+          {group:'Support - L3', flagged:205, human:320, auto:1415, total:1735, autoShare:82},
+          {group:'Support - L2', flagged:66, human:66, auto:330, total:396, autoShare:83},
+          {group:'TAM', flagged:57, human:57, auto:190, total:247, autoShare:77},
+          {group:'Support - L1', flagged:45, human:0, auto:45, total:45, autoShare:100},
+          {group:'CSE ICP', flagged:24, human:55, auto:105, total:160, autoShare:66},
+          {group:'Finance Billing', flagged:17, human:0, auto:0, total:0, autoShare:null},
+          {group:'Finance AR', flagged:16, human:0, auto:0, total:0, autoShare:null},
+          {group:'Other / unassigned', flagged:10, human:20, auto:30, total:50, autoShare:60},
+        ],
+      },
+      /* KB Feedback Backlog tab, Aug 11, 2026. Closure rate excludes the
+         Optional item. */
+      kbBacklog: {proposed:32, inProgress:3, completed:11, optional:1, total:47, closureRate:23.9},
       kbPipeline: {flagged:120, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
       /* Program impact — populated ONLY from the widget sheet. Add these
          labels to the sheet (label cell, value one row below, sub-text two
@@ -927,15 +1066,18 @@ function defaultState(){
          (Month | Reviewed | Pass Rate | Deflection Rate). */
       monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,301,49], passRate:[90.0,53.0,53.7,52.8,40.8], deflectionRate:[85.0,90.6,90.7,91.5,88.5]},
       /* Per-month KPI slices, computed from the QA sheet joined to the conversation
-         log (same join as the monthly chart). Deflection here is the log's deflected
-         flag per unique conversation, so it runs higher than the headline no-handoff
-         measure. Handoff, drop-off, and relevance have no month-split basis. */
+         log (same join as the monthly chart). handoffN/handoffRate count unique
+         conversations whose detected_workflows includes the Handoff intent — the
+         same basis as the headline (reconciles to 98 / 16.5%). deflectionNH is the
+         no-handoff complement (headline basis); the 'deflection' field keeps the
+         log's deflected-flag basis used by the monthly chart. Drop-off and
+         relevance have no month-split basis. */
       byMonth: {
-        'Apr*': {conversations:20,  deflected:17,  deflection:85.0, reviewed:20,  scorable:20,  passN:18,  partial:1,   fail:1,  sysupd:0,  passRate:90.0, improvement:10.0, partialRate:5.0,  failRate:5.0,  kbUpdates:0,  kbPct:0.0},
-        'May':  {conversations:117, deflected:106, deflection:90.6, reviewed:117, scorable:117, passN:62,  partial:34,  fail:21, sysupd:0,  passRate:53.0, improvement:47.0, partialRate:29.1, failRate:17.9, kbUpdates:0,  kbPct:0.0},
-        'Jun':  {conversations:161, deflected:146, deflection:90.7, reviewed:161, scorable:147, passN:79,  partial:52,  fail:16, sysupd:14, passRate:53.7, improvement:46.3, partialRate:35.4, failRate:10.9, kbUpdates:18, kbPct:11.2},
-        'Jul':  {conversations:220, deflected:202, deflection:91.8, reviewed:301, scorable:269, passN:142, partial:103, fail:24, sysupd:32, passRate:52.8, improvement:47.2, partialRate:38.3, failRate:8.9,  kbUpdates:83, kbPct:27.6},
-        'Aug*': {conversations:76,  deflected:66,  deflection:86.8, reviewed:49,  scorable:49,  passN:20,  partial:28,  fail:1,  sysupd:0,  passRate:40.8, improvement:59.2, partialRate:57.1, failRate:2.0,  kbUpdates:19, kbPct:38.8},
+        'Apr*': {conversations:20,  deflected:17,  deflection:85.0, handoffN:7, handoffRate:35.0, deflectionNH:65.0, reviewed:20,  scorable:20,  passN:18,  partial:1,   fail:1,  sysupd:0,  passRate:90.0, improvement:10.0, partialRate:5.0,  failRate:5.0,  kbUpdates:0,  kbPct:0.0},
+        'May':  {conversations:117, deflected:106, deflection:90.6, handoffN:17, handoffRate:14.5, deflectionNH:85.5, reviewed:117, scorable:117, passN:62,  partial:34,  fail:21, sysupd:0,  passRate:53.0, improvement:47.0, partialRate:29.1, failRate:17.9, kbUpdates:0,  kbPct:0.0},
+        'Jun':  {conversations:161, deflected:146, deflection:90.7, handoffN:27, handoffRate:16.8, deflectionNH:83.2, reviewed:161, scorable:147, passN:79,  partial:52,  fail:16, sysupd:14, passRate:53.7, improvement:46.3, partialRate:35.4, failRate:10.9, kbUpdates:18, kbPct:11.2},
+        'Jul':  {conversations:220, deflected:202, deflection:91.8, handoffN:40, handoffRate:18.2, deflectionNH:81.8, reviewed:301, scorable:269, passN:142, partial:103, fail:24, sysupd:32, passRate:52.8, improvement:47.2, partialRate:38.3, failRate:8.9,  kbUpdates:83, kbPct:27.6},
+        'Aug*': {conversations:76,  deflected:66,  deflection:86.8, handoffN:7, handoffRate:9.2, deflectionNH:90.8, reviewed:49,  scorable:49,  passN:20,  partial:28,  fail:1,  sysupd:0,  passRate:40.8, improvement:59.2, partialRate:57.1, failRate:2.0,  kbUpdates:19, kbPct:38.8},
       },
       /* Populates once the handoff-reply sample lives in the widget sheet
          (rows: outcome, count, share). Not shown until then — the dashboard
@@ -958,7 +1100,7 @@ function defaultState(){
         scorable:  {value:'79', sub:'46 pass + 23 partial + 10 fail'},
         qaPass:    {value:58.2, sub:'46 passes / 79 scorable rows'},
         improvement: {value:41.8, sub:'23 partial + 10 fail'},
-        emailCoverage: {value:null, sub:'From the widget sheet — add the "Ticket Autoresponder Coverage Rate" label'},
+        emailCoverage: {value:27.2, sub:'178 of 654 inbound emails received an autoresponse'},
       },
       quality: {
         partialPass:  {value:29.1, sub:'23 of 79 scorable — useful but incomplete'},
@@ -987,6 +1129,14 @@ function defaultState(){
       ],
       readoutCaveat: 'Data note: 14 of 49 Test rows are not marked Excluded from scoring in review_action_status.',
       monthly: {months:['Jun*','Jul','Aug*'], scorable:[5,66,8], pass:[2,42,2], partial:[2,17,4], fail:[1,7,2], passRate:[40.0,63.6,25.0]},
+      /* Autoresponder funnel from the email raw logs (both tabs), Aug 11, 2026.
+         463 emails skipped as email_automation; 5 with an explicit skip reason. */
+      funnel: [
+        {stage:'Inbound emails captured', count:654, pctOfPrev:null, note:'All rows in the autoresponder logs.'},
+        {stage:'Eligible for autoresponse', count:181, pctOfPrev:27.7, note:'463 skipped as email_automation; 5 other skips.'},
+        {stage:'Autoresponse sent', count:178, pctOfPrev:98.3, note:'Coverage: 27.2% of all inbound email.'},
+        {stage:'Deflected', count:131, pctOfPrev:73.6, note:'No further human response needed per the log flag.'},
+      ],
       /* Per-month KPI slices, joined from the autoresponder raw logs. rows = classified
          QA rows that month; Aug* rows include 19 system/backend-update rows that are
          neither scorable nor test/process. */
@@ -1215,8 +1365,8 @@ function renderWidgetView(){
 
   renderKpis('kpi-widget-headline', wm ? [
     {label:'Total Conversations', value:String(wm.conversations), unit:'', sub:`Unique widget conversations — ${widgetMonth}`, status:'neutral'},
-    {label:'Deflection Rate', value:fmtPct(wm.deflection,1).replace('%',''), unit:'%', sub:`${wm.deflected} of ${wm.conversations} conversations with deflected flag (flag basis, not no-handoff)`, status:kpiStatus('w','deflection',wm.deflection)},
-    {label:'Handoff Rate', value:'—', unit:'', sub:'All-period only — no per-month handoff data', status:'neutral'},
+    {label:'Deflection Rate', value:fmtPct(wm.deflectionNH,1).replace('%',''), unit:'%', sub:`${wm.conversations-wm.handoffN} of ${wm.conversations} conversations without handoff`, status:kpiStatus('w','deflection',wm.deflectionNH)},
+    {label:'Handoff Rate', value:wm.handoffRate, unit:'%', sub:`${wm.handoffN} of ${wm.conversations} conversations handed off`, status:kpiStatus('w','handoff',wm.handoffRate)},
     {label:'Technical QA Pass Rate', value:wm.passRate, unit:'%', sub:`${wm.passN} passes / ${wm.scorable} scorable QA rows`, status:kpiStatus('w','qaPass',wm.passRate)},
     {label:'Technical Improvement Rate', value:wm.improvement, unit:'%', sub:`${wm.partial} partial + ${wm.fail} fail; ${wm.sysupd} system updates excluded`, status:kpiStatus('w','improvement',wm.improvement)},
   ] : [
@@ -1291,15 +1441,20 @@ function renderWidgetView(){
   const hoursReturned = (touchesRemoved!==null && au.minutesPerTouch!==null) ? Math.round(touchesRemoved * au.minutesPerTouch / 60) : null;
   const av = v => (v===null||v===undefined) ? '—' : fmtNum(v);
   const ap = v => (v===null||v===undefined) ? '—' : fmtPct(v);
+  const tr = w.automationTracker;
   document.getElementById('tblAutomation').innerHTML = `
-    <tr><th>Metric</th><th class="num">Value</th><th>Guardrail / note</th></tr>
-    <tr><td>Auto-reminders sent</td><td class="num">${av(au.remindersSent)}</td><td style="color:var(--muted); font-size:12px;">Reply rate after reminder: <strong>${ap(au.replyRateAfterReminder)}</strong></td></tr>
-    <tr><td>Auto-closes executed</td><td class="num">${av(au.autoCloses)}</td><td style="color:var(--muted); font-size:12px;">Reopen rate after auto-close: <strong>${ap(au.reopenRateAfterClose)}</strong> — the safety metric; watch it climb before anyone else does.</td></tr>
-    <tr><td>Baseline L1 touches (pre go-live)</td><td class="num">${av(au.baselineTouches)}</td><td style="color:var(--muted); font-size:12px;">Captured before the automation shipped; the denominator for the reduction story.</td></tr>
-    <tr><td>Actual L1 touches (current month)</td><td class="num">${av(au.actualTouches)}</td><td style="color:var(--muted); font-size:12px;">Same query as the baseline, re-run monthly.</td></tr>
-    <tr><td><strong>Touches removed</strong></td><td class="num">${av(touchesRemoved)}</td><td style="color:var(--muted); font-size:12px;">Baseline − actual.</td></tr>
-    <tr><td><strong>Hours returned to the team</strong></td><td class="num">${av(hoursReturned)}</td><td style="color:var(--muted); font-size:12px;">Touches removed × minutes per touch (${au.minutesPerTouch===null?'—':au.minutesPerTouch + ' min'}, agreed assumption cell in the sheet) ÷ 60.</td></tr>
-    <tr><td colspan="3" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">Populates from an "Automation" tab in the widget sheet (Metric | Value). Labels: Auto-Reminders Sent, Reply Rate After Reminder, Auto-Closes Executed, Reopen Rate After Auto-Close, Baseline L1 Touches, L1 Touches Actual, Minutes per Touch.</td></tr>
+    <tr><th>Metric</th>${tr.months.map(m=>`<th class="num">${m}</th>`).join('')}<th>Guardrail / note</th></tr>
+    ${tr.rows.map(r=>`<tr><td>${r.metric}</td>${r.vals.map(v=>`<td class="num">${v}</td>`).join('')}<td style="color:var(--muted); font-size:12px;">${r.note}</td></tr>`).join('')}
+    <tr><td colspan="4" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">*June FT volume was confirmed test/pilot tickets — use the non-FT June row as the real before baseline. Auto-close counts are simulated against the proposed 4h+72h rule; no live automation exists yet. The tab's July pre/post-rollout L1 counts (44 + 22) do not reconcile with the full-month figure (13); full-month values shown.</td></tr>
+  `;
+
+  // ---- Follow-up workload (Check-in Reply Volume tab) ----
+  const ck = w.checkin;
+  document.getElementById('tblCheckin').innerHTML = `
+    <tr><th>Group</th><th class="num">Flagged tickets</th><th class="num">Est. human replies</th><th class="num">Est. auto reminders</th><th class="num">Total touches</th><th class="num">Automation share</th></tr>
+    ${ck.teams.map(t=>`<tr><td>${t.group}</td><td class="num">${fmtNum(t.flagged)}</td><td class="num">${fmtNum(t.human)}</td><td class="num">${fmtNum(t.auto)}</td><td class="num">${fmtNum(t.total)}</td><td class="num">${t.autoShare===null?'—':fmtPct(t.autoShare,0)}</td></tr>`).join('')}
+    <tr><td><strong>Total</strong></td><td class="num"><strong>${fmtNum(ck.summary.flagged)}</strong></td><td class="num"><strong>${fmtNum(ck.summary.humanReplies)}</strong></td><td class="num"><strong>${fmtNum(ck.summary.autoReminders)}</strong></td><td class="num"><strong>${fmtNum(ck.summary.touches)}</strong></td><td class="num"><strong>${fmtPct(ck.summary.automatedShare,0)}</strong></td></tr>
+    <tr><td colspan="6" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">Directional floor estimate: sampled group rates applied to phrase-matched tickets. Finance matches were customers chasing Redis, not agent check-ins.</td></tr>
   `;
 
   // ---- Monthly QA trend (sheet-fed) ----
@@ -1322,21 +1477,57 @@ function renderWidgetView(){
     document.getElementById('tblMonthly').innerHTML = `<tr><th>Month</th><th class="num">Reviewed</th><th class="num">Pass rate</th><th class="num">Deflection</th></tr><tr><td colspan="4" style="color:var(--muted-dim); font-style:italic;">Populates from a "Widget QA Monthly" tab in the widget sheet (Month | Reviewed | Pass Rate | Deflection Rate), one row per month.</td></tr>`;
   }
 
-  // ---- Customer feedback (feed-computed from the conversation log) ----
-  const cs = w.csat;
+  // ---- Customer feedback (computed from the conversation log) ----
+  const fb = w.feedback;
+  const sTot = fb.sentiment.rated;
   document.getElementById('tblCsat').innerHTML = `
-    <tr><th>Signal</th><th class="num">Average</th><th class="num">Responses</th></tr>
-    ${cs.csatCount!==null ? `
-      <tr><td>CSAT</td><td class="num">${cs.csatAvg===null?'—':cs.csatAvg}</td><td class="num">${fmtNum(cs.csatCount)}</td></tr>
-      <tr><td>Relevance rating</td><td class="num">${cs.relevanceAvg===null?'—':cs.relevanceAvg}</td><td class="num">${fmtNum(cs.relevanceCount)}</td></tr>
-    ` : syncPendingRow(3)}
+    <tr><th>Signal</th><th class="num">Value</th><th class="num">Sample</th><th>Read</th></tr>
+    <tr><td>Ending sentiment — positive</td><td class="num">${fmtPct(100*fb.sentiment.positive/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.positive)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Per unique conversation.</td></tr>
+    <tr><td>Ending sentiment — neutral</td><td class="num">${fmtPct(100*fb.sentiment.neutral/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.neutral)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Most conversations end without an emotional signal.</td></tr>
+    <tr><td>Ending sentiment — negative</td><td class="num">${fmtPct(100*fb.sentiment.negative/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.negative)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Roughly one in five conversations ends negative — compare against QA fail + partial.</td></tr>
+    <tr><td>CSAT average</td><td class="num">${fb.csatAvg} / 5</td><td class="num">${fmtNum(fb.csatCount)}</td><td style="color:var(--muted); font-size:12px;">Too sparse to be representative — do not headline this.</td></tr>
+    <tr><td>Quick feedback responses</td><td class="num">—</td><td class="num">${fmtNum(fb.quickFeedbackCount)}</td><td style="color:var(--muted); font-size:12px;">Also too sparse; consider making the feedback prompt more prominent.</td></tr>
   `;
 
-  // ---- Conversation duration (feed-computed) ----
+
+  // ---- Conversation duration (computed from the conversation log) ----
   const du = w.durations || [];
   document.getElementById('tblDurations').innerHTML = `
     <tr><th>Outcome</th><th class="num">Median time in widget</th><th class="num">Conversations</th></tr>
     ${du.length ? du.map(r=>`<tr><td>${r.group}</td><td class="num">${fmtDur(r.median)}</td><td class="num">${fmtNum(r.n)}</td></tr>`).join('') : syncPendingRow(3)}
+  `;
+
+  // ---- Handed-off topics & sample questions ----
+  document.getElementById('tblTopicsHandoff').innerHTML = `
+    <tr><th>Topic</th><th class="num">Handoffs</th><th class="num">Total mentions</th></tr>
+    ${w.topicsHandoff.map(t=>`<tr><td>${t.topic}</td><td class="num">${fmtNum(t.handoffs)}</td><td class="num">${fmtNum(t.mentions)}</td></tr>`).join('')}
+  `;
+  document.getElementById('tblHandoffQueries').innerHTML = `
+    <tr><th>Customer question (verbatim, truncated)</th></tr>
+    ${w.sampleHandoffQueries.map(q=>`<tr><td style="color:var(--muted); font-size:12px;">“${q}”</td></tr>`).join('')}
+  `;
+
+  // ---- Handoff rate by workflow ----
+  document.getElementById('tblWorkflows').innerHTML = `
+    <tr><th>Workflow</th><th class="num">Conversations</th><th class="num">Handoffs</th><th class="num">Handoff rate</th></tr>
+    ${w.workflows.map(x=>`<tr><td>${x.name}${x.byDesign?' <span style="color:var(--muted-dim); font-size:10.5px;">(by design)</span>':''}</td><td class="num">${fmtNum(x.convs)}</td><td class="num">${fmtNum(x.handoffs)}</td><td class="num">${fmtPct(x.rate)}</td></tr>`).join('')}
+  `;
+
+  // ---- QA -> KB backlog (KB Feedback Backlog tab) ----
+  const kbb = w.kbBacklog;
+  document.getElementById('tblKbBacklog').innerHTML = `
+    <tr><th>Status</th><th class="num">Items</th><th>What it means</th></tr>
+    <tr><td>Proposed</td><td class="num">${fmtNum(kbb.proposed)}</td><td style="color:var(--muted); font-size:12px;">Waiting on drafting or approval.</td></tr>
+    <tr><td>In progress</td><td class="num">${fmtNum(kbb.inProgress)}</td><td style="color:var(--muted); font-size:12px;">Being written or in review.</td></tr>
+    <tr><td>Completed</td><td class="num">${fmtNum(kbb.completed)}</td><td style="color:var(--muted); font-size:12px;">Shipped to the knowledge base.</td></tr>
+    <tr><td>Optional</td><td class="num">${fmtNum(kbb.optional)}</td><td style="color:var(--muted); font-size:12px;">Excluded from the closure rate.</td></tr>
+    <tr><td><strong>Closure rate</strong></td><td class="num"><strong>${fmtPct(kbb.closureRate)}</strong></td><td style="color:var(--muted); font-size:12px;">Completed ÷ actionable items (${fmtNum(kbb.total-kbb.optional)}).</td></tr>
+  `;
+
+  // ---- Autoresponder funnel ----
+  document.getElementById('tblFunnel').innerHTML = `
+    <tr><th>Stage</th><th class="num">Emails</th><th class="num">% of previous stage</th><th>Note</th></tr>
+    ${e.funnel.map(f=>`<tr><td>${f.stage}</td><td class="num">${fmtNum(f.count)}</td><td class="num">${f.pctOfPrev===null?'—':fmtPct(f.pctOfPrev)}</td><td style="color:var(--muted); font-size:12px;">${f.note}</td></tr>`).join('')}
   `;
 
   renderKpis('kpi-email-headline', emm ? [
