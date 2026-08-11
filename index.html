@@ -492,9 +492,9 @@
 <section class="block" id="sec-w-01d">
       <div class="block-head">
         <h3>Monthly QA trend</h3>
-        <div class="note">QA results grouped by the month the conversation happened (QA rows joined to conversation-log timestamps). Apr* covers Apr 27–30 only and Aug* runs through Aug 10. Deflection uses the same no-handoff basis as the headline. Reviewed QA rows can exceed a month's unique conversations: repeat reviews of the same conversation plus rows dated from the QA sheet when no log match exists (July: 301 rows across 237 unique conversations).</div>
+        <div class="note">QA results grouped by the month the conversation happened, counted per unique conversation — when a conversation was reviewed more than once (64 in July), the latest review is used. Apr* covers Apr 27–30 only and Aug* runs through Aug 10. Deflection uses the same no-handoff basis as the headline. July's reviewed count (237) exceeds its logged conversations (220) because 37 QA'd conversations are missing from the conversation-log export.</div>
       </div>
-      <div class="takeaway">Pass rate has held near 53% since May; August's 40.8% is a partial month with only 49 reviewed rows. Deflection has held in the low-to-mid 80s since May on the headline no-handoff basis.</div>
+      <div class="takeaway">Pass rate has held at 53–55% since May; August's 40.8% is a partial month with only 49 reviewed conversations. Deflection has held in the low-to-mid 80s since May on the headline no-handoff basis.</div>
       <div class="card">
         <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
       </div>
@@ -1064,20 +1064,21 @@ function defaultState(){
       csat: {csatAvg:null, csatCount:null, relevanceAvg:null, relevanceCount:null},
       /* Monthly QA trend — populates from a "Widget QA Monthly" tab
          (Month | Reviewed | Pass Rate | Deflection Rate). */
-      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,301,49], passRate:[90.0,53.0,53.7,52.8,40.8], deflectionRate:[65.0,85.5,83.2,81.8,90.8]},
-      /* Per-month KPI slices, computed from the QA sheet joined to the conversation
-         log (same join as the monthly chart). handoffN/handoffRate count unique
+      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,237,49], passRate:[90.0,53.0,53.7,54.7,40.8], deflectionRate:[65.0,85.5,83.2,81.8,90.8]},
+      /* Per-month KPI slices on a unique-conversation basis: 64 conversations
+         (all July) were reviewed twice in the QA sheet — the latest review wins.
+         37 QA'd July conversations are absent from the conversation log (export
+         gap) and are dated from the QA sheet. handoffN/handoffRate count unique
          conversations whose detected_workflows includes the Handoff intent — the
          same basis as the headline (reconciles to 98 / 16.5%). deflectionNH is the
          no-handoff complement (headline basis) and also feeds the monthly trend
          chart; the 'deflection' field keeps the log's deflected-flag basis for
-         reference only. Drop-off and
-         relevance have no month-split basis. */
+         reference only. Drop-off and relevance have no month-split basis. */
       byMonth: {
         'Apr*': {conversations:20,  deflected:17,  deflection:85.0, handoffN:7, handoffRate:35.0, deflectionNH:65.0, reviewed:20,  scorable:20,  passN:18,  partial:1,   fail:1,  sysupd:0,  passRate:90.0, improvement:10.0, partialRate:5.0,  failRate:5.0,  kbUpdates:0,  kbPct:0.0},
         'May':  {conversations:117, deflected:106, deflection:90.6, handoffN:17, handoffRate:14.5, deflectionNH:85.5, reviewed:117, scorable:117, passN:62,  partial:34,  fail:21, sysupd:0,  passRate:53.0, improvement:47.0, partialRate:29.1, failRate:17.9, kbUpdates:0,  kbPct:0.0},
         'Jun':  {conversations:161, deflected:146, deflection:90.7, handoffN:27, handoffRate:16.8, deflectionNH:83.2, reviewed:161, scorable:147, passN:79,  partial:52,  fail:16, sysupd:14, passRate:53.7, improvement:46.3, partialRate:35.4, failRate:10.9, kbUpdates:18, kbPct:11.2},
-        'Jul':  {conversations:220, deflected:202, deflection:91.8, handoffN:40, handoffRate:18.2, deflectionNH:81.8, reviewed:301, scorable:269, passN:142, partial:103, fail:24, sysupd:32, passRate:52.8, improvement:47.2, partialRate:38.3, failRate:8.9,  kbUpdates:83, kbPct:27.6},
+        'Jul':  {conversations:220, deflected:202, deflection:91.8, handoffN:40, handoffRate:18.2, deflectionNH:81.8, reviewed:237, scorable:212, passN:116, partial:80,  fail:16, sysupd:25, passRate:54.7, improvement:45.3, partialRate:37.7, failRate:7.5,  kbUpdates:53, kbPct:22.4},
         'Aug*': {conversations:76,  deflected:66,  deflection:86.8, handoffN:7, handoffRate:9.2, deflectionNH:90.8, reviewed:49,  scorable:49,  passN:20,  partial:28,  fail:1,  sysupd:0,  passRate:40.8, improvement:59.2, partialRate:57.1, failRate:2.0,  kbUpdates:19, kbPct:38.8},
       },
       /* Populates once the handoff-reply sample lives in the widget sheet
