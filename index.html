@@ -558,7 +558,7 @@
     <section class="block" id="sec-w-04">
       <div class="block-head">
         <h3>Customer journey risk</h3>
-        <div class="note">Drop-off pattern across 170 conversations that ended without a resolution signal.</div>
+        <div class="note">Drop-off pattern across 172 conversations that ended without a resolution signal.</div>
       </div>
       <div class="takeaway">Most drop-offs show no follow-up at all — consistent with self-resolution, but closure signals are missing.</div>
       <div class="grid-2b">
@@ -791,7 +791,7 @@
         <div class="range-filter" id="ticketRangeFilter"></div>
       </div>
       <div class="month-filter" id="ticketGroupFilter" style="margin:10px 0 12px;"></div>
-      <div class="takeaway">CSE ICP volume has collapsed by design; L2 is ramping and absorbing share.</div>
+      <div class="takeaway">CSE ICP has collapsed by design and L2 has plateaued near 150. The new signal is Unassigned: zero in Q1, then 33 → 236 by July — 11% of the month's volume is sitting without a group.</div>
       <div class="card">
         <div class="chart-wrap tall"><canvas id="chartTicketGroups"></canvas></div>
       </div>
@@ -1210,16 +1210,24 @@ function defaultState(){
         {metric:'Tickets Created After Search', current:23, prior:13, mom:76.9, isPct:false},
         {metric:'Searches with No Results', current:24, prior:24, mom:0.0, isPct:false},
       ],
-      ticketGroupMonths: ['Jan','Feb','Mar','Apr','May','Jun'],
+      ticketGroupMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+      /* Refreshed Aug 11, 2026 from the rebuilt Zendesk Ticket Raw tab
+         (Year | Group | Month, Jan–Jul 2026, 25 groups). Prior Jun figures
+         were revised slightly in the new export. Groups under 100 tickets
+         total are rolled into Other. */
       ticketGroups: {
-        'Support - L1':[268,253,331,334,335,282],
-        'Support - L2':[2,0,7,113,142,153],
-        'Support - L3':[487,506,524,488,438,411],
-        'TAM':[131,106,165,118,118,119],
-        'CS':[191,218,167,167,190,146],
-        'CSE ICP':[302,199,57,38,33,27],
-        'Finance Billing':[357,220,179,225,186,124],
-        'Finance Accounts Receivable':[141,162,154,163,137,178],
+        'Support - L3':[487,506,524,488,438,410,459],
+        'Support - L1':[268,253,331,334,335,281,318],
+        'Finance Billing':[357,220,179,225,186,122,217],
+        'CS':[191,218,167,168,190,146,187],
+        'Finance Accounts Receivable':[141,162,154,163,137,179,177],
+        'TAM':[131,106,165,118,118,120,153],
+        'CSE ICP':[302,199,57,38,33,27,17],
+        'Support - L2':[2,0,7,112,142,154,152],
+        'Unassigned':[0,0,0,33,106,145,236],
+        'Finance Licensing and Provisioning':[33,19,39,49,21,39,59],
+        'TAM AMR West':[21,10,16,23,21,10,24],
+        'Other (14 groups)':[16,23,21,36,12,50,134],
       },
       priorities: [
         {n:1, what:'Review May support-impact movement', why:'June is now the active reporting month; review official deflection and search-containment movement against May with Support.', kpi:'KB Scorecard; MoM Trend', owner:'Support Ops / KB Owner', status:'Updated June'},
