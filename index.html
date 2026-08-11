@@ -492,9 +492,9 @@
 <section class="block" id="sec-w-01d">
       <div class="block-head">
         <h3>Monthly QA trend</h3>
-        <div class="note">QA results grouped by the month the conversation happened (QA rows joined to conversation-log timestamps). Apr* covers Apr 27–30 only and Aug* runs through Aug 10. Deflection here is the log's deflected flag; the headline deflection counts conversations without handoff, so the levels differ by definition.</div>
+        <div class="note">QA results grouped by the month the conversation happened (QA rows joined to conversation-log timestamps). Apr* covers Apr 27–30 only and Aug* runs through Aug 10. Deflection uses the same no-handoff basis as the headline. Reviewed QA rows can exceed a month's unique conversations: repeat reviews of the same conversation plus rows dated from the QA sheet when no log match exists (July: 301 rows across 237 unique conversations).</div>
       </div>
-      <div class="takeaway">Pass rate has held near 53% since May; August's 40.8% is a partial month with only 49 reviewed rows. Deflection is steady around 90% on the flag-based measure.</div>
+      <div class="takeaway">Pass rate has held near 53% since May; August's 40.8% is a partial month with only 49 reviewed rows. Deflection has held in the low-to-mid 80s since May on the headline no-handoff basis.</div>
       <div class="card">
         <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
       </div>
@@ -1064,13 +1064,14 @@ function defaultState(){
       csat: {csatAvg:null, csatCount:null, relevanceAvg:null, relevanceCount:null},
       /* Monthly QA trend — populates from a "Widget QA Monthly" tab
          (Month | Reviewed | Pass Rate | Deflection Rate). */
-      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,301,49], passRate:[90.0,53.0,53.7,52.8,40.8], deflectionRate:[85.0,90.6,90.7,91.5,88.5]},
+      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,301,49], passRate:[90.0,53.0,53.7,52.8,40.8], deflectionRate:[65.0,85.5,83.2,81.8,90.8]},
       /* Per-month KPI slices, computed from the QA sheet joined to the conversation
          log (same join as the monthly chart). handoffN/handoffRate count unique
          conversations whose detected_workflows includes the Handoff intent — the
          same basis as the headline (reconciles to 98 / 16.5%). deflectionNH is the
-         no-handoff complement (headline basis); the 'deflection' field keeps the
-         log's deflected-flag basis used by the monthly chart. Drop-off and
+         no-handoff complement (headline basis) and also feeds the monthly trend
+         chart; the 'deflection' field keeps the log's deflected-flag basis for
+         reference only. Drop-off and
          relevance have no month-split basis. */
       byMonth: {
         'Apr*': {conversations:20,  deflected:17,  deflection:85.0, handoffN:7, handoffRate:35.0, deflectionNH:65.0, reviewed:20,  scorable:20,  passN:18,  partial:1,   fail:1,  sysupd:0,  passRate:90.0, improvement:10.0, partialRate:5.0,  failRate:5.0,  kbUpdates:0,  kbPct:0.0},
@@ -1826,10 +1827,17 @@ function renderOverview(){
       `Only ${e.headline.scorable.value} of ${e.headline.totalRows.value} rows are scorable — test/process noise is nearly half the sample.`,
       `${e.quality.followUps.value} follow-ups captured; tagging alignment is the main hygiene gap.`,
     ]},
-    {title:'KB Scorecard', big:fmtPct(hl['Total Deflection Rate'].current,1)+' total deflection', goto:'kb', points:[
-      `Confirmed deflections doubled in June (11 \u2192 22), lifting total deflection to ${fmtPct(hl['Total Deflection Rate'].current,1)}.`,
-      `Every search proxy fell sharply — June's tickets-after-search methodology changed, so verify before reacting.`,
-    ]},
+    {title:'KB Scorecard', big:fmtPct(hl['Total Deflection Rate'].current,1)+' total deflection', goto:'kb', points:(()=>{
+      const rm = k.reportingMonth;
+      const cd = k.momSeries['Confirmed Deflections'] || [];
+      const cdCur = cd[cd.length-1], cdPrior = cd[cd.length-2];
+      const tdr = hl['Total Deflection Rate'];
+      const pts = (tdr.current - tdr.prior).toFixed(1);
+      return [
+        `Confirmed deflections rose from ${cdPrior} to ${cdCur} in ${rm.current} — total deflection up ${pts} pts vs. ${rm.prior}.`,
+        `Search proxies dipped in ${rm.current}, but its tickets-after-search methodology changed — directional until reconciled.`,
+      ];
+    })()},
   ];
   document.getElementById('overviewCards').innerHTML = cards.map(c=>`
     <div class="card ov-card">
