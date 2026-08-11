@@ -201,6 +201,17 @@
     cursor:pointer;
   }
   .range-filter .rf-reset:hover{ color:var(--text); border-color:var(--red); }
+  .month-filter{
+    display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:16px 0 2px;
+    font-family:var(--rds-font-mono); font-size:11px; color:var(--muted);
+  }
+  .month-filter .mf-chip{
+    background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:999px; padding:4px 11px; font-family:var(--rds-font-mono); font-size:11px; cursor:pointer;
+  }
+  .month-filter .mf-chip:hover{ color:var(--text); border-color:var(--red); }
+  .month-filter .mf-chip.active{ color:var(--text); border-color:var(--red); background:var(--panel-alt); }
+  .month-filter .mf-note{ font-size:10.5px; opacity:.75; margin-left:6px; }
 
   /* ---------- KPI cards ---------- */
   .kpi-row{display:grid; grid-template-columns:repeat(5,1fr); gap:12px;}
@@ -465,6 +476,8 @@
       <p>Conversation volume, containment, and QA across the widget. 650 classified QA rows reviewed; 46 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 11, 2026.</p>
     </div>
 
+    <div class="month-filter" id="widgetMonthFilter"></div>
+
     <section class="block" id="sec-w-01">
       <div class="block-head"><h3>Headline performance</h3></div>
       <div class="takeaway">Deflection is strong — the gap is answer completeness, not coverage.</div>
@@ -583,6 +596,8 @@
       <p>Ticket autoresponder QA quality, exclusion mix, and follow-up workload. Technical rates exclude Test and Backend/process-update rows. Raw period Jul 19 – Jul 27, 2026. QA last pulled Jul 27, 2026.</p>
     </div>
 
+    <div class="month-filter" id="emailMonthFilter"></div>
+
     <section class="block" id="sec-w-09">
       <div class="block-head"><h3>Headline performance</h3></div>
       <div class="takeaway">Ticket autoresponder pass rate is 58.2% on a larger scorable sample (79) — the earlier 92.7% was a small-sample read.</div>
@@ -600,7 +615,7 @@
 
     <section class="block" id="sec-w-10">
       <div class="block-head"><h3>Quality &amp; exclusions</h3></div>
-      <div class="takeaway">Nearly half the sample is test or process noise — tagging hygiene is the real gap.</div>
+      <div class="takeaway">64 of 143 reviewed rows (44.8%) are test or process noise, and 14 test rows still lack exclusion tags — tagging hygiene, not answer quality, is the gap to close.</div>
       <div class="kpi-row" id="kpi-email-quality"></div>
     </section>
 
@@ -716,6 +731,7 @@
         <h3>Ticket volume by group, <span id="kbTicketRange">Jan – Jun 2026</span></h3>
         <div class="range-filter" id="ticketRangeFilter"></div>
       </div>
+      <div class="month-filter" id="ticketGroupFilter" style="margin:10px 0 12px;"></div>
       <div class="takeaway">CSE ICP volume has collapsed by design; L2 is ramping and absorbing share.</div>
       <div class="card">
         <div class="chart-wrap tall"><canvas id="chartTicketGroups"></canvas></div>
@@ -910,6 +926,17 @@ function defaultState(){
       /* Monthly QA trend — populates from a "Widget QA Monthly" tab
          (Month | Reviewed | Pass Rate | Deflection Rate). */
       monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,301,49], passRate:[90.0,53.0,53.7,52.8,40.8], deflectionRate:[85.0,90.6,90.7,91.5,88.5]},
+      /* Per-month KPI slices, computed from the QA sheet joined to the conversation
+         log (same join as the monthly chart). Deflection here is the log's deflected
+         flag per unique conversation, so it runs higher than the headline no-handoff
+         measure. Handoff, drop-off, and relevance have no month-split basis. */
+      byMonth: {
+        'Apr*': {conversations:20,  deflected:17,  deflection:85.0, reviewed:20,  scorable:20,  passN:18,  partial:1,   fail:1,  sysupd:0,  passRate:90.0, improvement:10.0, partialRate:5.0,  failRate:5.0,  kbUpdates:0,  kbPct:0.0},
+        'May':  {conversations:117, deflected:106, deflection:90.6, reviewed:117, scorable:117, passN:62,  partial:34,  fail:21, sysupd:0,  passRate:53.0, improvement:47.0, partialRate:29.1, failRate:17.9, kbUpdates:0,  kbPct:0.0},
+        'Jun':  {conversations:161, deflected:146, deflection:90.7, reviewed:161, scorable:147, passN:79,  partial:52,  fail:16, sysupd:14, passRate:53.7, improvement:46.3, partialRate:35.4, failRate:10.9, kbUpdates:18, kbPct:11.2},
+        'Jul':  {conversations:220, deflected:202, deflection:91.8, reviewed:301, scorable:269, passN:142, partial:103, fail:24, sysupd:32, passRate:52.8, improvement:47.2, partialRate:38.3, failRate:8.9,  kbUpdates:83, kbPct:27.6},
+        'Aug*': {conversations:76,  deflected:66,  deflection:86.8, reviewed:49,  scorable:49,  passN:20,  partial:28,  fail:1,  sysupd:0,  passRate:40.8, improvement:59.2, partialRate:57.1, failRate:2.0,  kbUpdates:19, kbPct:38.8},
+      },
       /* Populates once the handoff-reply sample lives in the widget sheet
          (rows: outcome, count, share). Not shown until then — the dashboard
          only presents numbers that exist in a source spreadsheet. */
@@ -934,11 +961,11 @@ function defaultState(){
         emailCoverage: {value:null, sub:'From the widget sheet — add the "Ticket Autoresponder Coverage Rate" label'},
       },
       quality: {
-        partialPass:  {value:29.1, sub:'23 useful but incomplete'},
-        trueFail:     {value:12.7, sub:'10 failed experiences'},
-        testTraffic:  {value:30.2, sub:'49 test rows excluded'},
-        processUpdates:{value:9.3, sub:'15 process rows excluded'},
-        followUps:    {value:31,   sub:'21.7% of reviewed QA rows'},
+        partialPass:  {value:29.1, sub:'23 of 79 scorable — useful but incomplete'},
+        trueFail:     {value:12.7, sub:'10 of 79 scorable — failed experiences'},
+        testTraffic:  {value:30.2, sub:'49 of 162 QA rows excluded as test'},
+        processUpdates:{value:9.3, sub:'15 of 162 QA rows excluded as process'},
+        followUps:    {value:31,   sub:'21.7% of 143 reviewed QA rows'},
       },
       mix: [
         {cat:'Pass', count:46, share:32.2},
@@ -960,6 +987,14 @@ function defaultState(){
       ],
       readoutCaveat: 'Data note: 14 of 49 Test rows are not marked Excluded from scoring in review_action_status.',
       monthly: {months:['Jun*','Jul','Aug*'], scorable:[5,66,8], pass:[2,42,2], partial:[2,17,4], fail:[1,7,2], passRate:[40.0,63.6,25.0]},
+      /* Per-month KPI slices, joined from the autoresponder raw logs. rows = classified
+         QA rows that month; Aug* rows include 19 system/backend-update rows that are
+         neither scorable nor test/process. */
+      byMonth: {
+        'Jun*': {rows:20,  scorable:5,  passN:2,  partial:2,  fail:1, passRate:40.0, improvement:60.0, partialRate:40.0, failRate:20.0, test:7,  testPct:35.0, process:8, processPct:40.0, followUps:11, fuPct:55.0},
+        'Jul':  {rows:115, scorable:66, passN:42, partial:17, fail:7, passRate:63.6, improvement:36.4, partialRate:25.8, failRate:10.6, test:42, testPct:36.5, process:7, processPct:6.1,  followUps:20, fuPct:17.4},
+        'Aug*': {rows:27,  scorable:8,  passN:2,  partial:4,  fail:2, passRate:25.0, improvement:75.0, partialRate:50.0, failRate:25.0, test:0,  testPct:0.0,  process:0, processPct:0.0,  followUps:0,  fuPct:0.0},
+      },
     },
     kb: {
       /* reportingMonth is overwritten by the live feed; every month label in
@@ -1086,6 +1121,9 @@ let activeMomSeries = ['Total Deflection Rate %','Search Deflection Proxy %','As
 // Ranges are indices into the respective month-label arrays; null = full range.
 let momRange = {from:0, to:null};
 let ticketRange = {from:0, to:null};
+let widgetMonth = 'All';
+let emailMonth = 'All';
+let activeTicketGroups = null; // null = all groups shown
 
 function destroyChart(key){ if(charts[key]){ charts[key].destroy(); delete charts[key]; } }
 
@@ -1157,17 +1195,44 @@ function renderKpis(containerId, items){
   }).join('');
 }
 
+function renderMonthChips(containerId, months, current, onPick, note){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = `<span>Month</span>` +
+    months.map(m=>`<button class="mf-chip ${m===current?'active':''}" data-m="${m}">${m}</button>`).join('') +
+    (note ? `<span class="mf-note">${note}</span>` : '');
+  el.querySelectorAll('.mf-chip').forEach(b=>b.addEventListener('click', ()=>onPick(b.dataset.m)));
+}
+
 function renderWidgetView(){
   const w = state.widget, e = state.email;
+  renderMonthChips('widgetMonthFilter', ['All','Apr*','May','Jun','Jul','Aug*'], widgetMonth,
+    m=>{ widgetMonth=m; renderWidgetView(); }, 'Filters the KPI headers; tables and charts stay full-period.');
+  renderMonthChips('emailMonthFilter', ['All','Jun*','Jul','Aug*'], emailMonth,
+    m=>{ emailMonth=m; renderWidgetView(); }, 'Filters the KPI headers; tables and charts stay full-period.');
+  const wm = widgetMonth==='All' ? null : w.byMonth[widgetMonth];
+  const emm = emailMonth==='All' ? null : e.byMonth[emailMonth];
 
-  renderKpis('kpi-widget-headline', [
+  renderKpis('kpi-widget-headline', wm ? [
+    {label:'Total Conversations', value:String(wm.conversations), unit:'', sub:`Unique widget conversations — ${widgetMonth}`, status:'neutral'},
+    {label:'Deflection Rate', value:fmtPct(wm.deflection,1).replace('%',''), unit:'%', sub:`${wm.deflected} of ${wm.conversations} conversations with deflected flag (flag basis, not no-handoff)`, status:kpiStatus('w','deflection',wm.deflection)},
+    {label:'Handoff Rate', value:'—', unit:'', sub:'All-period only — no per-month handoff data', status:'neutral'},
+    {label:'Technical QA Pass Rate', value:wm.passRate, unit:'%', sub:`${wm.passN} passes / ${wm.scorable} scorable QA rows`, status:kpiStatus('w','qaPass',wm.passRate)},
+    {label:'Technical Improvement Rate', value:wm.improvement, unit:'%', sub:`${wm.partial} partial + ${wm.fail} fail; ${wm.sysupd} system updates excluded`, status:kpiStatus('w','improvement',wm.improvement)},
+  ] : [
     {label:'Total Conversations', value:w.headline.conversations.value, unit:'', sub:w.headline.conversations.sub, status:'neutral'},
     {label:'Deflection Rate', value:fmtPct(w.headline.deflection.value,1).replace('%',''), unit:'%', sub:w.headline.deflection.sub, status:kpiStatus('w','deflection',w.headline.deflection.value)},
     {label:'Handoff Rate', value:w.headline.handoff.value, unit:'%', sub:w.headline.handoff.sub, status:kpiStatus('w','handoff',w.headline.handoff.value)},
     {label:'Technical QA Pass Rate', value:w.headline.qaPass.value, unit:'%', sub:w.headline.qaPass.sub, status:kpiStatus('w','qaPass',w.headline.qaPass.value)},
     {label:'Technical Improvement Rate', value:w.headline.improvement.value, unit:'%', sub:w.headline.improvement.sub, status:kpiStatus('w','improvement',w.headline.improvement.value)},
   ]);
-  renderKpis('kpi-widget-quality', [
+  renderKpis('kpi-widget-quality', wm ? [
+    {label:'Partial Pass Rate', value:wm.partialRate, unit:'%', sub:`${wm.partial} useful but incomplete`, status:kpiStatus('w','partialPass',wm.partialRate)},
+    {label:'True Fail Rate', value:wm.failRate, unit:'%', sub:`${wm.fail} failed experiences`, status:kpiStatus('w','trueFail',wm.failRate)},
+    {label:'Drop-off Rate', value:'—', unit:'', sub:'All-period only — drop-off measure is not month-split', status:'neutral'},
+    {label:'Low / Failed Relevance', value:'—', unit:'', sub:'All-period only — relevance measure is not month-split', status:'neutral'},
+    {label:'KB Updates Needed', value:wm.kbUpdates, unit:'', sub:`${wm.kbPct}% of reviewed rows — ${widgetMonth}`, status:'bad'},
+  ] : [
     {label:'Partial Pass Rate', value:w.quality.partialPass.value, unit:'%', sub:w.quality.partialPass.sub, status:kpiStatus('w','partialPass',w.quality.partialPass.value)},
     {label:'True Fail Rate', value:w.quality.trueFail.value, unit:'%', sub:w.quality.trueFail.sub, status:kpiStatus('w','trueFail',w.quality.trueFail.value)},
     {label:'Drop-off Rate', value:w.quality.dropoff.value, unit:'%', sub:w.quality.dropoff.sub, status:kpiStatus('w','dropoff',w.quality.dropoff.value)},
@@ -1274,14 +1339,26 @@ function renderWidgetView(){
     ${du.length ? du.map(r=>`<tr><td>${r.group}</td><td class="num">${fmtDur(r.median)}</td><td class="num">${fmtNum(r.n)}</td></tr>`).join('') : syncPendingRow(3)}
   `;
 
-  renderKpis('kpi-email-headline', [
+  renderKpis('kpi-email-headline', emm ? [
+    {label:'Total QA Rows', value:String(emm.rows), unit:'', sub:`Classified QA rows — ${emailMonth}`, status:'neutral'},
+    {label:'Scorable Autoresponder Responses', value:String(emm.scorable), unit:'', sub:`${emm.passN} pass + ${emm.partial} partial + ${emm.fail} fail`, status:'neutral'},
+    {label:'Technical QA Pass Rate', value:emm.passRate, unit:'%', sub:`${emm.passN} passes / ${emm.scorable} scorable rows`, status:kpiStatus('e','deflection',emm.passRate)},
+    {label:'Technical Improvement Rate', value:emm.improvement, unit:'%', sub:`${emm.partial} partial + ${emm.fail} fail`, status:kpiStatus('e','improvement',emm.improvement)},
+    {label:'Ticket Autoresponder Coverage Rate', value:'—', unit:'', sub:'All-period only — coverage is not month-split', status:'neutral'},
+  ] : [
     {label:'Total QA Rows', value:e.headline.totalRows.value, unit:'', sub:e.headline.totalRows.sub, status:'neutral'},
     {label:'Scorable Autoresponder Responses', value:e.headline.scorable.value, unit:'', sub:e.headline.scorable.sub, status:'neutral'},
     {label:'Technical QA Pass Rate', value:e.headline.qaPass.value, unit:'%', sub:e.headline.qaPass.sub, status:kpiStatus('e','deflection',e.headline.qaPass.value)},
     {label:'Technical Improvement Rate', value:e.headline.improvement.value, unit:'%', sub:e.headline.improvement.sub, status:kpiStatus('e','improvement',e.headline.improvement.value)},
     {label:'Ticket Autoresponder Coverage Rate', value:(e.headline.emailCoverage.value===null?'—':e.headline.emailCoverage.value), unit:e.headline.emailCoverage.value!==null?'%':'', sub:e.headline.emailCoverage.sub, status:'neutral'},
   ]);
-  renderKpis('kpi-email-quality', [
+  renderKpis('kpi-email-quality', emm ? [
+    {label:'Partial Pass Rate', value:emm.partialRate, unit:'%', sub:`${emm.partial} of ${emm.scorable} scorable — useful but incomplete`, status:kpiStatus('e','partialPass',emm.partialRate)},
+    {label:'True Fail Rate', value:emm.failRate, unit:'%', sub:`${emm.fail} of ${emm.scorable} scorable — failed experiences`, status:kpiStatus('e','trueFail',emm.failRate)},
+    {label:'Test Traffic', value:emm.testPct, unit:'%', sub:`${emm.test} of ${emm.rows} QA rows excluded as test`, status:kpiStatus('e','testTraffic',emm.testPct)},
+    {label:'Process Updates', value:emm.processPct, unit:'%', sub:`${emm.process} of ${emm.rows} QA rows excluded as process`, status:'neutral'},
+    {label:'Captured Follow-ups', value:emm.followUps, unit:'', sub:`${emm.fuPct}% of ${emm.rows} QA rows — ${emailMonth}`, status:'neutral'},
+  ] : [
     {label:'Partial Pass Rate', value:e.quality.partialPass.value, unit:'%', sub:e.quality.partialPass.sub, status:kpiStatus('e','partialPass',e.quality.partialPass.value)},
     {label:'True Fail Rate', value:e.quality.trueFail.value, unit:'%', sub:e.quality.trueFail.sub, status:kpiStatus('e','trueFail',e.quality.trueFail.value)},
     {label:'Test Traffic', value:e.quality.testTraffic.value, unit:'%', sub:e.quality.testTraffic.sub, status:kpiStatus('e','testTraffic',e.quality.testTraffic.value)},
@@ -1498,7 +1575,27 @@ function renderKbView(){
   `;
 
   renderRangeFilter('ticketRangeFilter', k.ticketGroupMonths, ticketRange, renderTicketGroupsChart);
+  renderTicketGroupChips();
   renderTicketGroupsChart();
+}
+
+function renderTicketGroupChips(){
+  const k = state.kb;
+  const el = document.getElementById('ticketGroupFilter');
+  if(!el) return;
+  const groups = Object.keys(k.ticketGroups);
+  const allActive = activeTicketGroups===null;
+  el.innerHTML = `<span>Groups</span><button class="mf-chip ${allActive?'active':''}" data-g="__all__">All</button>` +
+    groups.map(g=>`<button class="mf-chip ${!allActive && activeTicketGroups.has(g)?'active':''}" data-g="${g}">${g}</button>`).join('');
+  el.querySelectorAll('.mf-chip').forEach(b=>b.addEventListener('click', ()=>{
+    const g = b.dataset.g;
+    if(g==='__all__'){ activeTicketGroups = null; }
+    else if(activeTicketGroups===null){ activeTicketGroups = new Set([g]); }
+    else if(activeTicketGroups.has(g)){ activeTicketGroups.delete(g); if(!activeTicketGroups.size) activeTicketGroups = null; }
+    else { activeTicketGroups.add(g); }
+    renderTicketGroupChips();
+    renderTicketGroupsChart();
+  }));
 }
 
 function renderTicketGroupsChart(){
@@ -1507,7 +1604,7 @@ function renderTicketGroupsChart(){
   destroyChart('ticketGroups');
   charts.ticketGroups = safeChart('chartTicketGroups', {
     type:'line',
-    data:{ labels:k.ticketGroupMonths.slice(clamped.from, clamped.to+1), datasets:Object.keys(k.ticketGroups).map((g,i)=>({
+    data:{ labels:k.ticketGroupMonths.slice(clamped.from, clamped.to+1), datasets:Object.keys(k.ticketGroups).filter(g=>activeTicketGroups===null||activeTicketGroups.has(g)).map((g,i)=>({
       label:g, data:k.ticketGroups[g].slice(clamped.from, clamped.to+1), borderColor:palette[i%palette.length], backgroundColor:palette[i%palette.length],
       tension:0.3, pointRadius:2, borderWidth:2, fill:false })) },
     options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:COLORS.grid}} } }
