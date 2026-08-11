@@ -375,8 +375,8 @@
   </div>
   <nav class="tabs">
     <button class="tab-btn active" data-view="overview">Overview<span class="tab-period">all periods</span></button>
-    <button class="tab-btn" data-view="widget">Widget QA<span class="tab-period">Apr 27 – Aug 7</span></button>
-    <button class="tab-btn" data-view="ticket">Ticket QA<span class="tab-period">Jul 19 – 27</span></button>
+    <button class="tab-btn" data-view="widget">Widget QA<span class="tab-period">Apr 27 – Aug 10</span></button>
+    <button class="tab-btn" data-view="ticket">Ticket Autoresponder QA<span class="tab-period">Jul 19 – 27</span></button>
     <button class="tab-btn" data-view="kb">KB Scorecard<span class="tab-period" id="kbTabPeriod">Jan – Jun</span></button>
   </nav>
   <div class="sync-block">
@@ -402,12 +402,9 @@
     <a class="jn-pill" href="#sec-w-01c">Automation</a>
     <a class="jn-pill" href="#sec-w-02">Quality &amp; risk</a>
     <a class="jn-pill" href="#sec-w-03">Partial drivers</a>
-    <a class="jn-pill" href="#sec-w-03b">By topic</a>
     <a class="jn-pill" href="#sec-w-04">Journey risk</a>
-    <a class="jn-pill" href="#sec-w-04b">Handoff necessity</a>
     <a class="jn-pill" href="#sec-w-04c">Duration</a>
     <a class="jn-pill" href="#sec-w-04d">Customer feedback</a>
-    <a class="jn-pill" href="#sec-w-07b">QA → KB pipeline</a>
     <a class="jn-pill" href="#sec-w-08">Readout</a>
   </div>
   <div class="jumpnav" id="jumpnav-ticket" style="display:none;">
@@ -429,10 +426,7 @@
     <a class="jn-pill" href="#sec-k-03">Segments</a>
     <a class="jn-pill" href="#sec-k-04">Support impact</a>
     <a class="jn-pill" href="#sec-k-05">Content &amp; search</a>
-    <a class="jn-pill" href="#sec-k-05b">Content backlog</a>
     <a class="jn-pill" href="#sec-k-06">Ticket volume</a>
-    <a class="jn-pill" href="#sec-k-07">Priorities</a>
-    <a class="jn-pill" href="#sec-k-08">Data needed</a>
   </div>
 </div>
 
@@ -447,7 +441,7 @@
     <div class="page-head" id="head-overview">
       <div class="eyebrow">Executive summary</div>
       <h2>Support signal overview</h2>
-      <p>The one-screen story across the widget, email ticket intake, and the knowledge base. Each card opens its full tab. Note: the three areas cover different reporting periods — compare within a tab, not across tabs.</p>
+      <p>The one-screen story across the widget, ticket autoresponder, and the knowledge base. Each card opens its full tab. Note: the three areas cover different reporting periods — compare within a tab, not across tabs.</p>
     </div>
 
     <section class="block" id="sec-o-01">
@@ -468,7 +462,7 @@
     <div class="page-head" id="head-widget">
       <div class="eyebrow">Executive overview</div>
       <h2>Forethought widget performance</h2>
-      <p>Conversation volume, containment, and QA across the widget. 641 classified QA rows reviewed; 46 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 7, 2026. Last refreshed Aug 10, 2026.</p>
+      <p>Conversation volume, containment, and QA across the widget. 650 classified QA rows reviewed; 46 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 11, 2026.</p>
     </div>
 
     <section class="block" id="sec-w-01">
@@ -480,7 +474,7 @@
 <section class="block" id="sec-w-01d">
       <div class="block-head">
         <h3>Monthly QA trend</h3>
-        <div class="note">QA results grouped by the month the conversation happened (QA rows joined to conversation-log timestamps). Apr* covers Apr 27–30 only and Aug* runs through Aug 7. Deflection here is the log's deflected flag; the headline deflection counts conversations without handoff, so the levels differ by definition.</div>
+        <div class="note">QA results grouped by the month the conversation happened (QA rows joined to conversation-log timestamps). Apr* covers Apr 27–30 only and Aug* runs through Aug 10. Deflection here is the log's deflected flag; the headline deflection counts conversations without handoff, so the levels differ by definition.</div>
       </div>
       <div class="takeaway">Pass rate has held near 53% since May; August's 40.8% is a partial month with only 49 reviewed rows. Deflection is steady around 90% on the flag-based measure.</div>
       <div class="card">
@@ -534,21 +528,6 @@
       </div>
     </section>
 
-    <section class="block" id="sec-w-03b">
-      <div class="block-head">
-        <h3>Performance by topic</h3>
-        <div class="note">Pass / partial / fail split by Support Type, tallied from every classified QA row.</div>
-      </div>
-      <div class="takeaway">Pass rate by topic shows where the widget wins and where it needs guardrails before wider rollout.</div>
-      <div class="grid-2b">
-        <div class="card"><table id="tblTopics"></table></div>
-        <div class="card">
-          <div class="subhead">Technical pass rate by topic</div>
-          <div class="chart-wrap"><canvas id="chartTopics"></canvas></div>
-        </div>
-      </div>
-    </section>
-
     <section class="block" id="sec-w-04">
       <div class="block-head">
         <h3>Customer journey risk</h3>
@@ -563,24 +542,6 @@
         <div class="card">
           <div class="subhead">Validated drop-off rate</div>
           <div class="chart-wrap"><canvas id="chartJourney"></canvas></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="block" id="sec-w-04b">
-      <div class="block-head">
-        <h3>Handoff necessity check</h3>
-        <div class="note">Of conversations handed to L1, how many actually needed a human — i.e. the customer replied back.</div>
-      </div>
-      <div class="takeaway">The question this section answers once sampled: did the human touch actually change the outcome, or had the widget already resolved it?</div>
-      <div class="grid-2">
-        <div class="card">
-          <div class="subhead">Sampled L1 handoffs: did the customer reply?</div>
-          <div class="chart-wrap"><canvas id="chartHandoffNecessity"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="subhead">What this means</div>
-          <table id="tblHandoffNecessity"></table>
         </div>
       </div>
     </section>
@@ -603,15 +564,6 @@
       <div class="card"><table id="tblCsat"></table></div>
     </section>
 
-    <section class="block" id="sec-w-07b">
-      <div class="block-head">
-        <h3>QA → KB pipeline</h3>
-        <div class="note">From gap flagged in QA to content shipped: the loop that proves QA drives the knowledge base.</div>
-      </div>
-      <div class="takeaway">Flagged gaps only count if they close — the closure rate is the proof the QA loop produces content, not just findings.</div>
-      <div class="card"><table id="tblPipeline"></table></div>
-    </section>
-
     <section class="block" id="sec-w-08">
       <div class="block-head"><h3>Management readout, widget</h3></div>
       <div class="readout">
@@ -627,20 +579,20 @@
 
     <div class="page-head" id="head-email">
       <div class="eyebrow">Executive overview</div>
-      <h2>Email ticket intake QA</h2>
-      <p>Email QA quality, exclusion mix, and follow-up workload. Technical rates exclude Test and Backend/process-update rows. Raw period Jul 19 – Jul 27, 2026. QA last pulled Jul 27, 2026.</p>
+      <h2>Ticket Autoresponder QA</h2>
+      <p>Ticket autoresponder QA quality, exclusion mix, and follow-up workload. Technical rates exclude Test and Backend/process-update rows. Raw period Jul 19 – Jul 27, 2026. QA last pulled Jul 27, 2026.</p>
     </div>
 
     <section class="block" id="sec-w-09">
       <div class="block-head"><h3>Headline performance</h3></div>
-      <div class="takeaway">Email pass rate is 59.7% on a larger scorable sample (77) — the earlier 92.7% was a small-sample read.</div>
+      <div class="takeaway">Ticket autoresponder pass rate is 58.2% on a larger scorable sample (79) — the earlier 92.7% was a small-sample read.</div>
       <div class="kpi-row" id="kpi-email-headline"></div>
     </section>
 
     <section class="block" id="sec-w-09b">
       <div class="block-head">
         <h3>Month-over-month QA trend</h3>
-        <div class="note">Email QA results grouped by the month the conversation happened, joined from the email raw logs. Jun* and Aug* are partial samples.</div>
+        <div class="note">Ticket autoresponder QA results grouped by the month the conversation happened, joined from the autoresponder raw logs. Jun* and Aug* are partial samples.</div>
       </div>
       <div class="takeaway">July is the first month with a real sample — 66 scorable rows at 63.6% pass. June and August are too small to read alone.</div>
       <div class="card"><table id="tblEmailMonthly"></table></div>
@@ -653,11 +605,11 @@
     </section>
 
     <section class="block" id="sec-w-11">
-      <div class="block-head"><h3>Email QA mix &amp; operational signals</h3></div>
+      <div class="block-head"><h3>Ticket autoresponder QA mix &amp; operational signals</h3></div>
       <div class="takeaway">Test grading and review-status tagging still disagree on 14 of 49 test rows.</div>
       <div class="grid-2">
         <div class="card">
-          <div class="subhead">Classification of all 77 reviewed rows</div>
+          <div class="subhead">Classification of all 143 reviewed rows</div>
           <div class="chart-wrap"><canvas id="chartEmailMix"></canvas></div>
         </div>
         <div class="card">
@@ -668,7 +620,7 @@
     </section>
 
     <section class="block" id="sec-w-12">
-      <div class="block-head"><h3>Management readout, email</h3></div>
+      <div class="block-head"><h3>Management readout, ticket autoresponder</h3></div>
       <div class="readout">
         <div class="head">Executive summary</div>
         <ul id="readoutEmail"></ul>
@@ -759,24 +711,6 @@
       </div>
     </section>
 
-    <section class="block" id="sec-k-05b">
-      <div class="block-head">
-        <h3>Content backlog signals</h3>
-        <div class="note">What customers searched and didn't find, and which drivers keep generating tickets even with a linked article. Auto-updates with the reporting month.</div>
-      </div>
-      <div class="takeaway">Failed searches and driver-linked tickets are next month's article list, straight from the data.</div>
-      <div class="two-col-cards">
-        <div class="card">
-          <div class="subhead">Top failed searches, current month</div>
-          <table id="tblFailedQueries"></table>
-        </div>
-        <div class="card">
-          <div class="subhead">Ticket drivers vs. KB coverage, current month</div>
-          <table id="tblTicketDrivers"></table>
-        </div>
-      </div>
-    </section>
-
     <section class="block" id="sec-k-06">
       <div class="block-head">
         <h3>Ticket volume by group, <span id="kbTicketRange">Jan – Jun 2026</span></h3>
@@ -788,24 +722,13 @@
       </div>
     </section>
 
-    <section class="block" id="sec-k-07">
-      <div class="block-head"><h3>Improvement priorities</h3></div>
-      <div class="card"><table id="tblPriorities"></table></div>
-    </section>
-
-    <section class="block" id="sec-k-08">
-      <div class="block-head"><h3>Remaining data needed</h3><div class="note">Gaps between what the scorecard proxies today and a fully defensible impact story.</div></div>
-      <div class="takeaway">These gaps separate directional proxies from a defensible ROI story.</div>
-      <div class="card"><table id="tblDataNeeded"></table></div>
-    </section>
-
   </div>
 
 </main>
 
 <footer>
   <span>Static snapshot, figures reflect the source sheets at time of export.</span>
-  <span>Widget/QA period: Apr 27 – Aug 7, 2026 · KB period: <span id="kbFooterRange">Jan – Jun 2026</span></span>
+  <span>Widget/QA period: Apr 27 – Aug 10, 2026 · KB period: <span id="kbFooterRange">Jan – Jun 2026</span></span>
 </footer>
 
 <script>
@@ -927,18 +850,18 @@ function defaultState(){
   return {
     widget: {
       headline: {
-        conversations: {value:'588', sub:'Unique widget conversations'},
-        deflection:    {value:83.7,  sub:'492 conversations without handoff'},
-        handoff:       {value:16.3,  sub:'96 conversations handed off'},
-        qaPass:        {value:53.8,  sub:'320 passes / 595 scorable QA rows'},
-        improvement:   {value:46.2,  sub:'212 partial + 63 fail; 46 system updates excluded'},
+        conversations: {value:'595', sub:'Unique widget conversations'},
+        deflection:    {value:83.5,  sub:'497 conversations without handoff'},
+        handoff:       {value:16.5,  sub:'98 conversations handed off'},
+        qaPass:        {value:53.3,  sub:'322 passes / 604 scorable QA rows'},
+        improvement:   {value:46.7,  sub:'219 partial + 63 fail; 46 system updates excluded'},
       },
       quality: {
-        partialPass:  {value:35.6, sub:'212 useful but incomplete'},
-        trueFail:     {value:10.6, sub:'63 failed experiences'},
-        dropoff:      {value:28.9, sub:'170 conversations'},
-        lowRelevance: {value:19.7, sub:'108 of 549 rated'},
-        kbUpdates:    {value:114,  sub:'17.8% of QA rows'},
+        partialPass:  {value:36.3, sub:'219 useful but incomplete'},
+        trueFail:     {value:10.4, sub:'63 failed experiences'},
+        dropoff:      {value:28.9, sub:'172 conversations'},
+        lowRelevance: {value:20.6, sub:'115 of 559 rated'},
+        kbUpdates:    {value:120,  sub:'18.5% of QA rows'},
       },
       drivers: [
         {cat:'KB/content gap', count:66, share:45.5, action:'Create or tighten KB and documentation coverage.'},
@@ -947,18 +870,18 @@ function defaultState(){
         {cat:'Uncategorized / review', count:1, share:0.7, action:'Review the QA note and assign the best category.'},
       ],
       journey: [
-        {signal:'Drop-off conversations', count:170, rate:28.9, interp:'Users leave before a clear resolution signal.'},
-        {signal:'No follow-up', count:103, rate:60.6, interp:'Largest drop-off type; review answer closure and CTA.'},
-        {signal:'Incomplete handoff', count:28, rate:16.5, interp:'Tighten required ticket-intake prompts and fields.'},
-        {signal:'Relevant-answer drop-offs', count:102, rate:60.0, interp:'May indicate CTA or resolution-confirmation ambiguity.'},
-        {signal:'Likely true drop-offs', count:139, rate:81.8, interp:'QA validation indicates the drop-off signal is mostly valid.'},
+        {signal:'Drop-off conversations', count:172, rate:28.9, interp:'Users leave before a clear resolution signal.'},
+        {signal:'No follow-up', count:103, rate:59.9, interp:'Largest drop-off type; review answer closure and CTA.'},
+        {signal:'Incomplete handoff', count:28, rate:16.3, interp:'Tighten required ticket-intake prompts and fields.'},
+        {signal:'Relevant-answer drop-offs', count:102, rate:59.3, interp:'May indicate CTA or resolution-confirmation ambiguity.'},
+        {signal:'Likely true drop-offs', count:139, rate:80.8, interp:'QA validation indicates the drop-off signal is mostly valid.'},
       ],
       /* Feed-computed sections: these start empty and populate on the first
          successful live sync (the feed tallies them from the full QA sheet,
          tracker, and conversation log, which are too large to snapshot here). */
       topics: [],
       durations: [],
-      kbPipeline: {flagged:114, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
+      kbPipeline: {flagged:120, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
       /* Program impact — populated ONLY from the widget sheet. Add these
          labels to the sheet (label cell, value one row below, sub-text two
          rows below, same pattern as the headline KPIs) and the feed picks
@@ -996,44 +919,44 @@ function defaultState(){
         note:'Pending: add the L1 handoff-reply sample (handed-off conversations and whether the customer replied) to the widget sheet, and the feed will populate this section.',
       },
       readout: [
-        'Performance: <strong>83.7% deflection</strong>, but <strong>46.2%</strong> of graded responses still need improvement.',
+        'Performance: <strong>83.5% deflection</strong>, but <strong>46.7%</strong> of graded responses still need improvement.',
         'Partial-pass priorities: 66 KB/content (45.5%), 54 technical precision (37.2%), and 24 billing/account (16.6%).',
-        'Customer journey: 170 drop-offs (28.9%), with 103 showing no follow-up and 28 ending during incomplete handoff.',
+        'Customer journey: 172 drop-offs (28.9%), with 103 showing no follow-up and 28 ending during incomplete handoff.',
       ],
-      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through August 7, 2026. Open QA ask: split L1 replies into "confirmed the same answer" vs. "had to change the response" — not yet sampled.',
+      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through August 10, 2026. Open QA ask: split L1 replies into "confirmed the same answer" vs. "had to change the response" — not yet sampled.',
     },
     email: {
       headline: {
-        totalRows: {value:'159', sub:'141 of 159 QA rows classified'},
-        scorable:  {value:'77', sub:'46 pass + 22 partial + 9 fail'},
-        qaPass:    {value:59.7, sub:'46 passes / 77 scorable rows'},
-        improvement: {value:40.3, sub:'22 partial + 9 fail'},
-        emailCoverage: {value:null, sub:'From email sheet — add the "Email Coverage Rate" label'},
+        totalRows: {value:'162', sub:'143 of 162 QA rows classified'},
+        scorable:  {value:'79', sub:'46 pass + 23 partial + 10 fail'},
+        qaPass:    {value:58.2, sub:'46 passes / 79 scorable rows'},
+        improvement: {value:41.8, sub:'23 partial + 10 fail'},
+        emailCoverage: {value:null, sub:'From the widget sheet — add the "Ticket Autoresponder Coverage Rate" label'},
       },
       quality: {
-        partialPass:  {value:28.6, sub:'22 useful but incomplete'},
-        trueFail:     {value:11.7, sub:'9 failed experiences'},
-        testTraffic:  {value:30.8, sub:'49 test rows excluded'},
-        processUpdates:{value:9.4, sub:'15 process rows excluded'},
-        followUps:    {value:31,   sub:'22.0% of reviewed QA rows'},
+        partialPass:  {value:29.1, sub:'23 useful but incomplete'},
+        trueFail:     {value:12.7, sub:'10 failed experiences'},
+        testTraffic:  {value:30.2, sub:'49 test rows excluded'},
+        processUpdates:{value:9.3, sub:'15 process rows excluded'},
+        followUps:    {value:31,   sub:'21.7% of reviewed QA rows'},
       },
       mix: [
-        {cat:'Pass', count:46, share:32.6},
-        {cat:'Partial pass', count:22, share:15.6},
-        {cat:'Fail', count:9, share:6.4},
-        {cat:'Test + process exclusions', count:64, share:45.4},
+        {cat:'Pass', count:46, share:32.2},
+        {cat:'Partial pass', count:23, share:16.1},
+        {cat:'Fail', count:10, share:7.0},
+        {cat:'Test + process exclusions', count:64, share:44.8},
       ],
       signals: [
-        {signal:'Scorable QA rows', count:77, rate:48.4, interp:'Technical pass, partial, and fail denominator.'},
-        {signal:'Captured follow-ups', count:31, rate:22.0, interp:'Improvement work or process follow-up logged.'},
-        {signal:'Reviewed / no action', count:77, rate:54.6, interp:'No immediate QA or workflow change recorded.'},
-        {signal:'Workflow-tagged exclusions', count:35, rate:24.8, interp:'Rows explicitly excluded by review_action_status.'},
+        {signal:'Scorable QA rows', count:79, rate:48.8, interp:'Technical pass, partial, and fail denominator.'},
+        {signal:'Captured follow-ups', count:31, rate:21.7, interp:'Improvement work or process follow-up logged.'},
+        {signal:'Reviewed / no action', count:78, rate:54.5, interp:'No immediate QA or workflow change recorded.'},
+        {signal:'Workflow-tagged exclusions', count:35, rate:24.5, interp:'Rows explicitly excluded by review_action_status.'},
         {signal:'Test rows missing exclusion status', count:14, rate:28.6, interp:'Test grading and review-status tagging are not fully aligned.'},
       ],
       readout: [
-        'Coverage: 141 of 159 email QA rows are reviewed; 77 are technically scorable after exclusions.',
-        'Quality: <strong>59.7% technical pass rate</strong>, with 22 partial passes and 9 fails.',
-        'Exclusions: 64 test or process rows represent 45.4% of reviewed QA rows; 31 follow-ups are captured.',
+        'Coverage: 143 of 162 ticket autoresponder QA rows are reviewed; 79 are technically scorable after exclusions.',
+        'Quality: <strong>58.2% technical pass rate</strong>, with 23 partial passes and 10 fails.',
+        'Exclusions: 64 test or process rows represent 44.8% of reviewed QA rows; 31 follow-ups are captured.',
       ],
       readoutCaveat: 'Data note: 14 of 49 Test rows are not marked Excluded from scoring in review_action_status.',
       monthly: {months:['Jun*','Jul','Aug*'], scorable:[5,66,8], pass:[2,42,2], partial:[2,17,4], fail:[1,7,2], passRate:[40.0,63.6,25.0]},
@@ -1191,8 +1114,8 @@ const KPI_DEFS = {
   'Drop-off Rate':'Conversations that ended without a clear resolution signal.',
   'Low / Failed Relevance':'Answers rated as not clearly matching the customer issue.',
   'KB Updates Needed':'QA rows explicitly flagged as needing knowledge-base work.',
-  'Total QA Rows':'All email QA rows classified in the sample period.',
-  'Scorable Email Responses':'Rows remaining after excluding test and process-update rows.',
+  'Total QA Rows':'All ticket autoresponder QA rows classified in the sample period.',
+  'Scorable Autoresponder Responses':'Rows remaining after excluding test and process-update rows.',
   'Review Complete':'Share of the QA sample fully reviewed.',
   'Test Traffic':'Internal test rows, excluded from technical scoring.',
   'Process Updates':'Backend / process-update rows, excluded from technical scoring.',
@@ -1205,11 +1128,11 @@ const KPI_DEFS = {
   'Widget Deflection':'Share of widget conversations that ended without a handoff to a human.',
   'Widget Needs Improvement':'Partial passes plus fails as a share of scorable widget QA rows.',
   'KB Success Rate':'Total deflections as a share of tickets created plus deflections, from the workbook monthly table.',
-  'Email QA Pass':'Passes divided by scorable email QA rows, after test/process exclusions.',
+  'Ticket Autoresponder QA Pass':'Passes divided by scorable ticket autoresponder QA rows, after test/process exclusions.',
   'KB Total Deflection':'Confirmed plus assumed deflections per end-user session.',
   'KB Updates Flagged':'Widget QA rows explicitly flagged as needing knowledge-base work.',
   'Recontact After Deflection':'Share of deflected conversations where the same customer opened a ticket within 7 days. Reads "Recontact Rate After Deflection" from the widget sheet.',
-  'Email Coverage Rate':'Share of email tickets that received a Forethought auto-response. Reads "Email Coverage Rate" from the email section of the widget sheet.',
+  'Ticket Autoresponder Coverage Rate':'Share of tickets that received a Forethought auto-response. Reads the coverage-rate label from the autoresponder section of the widget sheet.',
   'Hours Returned':'Automation touches removed × the agreed minutes-per-touch assumption ÷ 60. All inputs from the Automation tab.',
   'Reopen After Auto-Close':'Share of auto-closed tickets the customer reopened — the guardrail that proves auto-close is safe.',
   'FT Coverage Today':'Share of eligible tickets that received a Forethought first response. Reads the "FT Coverage Rate" label from the widget sheet.',
@@ -1279,21 +1202,6 @@ function renderWidgetView(){
     options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{max:100, grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, y:{grid:{display:false}} } }
   });
 
-  destroyChart('handoffNecessity');
-  const hn = w.handoffNecessity;
-  if(hn.rows.length){
-    charts.handoffNecessity = safeChart('chartHandoffNecessity', {
-      type:'doughnut',
-      data:{ labels:hn.rows.map(r=>r.outcome), datasets:[{data:hn.rows.map(r=>r.count), backgroundColor:[COLORS.red, COLORS.muted], borderColor:COLORS.ring, borderWidth:2}] },
-      options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, padding:14, color:COLORS.text}}}, cutout:'62%' }
-    });
-  }
-  document.getElementById('tblHandoffNecessity').innerHTML = `
-    <tr><th>Outcome</th><th class="num">Count</th><th class="num">Share</th><th>What it means</th></tr>
-    ${hn.rows.length ? hn.rows.map(r=>`<tr><td>${r.outcome}</td><td class="num">${fmtNum(r.count)} / ${fmtNum(hn.sampleSize)}</td><td class="num">${fmtPct(r.share)}</td><td style="color:var(--muted); font-size:12px;">${r.interp}</td></tr>`).join('') : ''}
-    <tr><td colspan="4" style="color:var(--muted-dim); font-size:11.5px; font-style:italic; padding-top:12px;">${hn.note}</td></tr>
-  `;
-
   document.getElementById('readoutWidget').innerHTML = w.readout.map(t=>`<li>${t}</li>`).join('') + `<li class="caveat">${w.readoutCaveat}</li>`;
 
   // ---- Program impact & coverage (sheet-fed; em-dashes until the metrics exist there) ----
@@ -1359,23 +1267,6 @@ function renderWidgetView(){
     ` : syncPendingRow(3)}
   `;
 
-  // ---- Performance by topic (feed-computed) ----
-  const tp = w.topics || [];
-  destroyChart('topics');
-  if(!tp.length){
-    document.getElementById('tblTopics').innerHTML = `<tr><th>Topic</th><th class="num">Scorable</th><th class="num">Pass</th><th class="num">Partial</th><th class="num">Fail</th><th class="num">Pass rate</th></tr>` + syncPendingRow(6);
-  } else {
-    document.getElementById('tblTopics').innerHTML = `
-      <tr><th>Topic</th><th class="num">Scorable</th><th class="num">Pass</th><th class="num">Partial</th><th class="num">Fail</th><th class="num">Pass rate</th></tr>
-      ${tp.map(t=>`<tr><td>${t.topic}</td><td class="num">${fmtNum(t.scorable)}</td><td class="num">${fmtNum(t.pass)}</td><td class="num">${fmtNum(t.partial)}</td><td class="num">${fmtNum(t.fail)}</td><td class="num">${fmtPct(t.passRate)}</td></tr>`).join('')}
-    `;
-    charts.topics = safeChart('chartTopics', {
-      type:'bar',
-      data:{ labels:tp.map(t=>t.topic), datasets:[{data:tp.map(t=>t.passRate), backgroundColor:palette, borderRadius:4, maxBarThickness:44}] },
-      options:{ plugins:{legend:{display:false}}, scales:{ y:{max:100, grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} } }
-    });
-  }
-
   // ---- Conversation duration (feed-computed) ----
   const du = w.durations || [];
   document.getElementById('tblDurations').innerHTML = `
@@ -1383,25 +1274,12 @@ function renderWidgetView(){
     ${du.length ? du.map(r=>`<tr><td>${r.group}</td><td class="num">${fmtDur(r.median)}</td><td class="num">${fmtNum(r.n)}</td></tr>`).join('') : syncPendingRow(3)}
   `;
 
-  // ---- QA -> KB pipeline (flagged from snapshot; statuses feed-computed) ----
-  const pl = w.kbPipeline || {};
-  const closable = (pl.completed!==null && pl.actions!==null && pl.actions>0);
-  document.getElementById('tblPipeline').innerHTML = `
-    <tr><th>Stage</th><th class="num">Count</th><th>What it means</th></tr>
-    <tr><td>QA rows flagged "KB update needed"</td><td class="num">${fmtNum(pl.flagged)}</td><td style="color:var(--muted); font-size:12px;">Gaps identified during QA review.</td></tr>
-    <tr><td>Tracker actions logged</td><td class="num">${fmtNum(pl.actions)}</td><td style="color:var(--muted); font-size:12px;">Flagged gaps converted into a tracked content action.</td></tr>
-    <tr><td>Proposed</td><td class="num">${fmtNum(pl.proposed)}</td><td style="color:var(--muted); font-size:12px;">Waiting on drafting or approval.</td></tr>
-    <tr><td>In progress</td><td class="num">${fmtNum(pl.inProgress)}</td><td style="color:var(--muted); font-size:12px;">Being written or in review.</td></tr>
-    <tr><td>Completed</td><td class="num">${fmtNum(pl.completed)}</td><td style="color:var(--muted); font-size:12px;">Shipped to the knowledge base.</td></tr>
-    <tr><td><strong>Closure rate</strong></td><td class="num">${closable ? fmtPct(pl.completed/pl.actions*100) : '—'}</td><td style="color:var(--muted); font-size:12px;">Completed ÷ tracker actions. ${pl.actions===null ? 'Populates on first live sync.' : ''}</td></tr>
-  `;
-
   renderKpis('kpi-email-headline', [
     {label:'Total QA Rows', value:e.headline.totalRows.value, unit:'', sub:e.headline.totalRows.sub, status:'neutral'},
-    {label:'Scorable Email Responses', value:e.headline.scorable.value, unit:'', sub:e.headline.scorable.sub, status:'neutral'},
+    {label:'Scorable Autoresponder Responses', value:e.headline.scorable.value, unit:'', sub:e.headline.scorable.sub, status:'neutral'},
     {label:'Technical QA Pass Rate', value:e.headline.qaPass.value, unit:'%', sub:e.headline.qaPass.sub, status:kpiStatus('e','deflection',e.headline.qaPass.value)},
     {label:'Technical Improvement Rate', value:e.headline.improvement.value, unit:'%', sub:e.headline.improvement.sub, status:kpiStatus('e','improvement',e.headline.improvement.value)},
-    {label:'Email Coverage Rate', value:(e.headline.emailCoverage.value===null?'—':e.headline.emailCoverage.value), unit:e.headline.emailCoverage.value!==null?'%':'', sub:e.headline.emailCoverage.sub, status:'neutral'},
+    {label:'Ticket Autoresponder Coverage Rate', value:(e.headline.emailCoverage.value===null?'—':e.headline.emailCoverage.value), unit:e.headline.emailCoverage.value!==null?'%':'', sub:e.headline.emailCoverage.sub, status:'neutral'},
   ]);
   renderKpis('kpi-email-quality', [
     {label:'Partial Pass Rate', value:e.quality.partialPass.value, unit:'%', sub:e.quality.partialPass.sub, status:kpiStatus('e','partialPass',e.quality.partialPass.value)},
@@ -1619,29 +1497,8 @@ function renderKbView(){
     ${ks.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(ks.tickets[i])}</td><td class="num">${fmtNum(ks.deflections[i])}</td><td class="num">${fmtPct(ks.rate[i])}</td></tr>`).join('')}
   `;
 
-  // ---- Content backlog signals ----
-  const fq = k.topFailedQueries || [];
-  document.getElementById('tblFailedQueries').innerHTML = `
-    <tr><th>Search query</th><th class="num">No-result searches</th></tr>
-    ${fq.length ? fq.map(q=>`<tr><td>${q.query}</td><td class="num">${fmtNum(q.count)}</td></tr>`).join('') : `<tr><td colspan="2" style="color:var(--muted-dim); font-style:italic;">No failed searches recorded for the reporting month.</td></tr>`}
-  `;
-  const td = k.ticketDrivers || [];
-  document.getElementById('tblTicketDrivers').innerHTML = `
-    <tr><th>Issue origin</th><th>Linked article</th><th class="num">Tickets</th></tr>
-    ${td.length ? td.map(r=>`<tr><td>${r.origin || '—'}</td><td style="color:var(--muted); font-size:12px;">${r.article}</td><td class="num">${fmtNum(r.tickets)}</td></tr>`).join('') : `<tr><td colspan="3" style="color:var(--muted-dim); font-style:italic;">No driver-linked tickets recorded for the reporting month.</td></tr>`}
-  `;
-
   renderRangeFilter('ticketRangeFilter', k.ticketGroupMonths, ticketRange, renderTicketGroupsChart);
   renderTicketGroupsChart();
-
-  document.getElementById('tblPriorities').innerHTML = `
-    <tr><th></th><th>What to improve</th><th>Why it matters</th><th>Suggested KPI / view</th><th>Owner</th><th>Status</th></tr>
-    ${k.priorities.map(p=>`<tr><td><span class="priority-num">${p.n}</span></td><td>${p.what}</td><td style="color:var(--muted); font-size:12px;">${p.why}</td><td style="color:var(--muted); font-size:12px;">${p.kpi}</td><td style="color:var(--muted); font-size:12px;">${p.owner}</td><td><span class="tag ${p.status==='Ready'?'up':(p.status==='Watch'?'down':'flat')}">${p.status}</span></td></tr>`).join('')}
-  `;
-  document.getElementById('tblDataNeeded').innerHTML = `
-    <tr><th>Story area</th><th>Missing data</th><th>Why it matters</th></tr>
-    ${k.dataNeeded.map(d=>`<tr><td>${d.area}</td><td style="color:var(--muted); font-size:12px;">${d.missing}</td><td style="color:var(--muted); font-size:12px;">${d.why}</td></tr>`).join('')}
-  `;
 }
 
 function renderTicketGroupsChart(){
@@ -1667,7 +1524,7 @@ function renderOverview(){
     {label:'FT Coverage Today', value:(w.impact.coverageNowPct===null?'—':w.impact.coverageNowPct), unit:w.impact.coverageNowPct!==null?'%':'', sub:'Share of eligible tickets FT touches', status:'neutral'},
     {label:'Widget Deflection', value:w.headline.deflection.value, unit:'%', sub:w.headline.deflection.sub, status:'good'},
     {label:'Widget Needs Improvement', value:w.headline.improvement.value, unit:'%', sub:w.headline.improvement.sub, status:'bad'},
-    {label:'Email QA Pass', value:e.headline.qaPass.value, unit:'%', sub:e.headline.qaPass.sub, status:'good'},
+    {label:'Ticket Autoresponder QA Pass', value:e.headline.qaPass.value, unit:'%', sub:e.headline.qaPass.sub, status:'good'},
     {label:'KB Success Rate', value:k.kbSuccess.rate[k.kbSuccess.rate.length-1], unit:'%', sub:'Deflections ÷ (tickets + deflections), current month', status:'good'},
     {label:'Hours Returned', value:(oHours===null?'—':fmtNum(oHours)), unit:'', sub:'Automation touches removed × minutes per touch', status:'neutral'},
     {label:'Reopen After Auto-Close', value:(oAu.reopenRateAfterClose===null?'—':oAu.reopenRateAfterClose), unit:oAu.reopenRateAfterClose!==null?'%':'', sub:'Guardrail — low means the automation is safe', status:'neutral'},
