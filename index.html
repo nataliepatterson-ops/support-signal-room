@@ -478,7 +478,7 @@
     <div class="page-head" id="head-widget">
       <div class="eyebrow">Executive overview</div>
       <h2>Forethought widget performance</h2>
-      <p>Conversation volume, containment, and QA across the widget. 650 classified QA rows reviewed; 46 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 11, 2026.</p>
+      <p>Conversation volume, containment, and QA across the widget. 617 classified QA rows reviewed; 45 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 12, 2026.</p>
     </div>
 
     <div class="month-filter" id="widgetMonthFilter"></div>
@@ -492,9 +492,9 @@
 <section class="block" id="sec-w-01d">
       <div class="block-head">
         <h3>Monthly QA trend</h3>
-        <div class="note">QA results grouped by the month the conversation happened, counted per unique conversation — when a conversation was reviewed more than once (64 in July), the latest review is used. Apr* covers Apr 27–30 only and Aug* runs through Aug 10. Deflection uses the same no-handoff basis as the headline. July's reviewed count (237) exceeds its logged conversations (220) because 37 QA'd conversations are missing from the conversation-log export.</div>
+        <div class="note">QA rows grouped by the month the conversation happened, joined to the conversation log's timestamps. Reviewed counts rows graded Pass, Partial pass, Fail, or System Update; pass rate is Pass ÷ (Pass + Partial + Fail). Apr* covers Apr 27–30 only and Aug* runs through Aug 10. Deflection is the share of logged conversations with the log's deflected flag — this flag basis runs higher than the headline no-handoff deflection.</div>
       </div>
-      <div class="takeaway">Pass rate has held at 53–55% since May; August's 40.8% is a partial month with only 49 reviewed conversations. Deflection has held in the low-to-mid 80s since May on the headline no-handoff basis.</div>
+      <div class="takeaway">Pass rate has held in the low-to-mid 50s since May, with July at 58.3%; August's 40.8% is a partial month with only 49 reviewed rows. Flag-based deflection has held around 90% since May.</div>
       <div class="card">
         <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
       </div>
@@ -928,28 +928,28 @@ function defaultState(){
         conversations: {value:'595', sub:'Unique widget conversations'},
         deflection:    {value:83.5,  sub:'497 conversations without handoff'},
         handoff:       {value:16.5,  sub:'98 conversations handed off'},
-        qaPass:        {value:53.3,  sub:'322 passes / 604 scorable QA rows'},
-        improvement:   {value:46.7,  sub:'219 partial + 63 fail; 46 system updates excluded'},
+        qaPass:        {value:56.3,  sub:'322 passes / 572 scorable QA rows'},
+        improvement:   {value:43.7,  sub:'195 partial + 55 fail; 45 system updates excluded'},
       },
       quality: {
-        partialPass:  {value:36.3, sub:'219 useful but incomplete'},
-        trueFail:     {value:10.4, sub:'63 failed experiences'},
+        partialPass:  {value:34.1, sub:'195 useful but incomplete'},
+        trueFail:     {value:9.6, sub:'55 failed experiences'},
         dropoff:      {value:28.9, sub:'172 conversations'},
         lowRelevance: {value:20.6, sub:'115 of 559 rated'},
-        kbUpdates:    {value:120,  sub:'18.5% of QA rows'},
+        kbUpdates:    {value:89,  sub:'14.4% of QA rows'},
       },
       drivers: [
-        {cat:'KB/content gap', count:66, share:45.5, action:'Create or tighten KB and documentation coverage.'},
-        {cat:'Technical precision gap', count:54, share:37.2, action:'Improve technical specificity, scoping, and troubleshooting steps.'},
-        {cat:'Billing/account guidance gap', count:24, share:16.6, action:'Clarify process ownership, limitations, and escalation paths.'},
-        {cat:'Uncategorized / review', count:1, share:0.7, action:'Review the QA note and assign the best category.'},
+        {cat:'KB/content gap', count:43, share:35.5, action:'Create or tighten KB and documentation coverage.'},
+        {cat:'Technical precision gap', count:53, share:43.8, action:'Improve technical specificity, scoping, and troubleshooting steps.'},
+        {cat:'Billing/account guidance gap', count:24, share:19.8, action:'Clarify process ownership, limitations, and escalation paths.'},
+        {cat:'Uncategorized / review', count:1, share:0.8, action:'Review the QA note and assign the best category.'},
       ],
       journey: [
         {signal:'Drop-off conversations', count:172, rate:28.9, interp:'Users leave before a clear resolution signal.'},
-        {signal:'No follow-up', count:103, rate:59.9, interp:'Largest drop-off type; review answer closure and CTA.'},
-        {signal:'Incomplete handoff', count:28, rate:16.3, interp:'Tighten required ticket-intake prompts and fields.'},
+        {signal:'No follow-up', count:94, rate:54.7, interp:'Largest drop-off type; review answer closure and CTA.'},
+        {signal:'Incomplete handoff', count:27, rate:15.7, interp:'Tighten required ticket-intake prompts and fields.'},
         {signal:'Relevant-answer drop-offs', count:102, rate:59.3, interp:'May indicate CTA or resolution-confirmation ambiguity.'},
-        {signal:'Likely true drop-offs', count:139, rate:80.8, interp:'QA validation indicates the drop-off signal is mostly valid.'},
+        {signal:'Likely true drop-offs', count:128, rate:74.4, interp:'QA validation indicates the drop-off signal is mostly valid.'},
       ],
       /* Feed-computed sections: these start empty and populate on the first
          successful live sync (the feed tallies them from the full QA sheet,
@@ -1036,7 +1036,7 @@ function defaultState(){
       /* KB Feedback Backlog tab, Aug 11, 2026. Closure rate excludes the
          Optional item. */
       kbBacklog: {proposed:32, inProgress:3, completed:11, optional:1, total:47, closureRate:23.9},
-      kbPipeline: {flagged:120, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
+      kbPipeline: {flagged:89, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
       /* Program impact — populated ONLY from the widget sheet. Add these
          labels to the sheet (label cell, value one row below, sub-text two
          rows below, same pattern as the headline KPIs) and the feed picks
@@ -1064,7 +1064,7 @@ function defaultState(){
       csat: {csatAvg:null, csatCount:null, relevanceAvg:null, relevanceCount:null},
       /* Monthly QA trend — populates from a "Widget QA Monthly" tab
          (Month | Reviewed | Pass Rate | Deflection Rate). */
-      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,237,49], passRate:[90.0,53.0,53.7,54.7,40.8], deflectionRate:[65.0,85.5,83.2,81.8,90.8]},
+      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,235,49], passRate:[90.0,53.0,53.7,58.3,40.8], deflectionRate:[85.0,90.6,90.7,91.5,88.5]},
       /* Per-month KPI slices on a unique-conversation basis: 64 conversations
          (all July) were reviewed twice in the QA sheet — the latest review wins.
          37 QA'd July conversations are absent from the conversation log (export
@@ -1090,9 +1090,9 @@ function defaultState(){
         note:'Pending: add the L1 handoff-reply sample (handed-off conversations and whether the customer replied) to the widget sheet, and the feed will populate this section.',
       },
       readout: [
-        'Performance: <strong>83.5% deflection</strong>, but <strong>46.7%</strong> of graded responses still need improvement.',
-        'Partial-pass priorities: 66 KB/content (45.5%), 54 technical precision (37.2%), and 24 billing/account (16.6%).',
-        'Customer journey: 172 drop-offs (28.9%), with 103 showing no follow-up and 28 ending during incomplete handoff.',
+        'Performance: <strong>83.5% deflection</strong>, but <strong>43.7%</strong> of graded responses still need improvement.',
+        'Partial-pass priorities: 43 KB/content (35.5%), 53 technical precision (43.8%), and 24 billing/account (19.8%).',
+        'Customer journey: 172 drop-offs (28.9%), with 94 showing no follow-up and 27 ending during incomplete handoff.',
       ],
       readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through August 10, 2026. Open QA ask: split L1 replies into "confirmed the same answer" vs. "had to change the response" — not yet sampled.',
     },
