@@ -388,7 +388,7 @@
     <button class="tab-btn active" data-view="overview">Overview<span class="tab-period">all periods</span></button>
     <button class="tab-btn" data-view="widget">Widget QA<span class="tab-period">Apr 27 – Aug 10</span></button>
     <button class="tab-btn" data-view="ticket">Ticket Autoresponder QA<span class="tab-period">Jul 19 – 27</span></button>
-    <button class="tab-btn" data-view="kb">KB Scorecard<span class="tab-period" id="kbTabPeriod">Jan – Jun</span></button>
+    <button class="tab-btn" data-view="kb">KB Scorecard<span class="tab-period" id="kbTabPeriod">Jan – Jul</span></button>
   </nav>
   <div class="sync-block">
     <button id="themeBtn" class="sync-btn" style="border-color:var(--border); padding:8px 11px;" title="Toggle light / dark theme">☀</button>
@@ -478,7 +478,7 @@
     <div class="page-head" id="head-widget">
       <div class="eyebrow">Executive overview</div>
       <h2>Forethought widget performance</h2>
-      <p>Conversation volume, containment, and QA across the widget. 617 classified QA rows reviewed; 45 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 12, 2026.</p>
+      <p>Conversation volume, containment, and QA across the widget. 586 classified QA rows reviewed; 45 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 13, 2026.</p>
     </div>
 
     <div class="month-filter" id="widgetMonthFilter"></div>
@@ -494,7 +494,7 @@
         <h3>Monthly QA trend</h3>
         <div class="note">QA rows grouped by the month the conversation happened, joined to the conversation log's timestamps. Reviewed counts rows graded Pass, Partial pass, Fail, or System Update; pass rate is Pass ÷ (Pass + Partial + Fail). Apr* covers Apr 27–30 only and Aug* runs through Aug 10. Deflection is the share of logged conversations with the log's deflected flag — this flag basis runs higher than the headline no-handoff deflection.</div>
       </div>
-      <div class="takeaway">Pass rate has held in the low-to-mid 50s since May, with July at 58.3%; August's 40.8% is a partial month with only 49 reviewed rows. Flag-based deflection has held around 90% since May.</div>
+      <div class="takeaway">Pass rate has held in the low-to-mid 50s since May, with July at 57.8%; August's 40.8% is a partial month with only 49 reviewed rows. Flag-based deflection has held around 90% since May.</div>
       <div class="card">
         <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
       </div>
@@ -709,18 +709,18 @@
     <div class="page-head" id="head-kb">
       <div class="eyebrow">Executive overview</div>
       <h2>Knowledge Base Scorecard</h2>
-      <p id="kbPageDesc">Self-service deflection, search behavior, and content health. Reporting month: June 2026 vs. May 2026. Workbook last refreshed for the June reporting period.</p>
+      <p id="kbPageDesc">Self-service deflection, search behavior, and content health. Reporting month: July 2026 vs. June 2026. Workbook last refreshed for the July reporting period.</p>
     </div>
 
     <section class="block" id="sec-k-01">
-      <div class="block-head"><h3>Headline metrics, <span id="kbHeadMonths">June vs. May</span></h3></div>
-      <div class="takeaway">Official June deflections improved (confirmed doubled), but every search proxy fell hard — and June's tickets-after-search methodology changed, so verify before reacting.</div>
+      <div class="block-head"><h3>Headline metrics, <span id="kbHeadMonths">July vs. June</span></h3></div>
+      <div class="takeaway">July's deflection mix shifted: confirmed fell 29% while assumed rose 39%, lifting total deflection to 19.8% — validate the mix before reading it as a win. Search proxies fell again.</div>
       <div class="kpi-row" id="kpi-kb-headline"></div>
     </section>
 
     <section class="block" id="sec-k-01b">
       <div class="block-head">
-        <h3>Self-service flow, <span id="kbFunnelMonth">June</span></h3>
+        <h3>Self-service flow, <span id="kbFunnelMonth">July</span></h3>
         <div class="note">Stage volumes for the reporting month. Stages come from different trackers and aren't strict subsets — read as flow shape, not a conversion chain.</div>
       </div>
       <div class="takeaway">The funnel shows where self-service leaks — each stage's gap is a fix candidate.</div>
@@ -729,10 +729,10 @@
 
     <section class="block" id="sec-k-02">
       <div class="block-head">
-        <h3>Month-over-month trend, <span id="kbTrendRange">Jan – Jun 2026</span></h3>
-        <div class="note" id="kbTrendNote">June is the current reporting month and May is the comparison month.</div>
+        <h3>Month-over-month trend, <span id="kbTrendRange">Jan – Jul 2026</span></h3>
+        <div class="note" id="kbTrendNote">July is the current reporting month and June is the comparison month.</div>
       </div>
-      <div class="takeaway">Sessions and searches are declining together — watch whether deflection holds as volume falls.</div>
+      <div class="takeaway">Sessions recovered 9% in July while searches kept falling — deflection held up, findability didn't.</div>
       <div class="card">
         <div class="range-filter" id="momRangeFilter" style="margin-bottom:14px;"></div>
         <div class="chart-wrap tall"><canvas id="chartMomTrend"></canvas></div>
@@ -745,7 +745,7 @@
         <h3>KB success vs. ticket volume</h3>
         <div class="note">Total deflections as a share of (tickets created + deflections). Survives volume swings in a way raw deflection counts don't.</div>
       </div>
-      <div class="takeaway">Deflections held up while ticket volume fell — June's 15.9% success rate is the second-best month this year.</div>
+      <div class="takeaway">Ticket volume rebounded to 1,300 and deflections recovered to 227 — July's 14.9% success rate is a modest bounce off June's low. Note: tickets re-based to core support queues only.</div>
       <div class="card">
         <div class="chart-wrap tall"><canvas id="chartKbSuccess"></canvas></div>
       </div>
@@ -754,7 +754,7 @@
 
     <section class="block" id="sec-k-03">
       <div class="block-head"><h3>Deflections by user segment</h3><div class="note" id="kbSegNote">June's Deflections-by-Role export currently includes End user only; other segments show — until it's refreshed.</div></div>
-      <div class="takeaway">Anonymous users drive most assumed deflections (May, last complete export) — June role data covers end users only.</div>
+      <div class="takeaway">July's role export is complete: anonymous users drive most assumed deflections (765 of 1,032); end users account for all confirmed deflections.</div>
       <div class="grid-2">
         <div class="card"><table id="tblSegments"></table></div>
         <div class="card">
@@ -765,14 +765,14 @@
     </section>
 
     <section class="block" id="sec-k-04">
-      <div class="block-head"><h3>Support impact, <span id="kbSupportMonth">June</span> view</h3></div>
-      <div class="takeaway">Linked-article tickets keep climbing (40 → 51) — KB is referenced more even when a ticket still happens.</div>
+      <div class="block-head"><h3>Support impact, <span id="kbSupportMonth">July</span> view</h3></div>
+      <div class="takeaway">Linked-article tickets fell back (51 → 41) and KB influence dropped to 1.9% — confirm whether tagging behavior changed before reading it as reduced KB value.</div>
       <div class="card"><table id="tblSupportImpact"></table></div>
     </section>
 
     <section class="block" id="sec-k-05">
       <div class="block-head"><h3>Content health &amp; search / findability</h3></div>
-      <div class="takeaway">Searches nearly halved and CTR fell in June — but the tickets-after-search methodology changed, so treat the search story as unverified.</div>
+      <div class="takeaway">Searches fell another 22% in July and tickets-after-search rose to 15 — every containment proxy declined; findability is the pressure point.</div>
       <div class="two-col-cards">
         <div class="card">
           <div class="subhead">Content health</div>
@@ -787,7 +787,7 @@
 
     <section class="block" id="sec-k-06">
       <div class="block-head">
-        <h3>Ticket volume by group, <span id="kbTicketRange">Jan – Jun 2026</span></h3>
+        <h3>Ticket volume by group, <span id="kbTicketRange">Jan – Jul 2026</span></h3>
         <div class="range-filter" id="ticketRangeFilter"></div>
       </div>
       <div class="month-filter" id="ticketGroupFilter" style="margin:10px 0 12px;"></div>
@@ -803,7 +803,7 @@
 
 <footer>
   <span>Static snapshot, figures reflect the source sheets at time of export.</span>
-  <span>Widget/QA period: Apr 27 – Aug 10, 2026 · KB period: <span id="kbFooterRange">Jan – Jun 2026</span></span>
+  <span>Widget/QA period: Apr 27 – Aug 10, 2026 · KB period: <span id="kbFooterRange">Jan – Jul 2026</span></span>
 </footer>
 
 <script>
@@ -928,15 +928,15 @@ function defaultState(){
         conversations: {value:'595', sub:'Unique widget conversations'},
         deflection:    {value:83.5,  sub:'497 conversations without handoff'},
         handoff:       {value:16.5,  sub:'98 conversations handed off'},
-        qaPass:        {value:56.3,  sub:'322 passes / 572 scorable QA rows'},
-        improvement:   {value:43.7,  sub:'195 partial + 55 fail; 45 system updates excluded'},
+        qaPass:        {value:55.3,  sub:'299 passes / 541 scorable QA rows'},
+        improvement:   {value:44.7,  sub:'188 partial + 54 fail; 45 system updates excluded'},
       },
       quality: {
-        partialPass:  {value:34.1, sub:'195 useful but incomplete'},
-        trueFail:     {value:9.6, sub:'55 failed experiences'},
+        partialPass:  {value:34.8, sub:'188 useful but incomplete'},
+        trueFail:     {value:10.0, sub:'54 failed experiences'},
         dropoff:      {value:28.9, sub:'172 conversations'},
-        lowRelevance: {value:20.6, sub:'115 of 559 rated'},
-        kbUpdates:    {value:89,  sub:'14.4% of QA rows'},
+        lowRelevance: {value:20.3, sub:'113 of 557 rated'},
+        kbUpdates:    {value:91,  sub:'15.5% of QA rows'},
       },
       drivers: [
         {cat:'KB/content gap', count:43, share:35.5, action:'Create or tighten KB and documentation coverage.'},
@@ -1036,7 +1036,7 @@ function defaultState(){
       /* KB Feedback Backlog tab, Aug 11, 2026. Closure rate excludes the
          Optional item. */
       kbBacklog: {proposed:32, inProgress:3, completed:11, optional:1, total:47, closureRate:23.9},
-      kbPipeline: {flagged:89, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
+      kbPipeline: {flagged:91, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
       /* Program impact — populated ONLY from the widget sheet. Add these
          labels to the sheet (label cell, value one row below, sub-text two
          rows below, same pattern as the headline KPIs) and the feed picks
@@ -1064,7 +1064,7 @@ function defaultState(){
       csat: {csatAvg:null, csatCount:null, relevanceAvg:null, relevanceCount:null},
       /* Monthly QA trend — populates from a "Widget QA Monthly" tab
          (Month | Reviewed | Pass Rate | Deflection Rate). */
-      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,235,49], passRate:[90.0,53.0,53.7,58.3,40.8], deflectionRate:[85.0,90.6,90.7,91.5,88.5]},
+      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,237,49], passRate:[90.0,53.0,53.7,57.8,40.8], deflectionRate:[85.0,90.6,90.7,91.6,88.5]},
       /* Per-month KPI slices on a unique-conversation basis: 64 conversations
          (all July) were reviewed twice in the QA sheet — the latest review wins.
          37 QA'd July conversations are absent from the conversation log (export
@@ -1090,7 +1090,7 @@ function defaultState(){
         note:'Pending: add the L1 handoff-reply sample (handed-off conversations and whether the customer replied) to the widget sheet, and the feed will populate this section.',
       },
       readout: [
-        'Performance: <strong>83.5% deflection</strong>, but <strong>43.7%</strong> of graded responses still need improvement.',
+        'Performance: <strong>83.5% deflection</strong>, but <strong>44.7%</strong> of graded responses still need improvement.',
         'Partial-pass priorities: 43 KB/content (35.5%), 53 technical precision (43.8%), and 24 billing/account (19.8%).',
         'Customer journey: 172 drop-offs (28.9%), with 94 showing no follow-up and 27 ending during incomplete handoff.',
       ],
@@ -1155,61 +1155,61 @@ function defaultState(){
          it by hand after you've reviewed the takeaway lines, readouts, and
          overview text for a new month. If it lags reportingMonth, a warning
          banner appears. */
-      reportingMonth: {current:'June', prior:'May', currentAbbr:'Jun', priorAbbr:'May', year:'2026'},
-      narrativeMonth: 'June',
+      reportingMonth: {current:'July', prior:'June', currentAbbr:'Jul', priorAbbr:'Jun', year:'2026'},
+      narrativeMonth: 'July',
       headline: [
-        /* June 2026 current vs May 2026 prior — matches KB Scorecard reporting month. num/den are explicit so the count+% pairing never drifts from the rate. */
-        {label:'Confirmed Deflection Rate', current:2.1, prior:1.0, mom:115.6, isPct:true, num:22, den:1049, denLabel:'sessions'},
-        {label:'Assumed Deflection Rate', current:18.6, prior:17.8, mom:4.6, isPct:true, num:195, den:1049, denLabel:'sessions'},
-        {label:'Total Deflection Rate', current:20.7, prior:18.7, mom:10.4, isPct:true, num:217, den:1049, denLabel:'sessions'},
-        {label:'Search Deflection Proxy', current:86.4, prior:95.8, mom:-9.9, isPct:true, num:146, den:169, denLabel:'searches'},
-        {label:'Article Views', current:197, prior:254, mom:-22.4, isPct:false},
+        /* July 2026 current vs June 2026 prior — matches KB Scorecard reporting month. num/den are explicit so the count+% pairing never drifts from the rate. */
+        {label:'Confirmed Deflection Rate', current:1.5, prior:2.3, mom:-35.1, isPct:true, num:17, den:1145, denLabel:'sessions'},
+        {label:'Assumed Deflection Rate', current:18.3, prior:14.4, mom:27.4, isPct:true, num:210, den:1145, denLabel:'sessions'},
+        {label:'Total Deflection Rate', current:19.8, prior:16.7, mom:18.8, isPct:true, num:227, den:1145, denLabel:'sessions'},
+        {label:'Search Deflection Proxy', current:88.5, prior:94.1, mom:-5.9, isPct:true, num:116, den:131, denLabel:'searches'},
+        {label:'Article Views', current:188, prior:197, mom:-4.6, isPct:false},
       ],
-      momMonths: ['Jan','Feb','Mar','Apr','May','Jun'],
+      momMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
       momSeries: {
-        'Article Views': [393,329,286,278,254,197],
-        'Confirmed Deflections': [31,18,29,21,11,22],
-        'Assumed Deflections': [191,254,228,208,201,195],
-        'End-user Sessions': [1187,1251,1227,1243,1131,1049],
-        'Total Deflection Rate %': [18.7,21.7,20.9,18.4,18.7,20.7],
-        'Search Deflection Proxy %': [97.5,96.6,97.1,96.8,95.8,86.4],
+        'Article Views': [393,329,286,278,254,197,188],
+        'Confirmed Deflections': [31,18,29,21,11,24,17],
+        'Assumed Deflections': [191,254,228,208,214,151,210],
+        'End-user Sessions': [1187,1251,1227,1243,1131,1049,1145],
+        'Total Deflection Rate %': [18.7,21.7,20.9,18.4,19.9,16.7,19.8],
+        'Search Deflection Proxy %': [97.5,96.6,97.1,96.8,95.8,94.1,88.5],
       },
       /* Field names read may/apr but mean current/prior (kept for feed compatibility).
-         Current = June 2026, prior = May 2026. June's Deflections-by-Role export
-         currently includes End user only; other roles are null until refreshed. */
+         Current = July 2026, prior = June 2026. July's Deflections-by-Role export
+         is complete across all roles. */
       segments: [
-        {seg:'End user', mayConf:22, aprConf:11, confMom:100.0, mayAssumed:195, aprAssumed:201, assumedMom:-3.0},
-        {seg:'Anonymous', mayConf:null, aprConf:0, confMom:null, mayAssumed:null, aprAssumed:612, assumedMom:null},
-        {seg:'Agent', mayConf:null, aprConf:0, confMom:null, mayAssumed:null, aprAssumed:11, assumedMom:null},
-        {seg:'Admin', mayConf:null, aprConf:0, confMom:null, mayAssumed:null, aprAssumed:31, assumedMom:null},
-        {seg:'Total', mayConf:null, aprConf:11, confMom:null, mayAssumed:null, aprAssumed:855, assumedMom:null},
+        {seg:'End user', mayConf:17, aprConf:24, confMom:-29.2, mayAssumed:210, aprAssumed:151, assumedMom:39.1},
+        {seg:'Anonymous', mayConf:0, aprConf:0, confMom:null, mayAssumed:765, aprAssumed:544, assumedMom:40.6},
+        {seg:'Agent', mayConf:0, aprConf:0, confMom:null, mayAssumed:31, aprAssumed:22, assumedMom:40.9},
+        {seg:'Admin', mayConf:0, aprConf:0, confMom:null, mayAssumed:26, aprAssumed:21, assumedMom:23.8},
+        {seg:'Total', mayConf:17, aprConf:24, confMom:-29.2, mayAssumed:1032, aprAssumed:738, assumedMom:39.8},
       ],
       supportImpact: [
-        {metric:'End-user Sessions', current:1049, prior:1131, mom:-7.3, isPct:false},
-        {metric:'Confirmed Deflection Rate', current:2.1, prior:1.0, mom:115.6, isPct:true},
-        {metric:'Assumed Deflection Rate', current:18.6, prior:17.8, mom:4.6, isPct:true},
-        {metric:'Total Deflection Rate', current:20.7, prior:18.7, mom:10.4, isPct:true},
-        {metric:'Search Deflection Proxy', current:86.4, prior:95.8, mom:-9.9, isPct:true},
-        {metric:'Search Containment Count', current:146, prior:299, mom:-51.2, isPct:false},
-        {metric:'Result-Click Containment Proxy', current:66.2, prior:92.5, mom:-28.4, isPct:true},
-        {metric:'Article Views', current:197, prior:254, mom:-22.4, isPct:false},
-        {metric:'Linked-Article Tickets', current:51, prior:40, mom:27.5, isPct:false},
-        {metric:'KB Influence on Tickets', current:3.0, prior:2.3, mom:31.7, isPct:true},
+        {metric:'End-user Sessions', current:1145, prior:1049, mom:9.2, isPct:false},
+        {metric:'Confirmed Deflection Rate', current:1.5, prior:2.3, mom:-35.1, isPct:true},
+        {metric:'Assumed Deflection Rate', current:18.3, prior:14.4, mom:27.4, isPct:true},
+        {metric:'Total Deflection Rate', current:19.8, prior:16.7, mom:18.8, isPct:true},
+        {metric:'Search Deflection Proxy', current:88.5, prior:94.1, mom:-5.9, isPct:true},
+        {metric:'Search Containment Count', current:116, prior:159, mom:-27.0, isPct:false},
+        {metric:'Result-Click Containment Proxy', current:68.8, prior:84.1, mom:-18.3, isPct:true},
+        {metric:'Article Views', current:188, prior:197, mom:-4.6, isPct:false},
+        {metric:'Linked-Article Tickets', current:41, prior:51, mom:-19.6, isPct:false},
+        {metric:'KB Influence on Tickets', current:1.9, prior:3.0, mom:-36.5, isPct:true},
       ],
       contentHealth: [
         {metric:'Live Articles Total', current:'220', prior:'—', mom:null},
-        {metric:'New Articles Published', current:'0', prior:'1', mom:-100.0},
+        {metric:'New Articles Published', current:'0', prior:'0', mom:null},
         {metric:'Monthly Article Review Backlog', current:'8', prior:'—', mom:null},
       ],
       /* No-Result Search % intentionally omitted: the workbook flags its definition
          as unverified (user-run Zendesk report disagrees) and says not to present it.
          The raw no-result count stays. */
       searchFind: [
-        {metric:'Search Exit Rate', current:30.8, prior:44.6, mom:-30.9, isPct:true},
-        {metric:'Total Searches', current:169, prior:312, mom:-45.8, isPct:false},
-        {metric:'Search CTR', current:40.2, prior:55.4, mom:-27.4, isPct:true},
-        {metric:'Tickets Created After Search', current:23, prior:13, mom:76.9, isPct:false},
-        {metric:'Searches with No Results', current:24, prior:24, mom:0.0, isPct:false},
+        {metric:'Search Exit Rate', current:63.4, prior:62.7, mom:1.0, isPct:true},
+        {metric:'Total Searches', current:131, prior:169, mom:-22.5, isPct:false},
+        {metric:'Search CTR', current:36.6, prior:37.3, mom:-1.7, isPct:true},
+        {metric:'Tickets Created After Search', current:15, prior:10, mom:50.0, isPct:false},
+        {metric:'Searches with No Results', current:26, prior:24, mom:8.3, isPct:false},
       ],
       ticketGroupMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
       /* Refreshed Aug 11, 2026 from the rebuilt Zendesk Ticket Raw tab
@@ -1231,19 +1231,20 @@ function defaultState(){
         'Other (14 groups)':[16,23,21,36,12,50,134],
       },
       priorities: [
-        {n:1, what:'Review May support-impact movement', why:'June is now the active reporting month; review official deflection and search-containment movement against May with Support.', kpi:'KB Scorecard; MoM Trend', owner:'Support Ops / KB Owner', status:'Updated June'},
-        {n:2, what:'Use proxy stack with final-May caveat', why:'Deflection proxy metrics remain directional and should be paired with official Zendesk deflection counts.', kpi:'Search Deflection Proxy; Search Containment Count; Result-Click Containment Proxy', owner:'KB Owner', status:'Ready'},
-        {n:3, what:'Investigate May movement', why:'June shows movement in deflections, article views, and search behavior; isolate drivers before Support review.', kpi:'Confirmed/Assumed Deflections; Article Views; Search metrics', owner:'Content Ops', status:'Watch'},
-        {n:4, what:'Keep caveats visible', why:'All deflection metrics are directional proxies because article-view-to-ticket linkage is unavailable.', kpi:'Metric Definitions and Scorecard notes', owner:'Dashboard Owner', status:'Ready'},
-        {n:5, what:'Maintain clean raw refresh', why:'Raw Search Monthly Metrics includes the completed June refresh. June\u2019s Tickets After Search uses a different methodology than Jan\u2013May, so treat pre-June search comparisons as directional.', kpi:'Data Sources and raw tab filters', owner:'Dashboard Owner', status:'Ready'},
+        {n:1, what:'Investigate search containment decline', why:'July search deflection fell to 88.5%, containment volume fell 27.0%, and result-click containment fell to 68.8%.', kpi:'Search Deflection Proxy; Search Containment Count; Result-Click Containment Proxy', owner:'KB Owner / Support Ops', status:'Watch'},
+        {n:2, what:'Validate the deflection mix', why:'Confirmed deflections fell 29.2% while assumed deflections rose 39.1%; validate classification and journey quality before interpreting the higher total rate.', kpi:'Confirmed Deflections; Assumed Deflections; Total Deflection Rate', owner:'Support Ops', status:'Watch'},
+        {n:3, what:'Review KB influence decline', why:'July KB Influence on Tickets was 1.9%, down 36.5% from June; confirm whether tagging behavior or article usage changed.', kpi:'Monthly KPI Trend \u2014 KB Influence on Tickets', owner:'Content Ops / Support Ops', status:'Watch'},
+        {n:4, what:'Monitor article reach and feedback', why:'Article views declined 4.6% to 188 and July recorded no feedback responses; keep the low-volume feedback caveat visible.', kpi:'Article Views; Article Positive Feedback Rate', owner:'Content Ops', status:'Review'},
+        {n:5, what:'Maintain the clean July refresh', why:'All required dashboard sources are loaded through July 2026. August data is partial and remains excluded from current reporting.', kpi:'Raw Data Refresh Review; dashboard source checks', owner:'Dashboard Owner', status:'Ready'},
       ],
       /* KB Success vs Tickets — from the workbook's monthly table:
-         total deflections / (tickets created + deflections). */
+         total deflections / (tickets created + deflections). Tickets Created
+         re-based Aug 13, 2026 to core support queues only. */
       kbSuccess: {
-        months:['Jan','Feb','Mar','Apr','May','Jun'],
-        tickets:[1404,1293,1272,1291,1280,1151],
-        deflections:[222,272,257,229,212,217],
-        rate:[13.7,17.4,16.8,15.1,14.2,15.9],
+        months:['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+        tickets:[1102,1094,1215,1253,1247,1124,1300],
+        deflections:[222,272,257,229,225,175,227],
+        rate:[16.8,19.9,17.5,15.5,15.3,13.5,14.9],
       },
       topFailedQueries: [
         {query:'163914', count:1},
