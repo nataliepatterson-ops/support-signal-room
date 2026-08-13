@@ -1334,7 +1334,7 @@ const KPI_DEFS = {
   'Ticket Autoresponder Coverage Rate':'Share of tickets that received a Forethought auto-response. Reads the coverage-rate label from the autoresponder section of the widget sheet.',
   'Hours Returned':'Automation touches removed × the agreed minutes-per-touch assumption ÷ 60. All inputs from the Automation tab.',
   'Reopen After Auto-Close':'Share of auto-closed tickets the customer reopened — the guardrail that proves auto-close is safe.',
-  'FT Coverage Today':'Share of eligible tickets that received a Forethought first response. Reads the "FT Coverage Rate" label from the widget sheet.',
+  'FT Response Coverage':'Share of all new tickets that received a Forethought first response. Reads the "FT Coverage Rate" label from the widget sheet.',
   'Coverage After Expansion':'Projected coverage after the plan-tier expansion. Reads "Projected Coverage Rate" from the widget sheet.',
   'Support Nudges / Month':'Public support replies chasing a customer who had not yet responded. Reads "Support Nudges per Month" from the widget sheet.',
   'L1 Touches Removed':'Actual reduction in L1 follow-up replies on Forethought-covered tickets, measured post go-live.',
@@ -1434,7 +1434,7 @@ function renderWidgetView(){
   const im = w.impact;
   const dash = v => (v===null||v===undefined) ? '—' : v;
   renderKpis('kpi-widget-impact', [
-    {label:'FT Coverage Today', value:dash(im.coverageNowPct), unit:im.coverageNowPct!==null?'%':'', sub:'121 of 2,143 July tickets carried ft-email-automated', status:'neutral'},
+    {label:'FT Response Coverage', value:dash(im.coverageNowPct), unit:im.coverageNowPct!==null?'%':'', sub:'121 of 2,143 July tickets carried ft-email-automated', status:'neutral'},
     {label:'Coverage After Expansion', value:dash(im.coverageProjectedPct), unit:im.coverageProjectedPct!==null?'%':'', sub:'From widget sheet', status:'neutral'},
     {label:'Support Nudges / Month', value:im.nudgesPerMonth===null?'—':fmtNum(im.nudgesPerMonth), unit:'', sub:'July: 12 FT + 70 non-FT L1-touched tickets tagged no_response', status:'neutral'},
     {label:'Recontact After Deflection', value:dash(im.recontactRatePct), unit:im.recontactRatePct!==null?'%':'', sub:'7-day ticket recontact · from widget sheet', status:'neutral'},
@@ -1820,7 +1820,7 @@ function renderOverview(){
   const oRemoved = (oAu.baselineTouches!==null && oAu.actualTouches!==null) ? oAu.baselineTouches - oAu.actualTouches : null;
   const oHours = (oRemoved!==null && oAu.minutesPerTouch!==null) ? Math.round(oRemoved * oAu.minutesPerTouch / 60) : null;
   renderKpis('kpi-overview', [
-    {label:'FT Coverage Today', value:(w.impact.coverageNowPct===null?'—':w.impact.coverageNowPct), unit:w.impact.coverageNowPct!==null?'%':'', sub:'Share of eligible tickets FT touches', status:'neutral'},
+    {label:'FT Response Coverage', value:(w.impact.coverageNowPct===null?'—':w.impact.coverageNowPct), unit:w.impact.coverageNowPct!==null?'%':'', sub:'Share of all new tickets FT auto-responds to', status:'neutral'},
     {label:'Widget Deflection', value:w.headline.deflection.value, unit:'%', sub:w.headline.deflection.sub, status:'good'},
     {label:'Widget Needs Improvement', value:w.headline.improvement.value, unit:'%', sub:w.headline.improvement.sub, status:'bad'},
     {label:'Ticket Autoresponder QA Pass', value:e.headline.qaPass.value, unit:'%', sub:e.headline.qaPass.sub, status:'good'},
