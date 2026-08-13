@@ -1332,8 +1332,8 @@ const KPI_DEFS = {
   'KB Updates Flagged':'Widget QA rows explicitly flagged as needing knowledge-base work.',
   'Recontact After Deflection':'Share of deflected conversations where the same customer opened a ticket within 7 days. Reads "Recontact Rate After Deflection" from the widget sheet.',
   'Ticket Autoresponder Coverage Rate':'Share of tickets that received a Forethought auto-response. Reads the coverage-rate label from the autoresponder section of the widget sheet.',
-  'Hours Returned':'Automation touches removed × the agreed minutes-per-touch assumption ÷ 60. All inputs from the Automation tab.',
-  'Reopen After Auto-Close':'Share of auto-closed tickets the customer reopened — the guardrail that proves auto-close is safe.',
+  'L1 Touches Removed':'Baseline-expected L1 touches (non-FT touch rate × FT volume) minus actual — from the FT L1 Touches Removed tracker, July 2026.',
+  'Autoresponder Deflection':'Share of sent email autoresponses where the log shows no further human response was needed — from the autoresponder funnel.',
   'FT Response Coverage':'Share of all new tickets that received a Forethought first response. Reads the "FT Coverage Rate" label from the widget sheet.',
   'Coverage After Expansion':'Projected coverage after the plan-tier expansion. Reads "Projected Coverage Rate" from the widget sheet.',
   'Support Nudges / Month':'Public support replies chasing a customer who had not yet responded. Reads "Support Nudges per Month" from the widget sheet.',
@@ -1825,8 +1825,8 @@ function renderOverview(){
     {label:'Widget Needs Improvement', value:w.headline.improvement.value, unit:'%', sub:w.headline.improvement.sub, status:'bad'},
     {label:'Ticket Autoresponder QA Pass', value:e.headline.qaPass.value, unit:'%', sub:e.headline.qaPass.sub, status:'good'},
     {label:'KB Success Rate', value:k.kbSuccess.rate[k.kbSuccess.rate.length-1], unit:'%', sub:'Deflections ÷ (tickets + deflections), current month', status:'good'},
-    {label:'Hours Returned', value:(oHours===null?'—':fmtNum(oHours)), unit:'', sub:'Automation touches removed × minutes per touch', status:'neutral'},
-    {label:'Reopen After Auto-Close', value:(oAu.reopenRateAfterClose===null?'—':oAu.reopenRateAfterClose), unit:oAu.reopenRateAfterClose!==null?'%':'', sub:'Guardrail — low means the automation is safe', status:'neutral'},
+    {label:'L1 Touches Removed', value:(w.automationTracker.rows.find(r=>r.metric.indexOf('L1 touches removed')===0)||{vals:['—']}).vals.slice(-1)[0], unit:'', sub:'July: baseline-expected minus actual L1 touches on FT tickets', status:'good'},
+    {label:'Autoresponder Deflection', value:(e.funnel.find(f=>f.stage==='Deflected')||{pctOfPrev:null}).pctOfPrev, unit:'%', sub:'131 of 178 sent autoresponses needed no human follow-up', status:'good'},
   ]);
   const cards = [
     {title:'Widget QA', big:fmtPct(w.headline.deflection.value,1)+' deflection', goto:'widget', points:[
