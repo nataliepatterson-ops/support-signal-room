@@ -501,12 +501,31 @@
       <div class="card" style="margin-top:12px;"><table id="tblMonthly"></table></div>
     </section>
 
+    <section class="block" id="sec-w-01f">
+      <div class="block-head">
+        <h3>Repeat contact after deflection</h3>
+        <div class="note">Post-widget same-issue ticket rate from the Widget Repeat Contact tab: confirmed cases where the same customer opened their own support ticket within 7 days of a widget conversation that was never escalated to a human, over all never-escalated conversations that month. Lower is better — treat as a containment-quality signal, not a definitive deflection-failure rate. Evidence rows are de-identified on this page; customer names live in the sheet. Refreshed Aug 14, 2026.</div>
+      </div>
+      <div class="takeaway">10.0% of July's 180 fully-contained conversations came back as a same-issue support ticket within 7 days — up 3.8pp from June's 6.2% baseline. Every one is a conversation the headline deflection rate counts as a win.</div>
+      <div class="kpi-row autofit" id="kpi-widget-repeat"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="subhead">Monthly trend</div>
+          <table id="tblRepeatMonthly"></table>
+        </div>
+        <div class="card">
+          <div class="subhead">Evidence — de-identified</div>
+          <div style="max-height:300px; overflow-y:auto;"><table id="tblRepeatEvidence"></table></div>
+        </div>
+      </div>
+    </section>
+
     <section class="block" id="sec-w-01b">
       <div class="block-head">
         <h3>Program impact &amp; coverage</h3>
         <div class="note">The leadership view: how much of the ticket stream Forethought touches, and the manual work the approved automation removes.</div>
       </div>
-      <div class="takeaway">Coverage is the leadership lever: FT touches 5.6% of the July ticket stream, so quality wins multiply only as coverage expands. Recontact and touches-removed populate once their Zendesk queries are added to the sheet.</div>
+      <div class="takeaway">Coverage is the leadership lever: FT touches 5.6% of the July ticket stream, so quality wins multiply only as coverage expands. Recontact now reads from the Widget Repeat Contact tab; touches-removed populates once its Zendesk query is added to the sheet.</div>
       <div class="kpi-row autofit" id="kpi-widget-impact"></div>
       <div class="card" style="margin-top:12px;"><table id="tblImpact"></table></div>
     </section>
@@ -1047,7 +1066,8 @@ function defaultState(){
         coverageNowPct:5.6,
         coverageProjectedPct:null,
         nudgesPerMonth:82,
-        recontactRatePct:null,
+        /* Now measured by the Widget Repeat Contact tab (strict rate, July). */
+        recontactRatePct:10.0,
         touchesRemovedActual:null,
         measurement:'Count L1 public replies on Forethought-covered tickets before vs. after the automation go-live; report monthly next to coverage.',
       },
@@ -1065,6 +1085,55 @@ function defaultState(){
       /* Monthly QA trend — populates from a "Widget QA Monthly" tab
          (Month | Reviewed | Pass Rate | Deflection Rate). */
       monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,237,49], passRate:[90.0,53.0,53.7,57.8,40.8], deflectionRate:[85.0,90.6,90.7,91.6,88.5]},
+      /* Widget Repeat Contact tab, Aug 14, 2026 — post-widget same-issue ticket
+         rate. Strict = confirmed cases where the same customer opened their own
+         support ticket within 7 days of a widget conversation that was never
+         escalated to a human; inclusive adds ambiguous-timing matches. Lower is
+         better — a containment-quality signal, not a definitive deflection-failure
+         rate. Evidence rows are de-identified on this hosted page; customer names
+         live in the sheet. */
+      repeatContact: {
+        latest: {month:'Jul', eligible:180, confirmed:18, ambiguous:0, strictRate:10.0, inclusiveRate:10.0, momPp:3.8},
+        monthly: {
+          months:['Jun','Jul'],
+          eligible:[145,180],
+          confirmed:[9,18],
+          ambiguous:[1,0],
+          strictRate:[6.2,10.0],
+          inclusiveRate:[6.9,10.0],
+          notes:['Baseline. One ambiguous match excluded from the strict rate.','18 confirmed same-subject tickets opened within 7 days.'],
+        },
+        evidence: [
+          {month:'Jun', conv:'165107', ticket:'165093', cls:'Confirmed', note:'Gap: 6 min'},
+          {month:'Jun', conv:'164768', ticket:'164777', cls:'Confirmed', note:'Gap: 1h 20m'},
+          {month:'Jun', conv:'165082', ticket:'165086', cls:'Confirmed', note:'Gap: 3h'},
+          {month:'Jun', conv:'164982', ticket:'164967', cls:'Confirmed', note:'Gap: ~3h'},
+          {month:'Jun', conv:'164998', ticket:'164977', cls:'Confirmed', note:'Gap: ~3h'},
+          {month:'Jun', conv:'165269', ticket:'165286', cls:'Confirmed', note:'Gap: 5h 45m'},
+          {month:'Jun', conv:'164054', ticket:'164096', cls:'Confirmed', note:'Gap: 23h'},
+          {month:'Jun', conv:'164021', ticket:'164071', cls:'Confirmed', note:'Gap: 1 day'},
+          {month:'Jun', conv:'165097', ticket:'165157', cls:'Confirmed', note:'Gap: 1 day'},
+          {month:'Jun', conv:'164916', ticket:'164911', cls:'Ambiguous', note:'Sequence not established from available evidence.'},
+          {month:'Jul', conv:'165642', ticket:'165636', cls:'Confirmed', note:'Entra ID / SAML SSO for Redis Enterprise Software'},
+          {month:'Jul', conv:'165888', ticket:'165869', cls:'Confirmed', note:'July 2026 tax invoice (only proforma issued)'},
+          {month:'Jul', conv:'165922', ticket:'165913', cls:'Confirmed', note:'Two unrecognised card charges, no subscription'},
+          {month:'Jul', conv:'165750', ticket:'166048', cls:'Confirmed', note:'Seeding a new cluster from a 16 TB prod cluster'},
+          {month:'Jul', conv:'166246', ticket:'166368', cls:'Confirmed', note:'RDI change-data-capture from a MySQL replica'},
+          {month:'Jul', conv:'166252', ticket:'166235', cls:'Confirmed', note:'RIOT-X --unlock-token, Valkey support'},
+          {month:'Jul', conv:'166301', ticket:'166852', cls:'Confirmed', note:'RediSearch GC threshold on Cloud'},
+          {month:'Jul', conv:'166375', ticket:'166365', cls:'Confirmed', note:'Will scaling memory up delete my data'},
+          {month:'Jul', conv:'166521', ticket:'166668', cls:'Confirmed', note:'Change the GCP billing account'},
+          {month:'Jul', conv:'166653', ticket:'166627', cls:'Confirmed', note:'License reuse, on-prem → Azure migration'},
+          {month:'Jul', conv:'166914', ticket:'166912', cls:'Confirmed', note:'Temporary connection-limit raise for World Cup'},
+          {month:'Jul', conv:'167230', ticket:'167213', cls:'Confirmed', note:'Duplicate Cloud accounts, restore access'},
+          {month:'Jul', conv:'167290', ticket:'167274', cls:'Confirmed', note:'Forced social login, restore password access'},
+          {month:'Jul', conv:'167365', ticket:'167359', cls:'Confirmed', note:'Increase DB size and shard count via API'},
+          {month:'Jul', conv:'167414', ticket:'167410', cls:'Confirmed', note:'Which Redis certifications are free'},
+          {month:'Jul', conv:'167494', ticket:'167471', cls:'Confirmed', note:'Redis upgrade procedure and prerequisites'},
+          {month:'Jul', conv:'167583', ticket:'167565', cls:'Confirmed', note:'Reissue legacy course certificates'},
+          {month:'Jul', conv:'167672', ticket:'168212', cls:'Confirmed', note:'SSO linking across multiple Cloud accounts'},
+        ],
+      },
       /* Per-month KPI slices on a unique-conversation basis: 64 conversations
          (all July) were reviewed twice in the QA sheet — the latest review wins.
          37 QA'd July conversations are absent from the conversation log (export
@@ -1332,7 +1401,11 @@ const KPI_DEFS = {
   'Ticket Autoresponder QA Pass':'Passes divided by scorable ticket autoresponder QA rows, after test/process exclusions.',
   'KB Total Deflection':'Confirmed plus assumed deflections per end-user session.',
   'KB Updates Flagged':'Widget QA rows explicitly flagged as needing knowledge-base work.',
-  'Recontact After Deflection':'Share of deflected conversations where the same customer opened a ticket within 7 days. Reads "Recontact Rate After Deflection" from the widget sheet.',
+  'Recontact After Deflection':'Share of deflected conversations where the same customer opened a ticket within 7 days. Strict rate from the Widget Repeat Contact tab.',
+  'Post-Widget Ticket Rate':'Confirmed cases where the same customer opened their own support ticket within 7 days of a never-escalated widget conversation, over all never-escalated conversations that month. From the Widget Repeat Contact tab.',
+  'Confirmed Same-Issue Tickets':'Manually validated: same customer, same issue, correct chronology, within the 7-day window.',
+  'Inclusive Rate':'Strict confirmed cases plus ambiguous same-issue matches where the sequence cannot be established.',
+  'MoM Change':'Percentage-point change in the strict rate versus the prior month.',
   'Ticket Autoresponder Coverage Rate':'Share of tickets that received a Forethought auto-response. Reads the coverage-rate label from the autoresponder section of the widget sheet.',
   'L1 Touches Removed':'Baseline-expected L1 touches (non-FT touch rate × FT volume) minus actual — from the FT L1 Touches Removed tracker, July 2026.',
   'Autoresponder Deflection':'Share of sent email autoresponses where the log shows no further human response was needed — from the autoresponder funnel.',
@@ -1439,7 +1512,7 @@ function renderWidgetView(){
     {label:'FT Response Coverage', value:dash(im.coverageNowPct), unit:im.coverageNowPct!==null?'%':'', sub:'121 of 2,143 July tickets carried ft-email-automated', status:'neutral'},
     {label:'Coverage After Expansion', value:dash(im.coverageProjectedPct), unit:im.coverageProjectedPct!==null?'%':'', sub:'From widget sheet', status:'neutral'},
     {label:'Support Nudges / Month', value:im.nudgesPerMonth===null?'—':fmtNum(im.nudgesPerMonth), unit:'', sub:'July: 12 FT + 70 non-FT L1-touched tickets tagged no_response', status:'neutral'},
-    {label:'Recontact After Deflection', value:dash(im.recontactRatePct), unit:im.recontactRatePct!==null?'%':'', sub:'7-day ticket recontact · from widget sheet', status:'neutral'},
+    {label:'Recontact After Deflection', value:dash(im.recontactRatePct), unit:im.recontactRatePct!==null?'%':'', sub:'7-day same-issue ticket rate · Widget Repeat Contact tab, July', status:'neutral'},
     {label:'L1 Touches Removed', value:im.touchesRemovedActual===null?'—':fmtNum(im.touchesRemovedActual), unit:'', sub:'Actual, measured post go-live', status:'neutral'},
   ]);
   document.getElementById('tblImpact').innerHTML = `
@@ -1489,6 +1562,24 @@ function renderWidgetView(){
   } else {
     document.getElementById('tblMonthly').innerHTML = `<tr><th>Month</th><th class="num">Reviewed</th><th class="num">Pass rate</th><th class="num">Deflection</th></tr><tr><td colspan="4" style="color:var(--muted-dim); font-style:italic;">Populates from a "Widget QA Monthly" tab in the widget sheet (Month | Reviewed | Pass Rate | Deflection Rate), one row per month.</td></tr>`;
   }
+
+  // ---- Repeat contact after deflection (Widget Repeat Contact tab) ----
+  const rc = w.repeatContact;
+  renderKpis('kpi-widget-repeat', [
+    {label:'Post-Widget Ticket Rate', value:fmtPct(rc.latest.strictRate,1).replace('%',''), unit:'%', sub:`${rc.latest.confirmed} confirmed of ${rc.latest.eligible} eligible no-handoff conversations — ${rc.latest.month}`, status:'bad'},
+    {label:'Confirmed Same-Issue Tickets', value:String(rc.latest.confirmed), unit:'', sub:`Customer reopened with support within 7 days — ${rc.latest.month}`, status:'bad'},
+    {label:'Inclusive Rate', value:fmtPct(rc.latest.inclusiveRate,1).replace('%',''), unit:'%', sub:`Adds ${rc.latest.ambiguous} ambiguous timing ${rc.latest.ambiguous===1?'match':'matches'} — ${rc.latest.month}`, status:'neutral'},
+    {label:'MoM Change', value:(rc.latest.momPp>0?'+':'')+rc.latest.momPp, unit:'pp', sub:'Strict rate vs the June baseline', status:rc.latest.momPp>0?'bad':'good'},
+  ]);
+  document.getElementById('tblRepeatMonthly').innerHTML = `
+    <tr><th>Month</th><th class="num">Eligible</th><th class="num">Confirmed</th><th class="num">Ambiguous</th><th class="num">Strict rate</th><th class="num">Inclusive</th></tr>
+    ${rc.monthly.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(rc.monthly.eligible[i])}</td><td class="num">${fmtNum(rc.monthly.confirmed[i])}</td><td class="num">${fmtNum(rc.monthly.ambiguous[i])}</td><td class="num">${fmtPct(rc.monthly.strictRate[i])}</td><td class="num">${fmtPct(rc.monthly.inclusiveRate[i])}</td></tr>`).join('')}
+    ${rc.monthly.months.map((m,i)=>`<tr><td colspan="6" style="color:var(--muted-dim); font-size:11.5px;">${m}: ${rc.monthly.notes[i]}</td></tr>`).join('')}
+  `;
+  document.getElementById('tblRepeatEvidence').innerHTML = `
+    <tr><th>Month</th><th class="num">Widget conv.</th><th class="num">Ticket</th><th>Class</th><th>Issue / gap</th></tr>
+    ${rc.evidence.map(v=>`<tr><td>${v.month}</td><td class="num">${v.conv}</td><td class="num">${v.ticket}</td><td>${v.cls}</td><td style="color:var(--muted); font-size:12px;">${v.note}</td></tr>`).join('')}
+  `;
 
   // ---- Customer feedback (computed from the conversation log) ----
   const fb = w.feedback;
@@ -1829,6 +1920,7 @@ function renderOverview(){
     {label:'KB Success Rate', value:k.kbSuccess.rate[k.kbSuccess.rate.length-1], unit:'%', sub:'Deflections ÷ (tickets + deflections), current month', status:'good'},
     {label:'L1 Touches Removed', value:(w.automationTracker.rows.find(r=>r.metric.indexOf('L1 touches removed')===0)||{vals:['—']}).vals.slice(-1)[0], unit:'', sub:'July: baseline-expected minus actual L1 touches on FT tickets', status:'good'},
     {label:'Autoresponder Deflection', value:(e.funnel.find(f=>f.stage==='Deflected')||{pctOfPrev:null}).pctOfPrev, unit:'%', sub:'114 of 157 sent autoresponses needed no human follow-up', status:'good'},
+    {label:'Post-Widget Ticket Rate', value:w.repeatContact.latest.strictRate, unit:'%', sub:'18 of 180 contained July conversations returned as same-issue tickets within 7 days', status:'bad'},
   ]);
   const cards = [
     {title:'Widget QA', big:fmtPct(w.headline.deflection.value,1)+' deflection', goto:'widget', points:[
