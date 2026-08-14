@@ -478,7 +478,7 @@
     <div class="page-head" id="head-widget">
       <div class="eyebrow">Executive overview</div>
       <h2>Forethought widget performance</h2>
-      <p>Conversation volume, containment, and QA across the widget. 586 classified QA rows reviewed; 45 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 13, 2026.</p>
+      <p>Conversation volume, containment, and QA across the widget. 586 classified QA rows reviewed; 45 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 14, 2026.</p>
     </div>
 
     <div class="month-filter" id="widgetMonthFilter"></div>
@@ -666,9 +666,9 @@
     <section class="block" id="sec-w-09c">
       <div class="block-head">
         <h3>Autoresponder funnel</h3>
-        <div class="note">From the autoresponder raw logs (current + archive), Aug 11, 2026. Deflected uses the log's flag; QA quality of the sent responses is graded above.</div>
+        <div class="note">From the autoresponder raw logs (current + archive, deduplicated by conversation), Aug 14, 2026. Deflected uses the log's flag; QA quality of the sent responses is graded above.</div>
       </div>
-      <div class="takeaway">Coverage is the constraint, not execution: only 27.7% of inbound email is eligible, but 98% of eligible emails get a response and 74% of those deflect.</div>
+      <div class="takeaway">Coverage is the constraint, not execution: only 25.7% of inbound email is eligible, but 98% of eligible emails get a response and 73% of those deflect.</div>
       <div class="card"><table id="tblFunnel"></table></div>
     </section>
 
@@ -1102,7 +1102,7 @@ function defaultState(){
         scorable:  {value:'79', sub:'46 pass + 23 partial + 10 fail'},
         qaPass:    {value:58.2, sub:'46 passes / 79 scorable rows'},
         improvement: {value:41.8, sub:'23 partial + 10 fail'},
-        emailCoverage: {value:27.2, sub:'178 of 654 inbound emails received an autoresponse'},
+        emailCoverage: {value:25.2, sub:'157 of 623 inbound emails received an autoresponse'},
       },
       quality: {
         partialPass:  {value:29.1, sub:'23 of 79 scorable — useful but incomplete'},
@@ -1131,13 +1131,15 @@ function defaultState(){
       ],
       readoutCaveat: 'Data note: 14 of 49 Test rows are not marked Excluded from scoring in review_action_status.',
       monthly: {months:['Jun*','Jul','Aug*'], scorable:[5,66,8], pass:[2,42,2], partial:[2,17,4], fail:[1,7,2], passRate:[40.0,63.6,25.0]},
-      /* Autoresponder funnel from the email raw logs (both tabs), Aug 11, 2026.
-         463 emails skipped as email_automation; 5 with an explicit skip reason. */
+      /* Autoresponder funnel from the email raw logs (both tabs, deduplicated by
+         conversation_id — the archive's 119 KEEP rows are now fully duplicated in
+         the current log with identical flags), Aug 14, 2026.
+         463 emails skipped as email_automation. */
       funnel: [
-        {stage:'Inbound emails captured', count:654, pctOfPrev:null, note:'All rows in the autoresponder logs.'},
-        {stage:'Eligible for autoresponse', count:181, pctOfPrev:27.7, note:'463 skipped as email_automation; 5 other skips.'},
-        {stage:'Autoresponse sent', count:178, pctOfPrev:98.3, note:'Coverage: 27.2% of all inbound email.'},
-        {stage:'Deflected', count:131, pctOfPrev:73.6, note:'No further human response needed per the log flag.'},
+        {stage:'Inbound emails captured', count:623, pctOfPrev:null, note:'Unique conversations across the autoresponder logs.'},
+        {stage:'Eligible for autoresponse', count:160, pctOfPrev:25.7, note:'463 skipped as email_automation.'},
+        {stage:'Autoresponse sent', count:157, pctOfPrev:98.1, note:'Coverage: 25.2% of all inbound email.'},
+        {stage:'Deflected', count:114, pctOfPrev:72.6, note:'No further human response needed per the log flag.'},
       ],
       /* Per-month KPI slices, joined from the autoresponder raw logs. rows = classified
          QA rows that month; Aug* rows include 19 system/backend-update rows that are
@@ -1826,7 +1828,7 @@ function renderOverview(){
     {label:'Ticket Autoresponder QA Pass', value:e.headline.qaPass.value, unit:'%', sub:e.headline.qaPass.sub, status:'good'},
     {label:'KB Success Rate', value:k.kbSuccess.rate[k.kbSuccess.rate.length-1], unit:'%', sub:'Deflections ÷ (tickets + deflections), current month', status:'good'},
     {label:'L1 Touches Removed', value:(w.automationTracker.rows.find(r=>r.metric.indexOf('L1 touches removed')===0)||{vals:['—']}).vals.slice(-1)[0], unit:'', sub:'July: baseline-expected minus actual L1 touches on FT tickets', status:'good'},
-    {label:'Autoresponder Deflection', value:(e.funnel.find(f=>f.stage==='Deflected')||{pctOfPrev:null}).pctOfPrev, unit:'%', sub:'131 of 178 sent autoresponses needed no human follow-up', status:'good'},
+    {label:'Autoresponder Deflection', value:(e.funnel.find(f=>f.stage==='Deflected')||{pctOfPrev:null}).pctOfPrev, unit:'%', sub:'114 of 157 sent autoresponses needed no human follow-up', status:'good'},
   ]);
   const cards = [
     {title:'Widget QA', big:fmtPct(w.headline.deflection.value,1)+' deflection', goto:'widget', points:[
