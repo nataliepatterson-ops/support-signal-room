@@ -414,7 +414,7 @@
     <a class="jn-pill" href="#sec-w-01e">Check-in volume</a>
     <a class="jn-pill" href="#sec-w-02">Quality &amp; risk</a>
     <a class="jn-pill" href="#sec-w-03">Partial drivers</a>
-    <a class="jn-pill" href="#sec-w-04">Journey risk</a>
+    <a class="jn-pill" href="#sec-w-04">Drop-off signal</a>
     <a class="jn-pill" href="#sec-w-05">Handoff topics</a>
     <a class="jn-pill" href="#sec-w-05b">Workflow handoffs</a>
     <a class="jn-pill" href="#sec-w-04c">Duration</a>
@@ -576,17 +576,17 @@
 
     <section class="block" id="sec-w-04">
       <div class="block-head">
-        <h3>Customer journey risk</h3>
-        <div class="note">Drop-off pattern across 172 conversations that ended without a resolution signal.</div>
+        <h3>Drop-off signal (automated Forethought)</h3>
+        <div class="note">Forethought's automated drop-off signal — the conversation log's dropoff_rating and dropoff_reasoning, bucketed into patterns across 172 flagged conversations. This is bot-detected engagement, not human QA (intake grading is above) and not measured recontact: for whether contained conversations actually turn into tickets, see Repeat contact after deflection.</div>
       </div>
-      <div class="takeaway">Most drop-offs show no follow-up at all — consistent with self-resolution, but closure signals are missing.</div>
+      <div class="takeaway">Most flagged drop-offs show no follow-up at all — consistent with self-resolution — and July's 10.0% repeat-contact rate says flagged drop-offs are mostly not turning into tickets. Treat as an engagement signal, not a validated risk.</div>
       <div class="grid-2b">
         <div class="card">
           <div class="subhead">Drop-off signal breakdown</div>
           <table id="tblJourney"></table>
         </div>
         <div class="card">
-          <div class="subhead">Validated drop-off rate</div>
+          <div class="subhead">Signal rates (automated)</div>
           <div class="chart-wrap"><canvas id="chartJourney"></canvas></div>
         </div>
       </div>
@@ -953,7 +953,7 @@ function defaultState(){
       quality: {
         partialPass:  {value:34.8, sub:'188 useful but incomplete'},
         trueFail:     {value:10.0, sub:'54 failed experiences'},
-        dropoff:      {value:28.9, sub:'172 conversations'},
+        dropoff:      {value:28.9, sub:'172 flagged by Forethought (automated signal)'},
         lowRelevance: {value:20.3, sub:'113 of 557 rated'},
         kbUpdates:    {value:91,  sub:'15.5% of QA rows'},
       },
@@ -964,11 +964,11 @@ function defaultState(){
         {cat:'Uncategorized / review', count:1, share:0.8, action:'Review the QA note and assign the best category.'},
       ],
       journey: [
-        {signal:'Drop-off conversations', count:172, rate:28.9, interp:'Users leave before a clear resolution signal.'},
+        {signal:'Drop-off conversations', count:172, rate:28.9, interp:'Flagged by Forethought\'s automated dropoff_rating.'},
         {signal:'No follow-up', count:94, rate:54.7, interp:'Largest drop-off type; review answer closure and CTA.'},
         {signal:'Incomplete handoff', count:27, rate:15.7, interp:'Tighten required ticket-intake prompts and fields.'},
         {signal:'Relevant-answer drop-offs', count:102, rate:59.3, interp:'May indicate CTA or resolution-confirmation ambiguity.'},
-        {signal:'Likely true drop-offs', count:128, rate:74.4, interp:'QA validation indicates the drop-off signal is mostly valid.'},
+        {signal:'Likely true drop-offs', count:128, rate:74.4, interp:'Automated validation of Forethought\'s own signal \u2014 not human QA.'},
       ],
       /* Feed-computed sections: these start empty and populate on the first
          successful live sync (the feed tallies them from the full QA sheet,
@@ -1158,7 +1158,7 @@ function defaultState(){
       readout: [
         'Performance: <strong>83.5% deflection</strong>, but <strong>44.7%</strong> of graded responses still need improvement.',
         'Partial-pass priorities: 43 KB/content (35.5%), 53 technical precision (43.8%), and 24 billing/account (19.8%).',
-        'Customer journey: 172 drop-offs (28.9%), with 94 showing no follow-up and 27 ending during incomplete handoff.',
+        'Automated drop-off signal: Forethought flagged 172 conversations (28.9%), 94 with no follow-up \u2014 but July recontact tracking shows only 10.0% of contained conversations return as tickets.',
       ],
       readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through August 10, 2026. Open QA ask: split L1 replies into "confirmed the same answer" vs. "had to change the response" — not yet sampled.',
     },
@@ -1378,7 +1378,7 @@ const KPI_DEFS = {
   'Technical Improvement Rate':'Partial passes plus fails as a share of scorable rows.',
   'Partial Pass Rate':'Responses judged useful but incomplete.',
   'True Fail Rate':'Responses graded as failed experiences.',
-  'Drop-off Rate':'Conversations that ended without a clear resolution signal.',
+  'Drop-off Rate':'Conversations flagged by Forethought\'s automated dropoff_rating as ending without resolution \u2014 an engagement signal, not human QA and not measured recontact.',
   'Low / Failed Relevance':'Answers rated as not clearly matching the customer issue.',
   'KB Updates Needed':'QA rows explicitly flagged as needing knowledge-base work.',
   'Total QA Rows':'All ticket autoresponder QA rows classified in the sample period.',
