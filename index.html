@@ -478,7 +478,7 @@
     <div class="page-head" id="head-widget">
       <div class="eyebrow">Executive overview</div>
       <h2>Forethought widget performance</h2>
-      <p>Conversation volume, containment, and QA across the widget. 586 classified QA rows reviewed; 45 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 14, 2026.</p>
+      <p>Conversation volume, containment, and QA across the widget. 586 classified QA rows reviewed; 45 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 16, 2026.</p>
     </div>
 
     <div class="month-filter" id="widgetMonthFilter"></div>
@@ -739,21 +739,11 @@
 
     <section class="block" id="sec-k-01b">
       <div class="block-head">
-        <h3>Search path, <span id="kbFunnelMonth">July</span> vs <span id="kbFunnelPrior">June</span></h3>
-        <div class="note">The one true conversion chain in the self-service data — every stage is a subset of the one above it. Sessions, deflections, and article views are context, not chain stages: article views come from browsing as well as search, and deflections are measured against sessions. Clicked counts are derived from searches × CTR.</div>
+        <h3>Self-service flow, <span id="kbFunnelMonth">July</span></h3>
+        <div class="note">Stage volumes for the reporting month. Stages come from different trackers and aren't strict subsets — read as flow shape, not a conversion chain.</div>
       </div>
-      <div class="takeaway">Search demand fell 22.5% in July, but tickets created after search rose 50% — tickets per search nearly doubled (5.9% → 11.5%). Fewer customers search, and more of the ones who do end up filing a ticket: the leak is result quality, not search volume.</div>
-      <div class="kpi-row autofit" id="kpi-kb-context"></div>
-      <div class="grid-2">
-        <div class="card">
-          <div class="subhead">Search chain — reporting month</div>
-          <div class="bar-list" id="kbFunnel"></div>
-        </div>
-        <div class="card">
-          <div class="subhead">Month over month</div>
-          <table id="tblKbChain"></table>
-        </div>
-      </div>
+      <div class="takeaway">The funnel shows where self-service leaks — each stage's gap is a fix candidate.</div>
+      <div class="card"><div class="bar-list" id="kbFunnel"></div></div>
     </section>
 
     <section class="block" id="sec-k-02">
@@ -1834,50 +1824,31 @@ function renderKbView(){
     ${k.searchFind.map(m=>`<tr><td>${m.metric}</td><td class="num">${m.isPct? fmtPct(m.current): fmtNum(m.current)}</td><td class="num">${m.isPct? fmtPct(m.prior): fmtNum(m.prior)}</td><td class="num">${momTag(m.mom)}</td></tr>`).join('')}
   `;
 
-  // ---- Search path: the one true chain (searches ⊇ clicks ⊇ tickets), with MoM ----
+  // ---- Self-service funnel: stage volumes derived from sheet-backed state ----
   setText('kbFunnelMonth', rm.current);
-  setText('kbFunnelPrior', rm.prior);
-  const sfM = m => k.searchFind.find(x=>x.metric===m) || {current:null, prior:null, mom:null};
-  const siM = m => k.supportImpact.find(x=>x.metric===m) || {current:null, prior:null, mom:null};
-  const fSearches = sfM('Total Searches'), fCtr = sfM('Search CTR'), fTix = sfM('Tickets Created After Search');
-  const clicksCur = (fSearches.current!==null && fCtr.current!==null) ? Math.round(fSearches.current*fCtr.current/100) : null;
-  const clicksPri = (fSearches.prior!==null && fCtr.prior!==null) ? Math.round(fSearches.prior*fCtr.prior/100) : null;
-  const clicksMom = (clicksCur!==null && clicksPri) ? (clicksCur-clicksPri)/clicksPri*100 : null;
-  const tixRateCur = (fTix.current!==null && fSearches.current) ? fTix.current/fSearches.current*100 : null;
-  const tixRatePri = (fTix.prior!==null && fSearches.prior) ? fTix.prior/fSearches.prior*100 : null;
-  const tixRateMom = (tixRateCur!==null && tixRatePri) ? (tixRateCur-tixRatePri)/tixRatePri*100 : null;
-  const kSess = siM('End-user Sessions'), kViews = siM('Article Views');
-  const hlT = hl['Total Deflection Rate'];
-  const priDeflIdx = k.kbSuccess.months.indexOf(rm.priorAbbr);
-  const priDefl = priDeflIdx>=0 ? k.kbSuccess.deflections[priDeflIdx] : null;
-  renderKpis('kpi-kb-context', [
-    {label:'End-user Sessions', value:fmtNum(kSess.current), unit:'', sub:`${rm.prior}: ${fmtNum(kSess.prior)} · ${momTag(kSess.mom)}`, status:'neutral'},
-    {label:'Deflected (conf + assumed)', value:fmtNum(hlT.num), unit:'', sub:`${fmtPct(hlT.current)} of sessions · ${rm.prior}: ${fmtNum(priDefl)} · rate ${momTag(hlT.mom)}`, status:'neutral'},
-    {label:'Article Views', value:fmtNum(kViews.current), unit:'', sub:`${rm.prior}: ${fmtNum(kViews.prior)} · ${momTag(kViews.mom)} · browse + search, outside the chain`, status:'neutral'},
-  ]);
+  const fSessions = hl['Total Deflection Rate'].den;
+  const fSearches = k.searchFind.find(m=>m.metric==='Total Searches')?.current;
+  const fCtr = k.searchFind.find(m=>m.metric==='Search CTR')?.current;
+  const fClicks = (fSearches!==null && fSearches!==undefined && fCtr!==null && fCtr!==undefined) ? Math.round(fSearches*fCtr/100) : null;
+  const fViews = k.supportImpact.find(m=>m.metric==='Article Views')?.current;
+  const fDefl = hl['Total Deflection Rate'].num;
+  const fTix = k.searchFind.find(m=>m.metric==='Tickets Created After Search')?.current;
   const stages = [
-    {name:'Searches run', v:fSearches.current, share:null},
-    {name:'Search results clicked', v:clicksCur, share:fCtr.current},
-    {name:'Tickets created after search', v:fTix.current, share:tixRateCur},
+    {name:'End-user sessions', v:fSessions},
+    {name:'Searches run', v:fSearches},
+    {name:'Search results clicked', v:fClicks},
+    {name:'Articles viewed', v:fViews},
+    {name:'Deflected (conf + assumed)', v:fDefl},
+    {name:'Tickets created after search', v:fTix},
   ];
   document.getElementById('kbFunnel').innerHTML = stages.map(s=>{
-    const pct = (s.v!==null && fSearches.current) ? Math.min(100, s.v/fSearches.current*100) : 0;
-    const shareTxt = s.share===null ? '' : ` <span style="color:var(--muted-dim); font-size:11px;">— ${fmtPct(s.share)} of searches</span>`;
+    const pct = (s.v!==null && s.v!==undefined && fSessions) ? Math.min(100, s.v/fSessions*100) : 0;
     return `<div class="row">
-      <div class="name">${s.name}${shareTxt}</div>
+      <div class="name">${s.name}</div>
       <div class="track"><div class="fill" style="width:${pct.toFixed(1)}%"></div></div>
       <div class="pct">${fmtNum(s.v)}</div>
     </div>`;
   }).join('');
-  document.getElementById('tblKbChain').innerHTML = `
-    <tr><th>Stage</th><th class="num">${rm.currentAbbr}</th><th class="num">${rm.priorAbbr}</th><th class="num">MoM</th></tr>
-    <tr><td>Searches run</td><td class="num">${fmtNum(fSearches.current)}</td><td class="num">${fmtNum(fSearches.prior)}</td><td class="num">${momTag(fSearches.mom)}</td></tr>
-    <tr><td>Search results clicked</td><td class="num">${fmtNum(clicksCur)}</td><td class="num">${fmtNum(clicksPri)}</td><td class="num">${momTag(clicksMom===null?null:Number(clicksMom.toFixed(1)))}</td></tr>
-    <tr><td>Search CTR</td><td class="num">${fmtPct(fCtr.current)}</td><td class="num">${fmtPct(fCtr.prior)}</td><td class="num">${momTag(fCtr.mom)}</td></tr>
-    <tr><td>Tickets created after search</td><td class="num">${fmtNum(fTix.current)}</td><td class="num">${fmtNum(fTix.prior)}</td><td class="num">${momTag(fTix.mom)}</td></tr>
-    <tr><td><strong>Tickets per search</strong></td><td class="num"><strong>${fmtPct(tixRateCur)}</strong></td><td class="num"><strong>${fmtPct(tixRatePri)}</strong></td><td class="num">${momTag(tixRateMom===null?null:Number(tixRateMom.toFixed(1)))}</td></tr>
-    <tr><td colspan="4" style="color:var(--muted-dim); font-size:11.5px;">Lower is better for the ticket rows — the ▲ marks growth, not improvement.</td></tr>
-  `;
 
   // ---- KB success vs ticket volume ----
   const ks = k.kbSuccess;
