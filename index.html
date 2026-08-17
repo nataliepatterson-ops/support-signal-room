@@ -369,6 +369,9 @@
   .ov-card{display:flex; flex-direction:column;}
   .ov-card ul{flex:1;}
   .ov-card .goto-btn{margin-top:auto; align-self:flex-start;}
+  /* Repeat-contact section: space between KPI row and cards, calmer note rows */
+  #kpi-widget-repeat{margin-bottom:16px;}
+  #tblRepeatMonthly td[colspan]{border-bottom:none; padding-top:4px;}
 
   /* ---------- mobile pass ---------- */
   @media (max-width:640px){
@@ -515,9 +518,9 @@
     <section class="block" id="sec-w-01f">
       <div class="block-head">
         <h3>Repeat contact after deflection</h3>
-        <div class="note">Post-widget same-issue ticket rate from the Widget Repeat Contact tab: confirmed cases where the same customer opened their own support ticket within 7 days of a widget conversation that was never escalated to a human, over all never-escalated conversations that month. Lower is better — treat as a containment-quality signal, not a definitive deflection-failure rate. Evidence rows are de-identified on this page; customer names live in the sheet. Refreshed Aug 14, 2026.</div>
+        <div class="note">Same customer, same issue, own support ticket within 7 days of a fully-contained widget conversation. Lower is better — a containment-quality signal, not a deflection-failure rate. Widget Repeat Contact tab, refreshed Aug 16, 2026.</div>
       </div>
-      <div class="takeaway">10.0% of July's 180 fully-contained conversations came back as a same-issue support ticket within 7 days — up 3.8pp from June's 6.2% baseline. Every one is a conversation the headline deflection rate counts as a win.</div>
+      <div class="takeaway">10.0% of July's contained conversations came back as same-issue tickets within 7 days, up from 6.2% in June — each one is counted as a win by the headline deflection rate.</div>
       <div class="kpi-row autofit" id="kpi-widget-repeat"></div>
       <div class="grid-2">
         <div class="card">
@@ -525,7 +528,7 @@
           <table id="tblRepeatMonthly"></table>
         </div>
         <div class="card">
-          <div class="subhead">Evidence — de-identified</div>
+          <div class="subhead">Evidence — de-identified (customer names live in the sheet)</div>
           <div style="max-height:300px; overflow-y:auto;"><table id="tblRepeatEvidence"></table></div>
         </div>
       </div>
