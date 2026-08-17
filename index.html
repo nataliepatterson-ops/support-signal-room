@@ -385,7 +385,7 @@
     <span class="sub">support ops</span>
   </div>
   <nav class="tabs">
-    <button class="tab-btn active" data-view="overview">Overview<span class="tab-period">all periods</span></button>
+    <button class="tab-btn active" data-view="overview">Overview<span class="tab-period">Jul 2026</span></button>
     <button class="tab-btn" data-view="widget">Widget QA<span class="tab-period">Apr 27 – Aug 10</span></button>
     <button class="tab-btn" data-view="ticket">Ticket Autoresponder QA<span class="tab-period">Jul 19 – 27</span></button>
     <button class="tab-btn" data-view="kb">KB Scorecard<span class="tab-period" id="kbTabPeriod">Jan – Jul</span></button>
@@ -457,11 +457,11 @@
     <div class="page-head" id="head-overview">
       <div class="eyebrow">Executive summary</div>
       <h2>Support signal overview</h2>
-      <p>The one-screen story across the widget, ticket autoresponder, and the knowledge base. Each card opens its full tab. Note: the three areas cover different reporting periods — compare within a tab, not across tabs.</p>
+      <p>The one-screen story across the widget, ticket autoresponder, and the knowledge base. Each card opens its full tab. Headline KPIs and story cards are July 2026 — the latest complete month in all three sources; full source periods live in each tab.</p>
     </div>
 
     <section class="block" id="sec-o-01">
-      <div class="block-head"><h3>Cross-channel headline</h3></div>
+      <div class="block-head"><h3>Cross-channel headline — July 2026</h3><div class="note">One reporting month across all channels; August is partial everywhere and excluded. Deflection here uses the log's flag basis (month-splittable); the all-period no-handoff deflection (83.5%) lives on the Widget tab.</div></div>
       <div class="kpi-row autofit" id="kpi-overview"></div>
     </section>
 
@@ -1196,6 +1196,8 @@ function defaultState(){
       ],
       readoutCaveat: 'Data note: 14 of 49 Test rows are not marked Excluded from scoring in review_action_status.',
       monthly: {months:['Jun*','Jul','Aug*'], scorable:[5,66,8], pass:[2,42,2], partial:[2,17,4], fail:[1,7,2], passRate:[40.0,63.6,25.0]},
+      /* July slice of the autoresponder raw logs (computed Aug 17, 2026) — feeds the overview's single-month headline. */
+      funnelJul: {inbound:576, sent:110, deflected:73, deflRate:66.4},
       /* Autoresponder funnel from the email raw logs (both tabs, deduplicated by
          conversation_id — the archive's 119 KEEP rows are now fully duplicated in
          the current log with identical flags), Aug 14, 2026.
@@ -1904,24 +1906,30 @@ function renderOverview(){
   const oAu = w.automation;
   const oRemoved = (oAu.baselineTouches!==null && oAu.actualTouches!==null) ? oAu.baselineTouches - oAu.actualTouches : null;
   const oHours = (oRemoved!==null && oAu.minutesPerTouch!==null) ? Math.round(oRemoved * oAu.minutesPerTouch / 60) : null;
+  const jw = w.monthly.months.indexOf('Jul');
+  const julDefl = jw>=0 ? w.monthly.deflectionRate[jw] : null;
+  const julPassW = jw>=0 ? w.monthly.passRate[jw] : null;
+  const julImprove = julPassW===null ? null : Number((100-julPassW).toFixed(1));
+  const ebm = (e.byMonth && e.byMonth['Jul']) || null;
+  const ef = e.funnelJul || {};
   renderKpis('kpi-overview', [
-    {label:'FT Response Coverage', value:(w.impact.coverageNowPct===null?'—':w.impact.coverageNowPct), unit:w.impact.coverageNowPct!==null?'%':'', sub:'Share of all new tickets FT auto-responds to', status:'neutral'},
-    {label:'Widget Deflection', value:w.headline.deflection.value, unit:'%', sub:w.headline.deflection.sub, status:'good'},
-    {label:'Widget Needs Improvement', value:w.headline.improvement.value, unit:'%', sub:w.headline.improvement.sub, status:'bad'},
-    {label:'Ticket Autoresponder QA Pass', value:e.headline.qaPass.value, unit:'%', sub:e.headline.qaPass.sub, status:'good'},
-    {label:'KB Success Rate', value:k.kbSuccess.rate[k.kbSuccess.rate.length-1], unit:'%', sub:'Deflections ÷ (tickets + deflections), current month', status:'good'},
+    {label:'FT Response Coverage', value:(w.impact.coverageNowPct===null?'—':w.impact.coverageNowPct), unit:w.impact.coverageNowPct!==null?'%':'', sub:'Share of July tickets FT auto-responds to (121 of 2,143)', status:'neutral'},
+    {label:'Widget Deflection', value:julDefl, unit:'%', sub:'July, log flag basis — all-period no-handoff deflection is 83.5% (Widget tab)', status:'good'},
+    {label:'Widget Needs Improvement', value:julImprove, unit:'%', sub:'July: 72 partial + 15 fail of 206 scorable QA rows', status:'bad'},
+    {label:'Ticket Autoresponder QA Pass', value:ebm?ebm.passRate:e.headline.qaPass.value, unit:'%', sub:ebm?`${ebm.passN} passes / ${ebm.scorable} July scorable rows`:e.headline.qaPass.sub, status:'good'},
+    {label:'KB Success Rate', value:k.kbSuccess.rate[k.kbSuccess.rate.length-1], unit:'%', sub:`Deflections ÷ (tickets + deflections), ${k.reportingMonth.currentAbbr} ${k.reportingMonth.year}`, status:'good'},
     {label:'L1 Touches Removed', value:(w.automationTracker.rows.find(r=>r.metric.indexOf('L1 touches removed')===0)||{vals:['—']}).vals.slice(-1)[0], unit:'', sub:'July: baseline-expected minus actual L1 touches on FT tickets', status:'good'},
-    {label:'Autoresponder Deflection', value:(e.funnel.find(f=>f.stage==='Deflected')||{pctOfPrev:null}).pctOfPrev, unit:'%', sub:'114 of 157 sent autoresponses needed no human follow-up', status:'good'},
+    {label:'Autoresponder Deflection', value:ef.deflRate!==undefined?ef.deflRate:null, unit:'%', sub:`${ef.deflected} of ${ef.sent} July sent autoresponses needed no human follow-up`, status:'good'},
     {label:'Post-Widget Ticket Rate', value:w.repeatContact.latest.strictRate, unit:'%', sub:'18 of 180 contained July conversations returned as same-issue tickets within 7 days', status:'bad'},
   ]);
   const cards = [
-    {title:'Widget QA', big:fmtPct(w.headline.deflection.value,1)+' deflection', goto:'widget', points:[
-      `${w.headline.improvement.value}% of graded responses still need improvement — mostly KB/content gaps, not bot failures.`,
-      `${w.quality.kbUpdates.value} QA rows are flagged as needing KB updates — the content backlog is quantified.`,
+    {title:'Widget QA', big:fmtPct(julDefl,1)+' deflection (flag basis)', goto:'widget', points:[
+      `${julImprove}% of July's graded responses still need improvement — mostly KB/content gaps, not bot failures.`,
+      `${w.quality.kbUpdates.value} QA rows are flagged as needing KB updates — the content backlog is quantified (all-period).`,
     ]},
-    {title:'Ticket QA', big:fmtPct(e.headline.qaPass.value,1)+' QA pass', goto:'ticket', points:[
-      `Only ${e.headline.scorable.value} of ${e.headline.totalRows.value} rows are scorable — test/process noise is nearly half the sample.`,
-      `${e.quality.followUps.value} follow-ups captured; tagging alignment is the main hygiene gap.`,
+    {title:'Ticket QA', big:(ebm?fmtPct(ebm.passRate,1):fmtPct(e.headline.qaPass.value,1))+' QA pass', goto:'ticket', points:[
+      `Only ${ebm?ebm.scorable:e.headline.scorable.value} of ${ebm?ebm.rows:e.headline.totalRows.value} July QA rows are scorable after test/process exclusions.`,
+      `${ebm?ebm.followUps:e.quality.followUps.value} July follow-ups captured; tagging alignment is the main hygiene gap.`,
     ]},
     {title:'KB Scorecard', big:fmtPct(hl['Total Deflection Rate'].current,1)+' total deflection', goto:'kb', points:(()=>{
       const rm = k.reportingMonth;
