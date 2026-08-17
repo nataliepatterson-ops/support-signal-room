@@ -401,7 +401,7 @@
   <nav class="tabs">
     <button class="tab-btn active" data-view="overview">Overview<span class="tab-period">Jul 2026</span></button>
     <button class="tab-btn" data-view="widget">Widget QA<span class="tab-period">Apr 27 – Aug 10</span></button>
-    <button class="tab-btn" data-view="ticket">Ticket Autoresponder QA<span class="tab-period">Jul 19 – 27</span></button>
+    <button class="tab-btn" data-view="ticket">Ticket Autoresponder QA<span class="tab-period">Jun – Aug*</span></button>
     <button class="tab-btn" data-view="kb">KB Scorecard<span class="tab-period" id="kbTabPeriod">Jan – Jul</span></button>
   </nav>
   <div class="sync-block">
@@ -676,7 +676,7 @@
     <div class="page-head" id="head-email">
       <div class="eyebrow">Executive overview</div>
       <h2>Ticket Autoresponder QA</h2>
-      <p>Ticket autoresponder QA quality, exclusion mix, and follow-up workload. Technical rates exclude Test and Backend/process-update rows. Raw period Jul 19 – Jul 27, 2026. QA last pulled Jul 27, 2026.</p>
+      <p>Ticket autoresponder QA quality, exclusion mix, and follow-up workload. Technical rates exclude Test and Backend/process-update rows. QA sample spans Jun – Aug 2026 (Jun and Aug partial); bulk QA pull Jul 27, 2026.</p>
     </div>
 
     <div class="month-filter" id="emailMonthFilter"></div>
@@ -699,7 +699,7 @@
     <section class="block" id="sec-w-09c">
       <div class="block-head">
         <h3>Autoresponder funnel</h3>
-        <div class="note">From the autoresponder raw logs (current + archive, deduplicated by conversation), Aug 14, 2026. Deflected uses the log's flag; QA quality of the sent responses is graded above.</div>
+        <div class="note">From the autoresponder raw logs (current + archive, deduplicated by conversation), verified Aug 16, 2026. Deflected uses the log's flag; QA quality of the sent responses is graded above.</div>
       </div>
       <div class="takeaway">Coverage is the constraint, not execution: only 25.7% of inbound email is eligible, but 98% of eligible emails get a response and 73% of those deflect.</div>
       <div class="card"><table id="tblFunnel"></table></div>
@@ -1413,10 +1413,10 @@ const KPI_DEFS = {
   'Ticket Autoresponder QA Pass':'Passes divided by scorable ticket autoresponder QA rows, after test/process exclusions.',
   'KB Total Deflection':'Confirmed plus assumed deflections per end-user session.',
   'KB Updates Flagged':'Widget QA rows explicitly flagged as needing knowledge-base work.',
-  'Recontact After Deflection':'Share of deflected conversations where the same customer opened a ticket within 7 days. Strict rate from the Widget Repeat Contact tab.',
+  'Recontact After Deflection':'Share of deflected conversations where the same customer opened a ticket within 7 days. From the Widget Repeat Contact tab.',
   'Post-Widget Ticket Rate':'Confirmed cases where the same customer opened their own support ticket within 7 days of a never-escalated widget conversation, over all never-escalated conversations that month. From the Widget Repeat Contact tab.',
   'Confirmed Same-Issue Tickets':'Manually validated: same customer, same issue, correct chronology, within the 7-day window.',
-  'MoM Change':'Percentage-point change in the strict rate versus the prior month.',
+  'MoM Change':'Percentage-point change in the post-widget ticket rate versus the prior month.',
   'Ticket Autoresponder Coverage Rate':'Share of tickets that received a Forethought auto-response. Reads the coverage-rate label from the autoresponder section of the widget sheet.',
   'L1 Touches Removed':'Baseline-expected L1 touches (non-FT touch rate × FT volume) minus actual — from the FT L1 Touches Removed tracker, July 2026.',
   'Autoresponder Deflection':'Share of sent email autoresponses where the log shows no further human response was needed — from the autoresponder funnel.',
@@ -1577,7 +1577,7 @@ function renderWidgetView(){
   renderKpis('kpi-widget-repeat', [
     {label:'Post-Widget Ticket Rate', value:fmtPct(rc.latest.strictRate,1).replace('%',''), unit:'%', sub:`${rc.latest.confirmed} confirmed of ${rc.latest.eligible} eligible no-handoff conversations — ${rc.latest.month}`, status:'bad'},
     {label:'Confirmed Same-Issue Tickets', value:String(rc.latest.confirmed), unit:'', sub:`Customer reopened with support within 7 days — ${rc.latest.month}`, status:'bad'},
-    {label:'MoM Change', value:(rc.latest.momPp>0?'+':'')+rc.latest.momPp, unit:'pp', sub:'Strict rate vs the June baseline', status:rc.latest.momPp>0?'bad':'good'},
+    {label:'MoM Change', value:(rc.latest.momPp>0?'+':'')+rc.latest.momPp, unit:'pp', sub:'Post-widget ticket rate vs the June baseline', status:rc.latest.momPp>0?'bad':'good'},
   ]);
   document.getElementById('tblRepeatMonthly').innerHTML = `
     <tr><th>Month</th><th class="num">Eligible</th><th class="num">Confirmed</th><th class="num">Rate</th></tr>
@@ -1917,9 +1917,6 @@ function renderTicketGroupsChart(){
 function renderOverview(){
   const w = state.widget, e = state.email, k = state.kb;
   const hl = {}; k.headline.forEach(h=>hl[h.label]=h);
-  const oAu = w.automation;
-  const oRemoved = (oAu.baselineTouches!==null && oAu.actualTouches!==null) ? oAu.baselineTouches - oAu.actualTouches : null;
-  const oHours = (oRemoved!==null && oAu.minutesPerTouch!==null) ? Math.round(oRemoved * oAu.minutesPerTouch / 60) : null;
   const jw = w.monthly.months.indexOf('Jul');
   const julDefl = jw>=0 ? w.monthly.deflectionRate[jw] : null;
   const julPassW = jw>=0 ? w.monthly.passRate[jw] : null;
