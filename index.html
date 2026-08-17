@@ -1088,20 +1088,18 @@ function defaultState(){
       /* Widget Repeat Contact tab, Aug 14, 2026 — post-widget same-issue ticket
          rate. Strict = confirmed cases where the same customer opened their own
          support ticket within 7 days of a widget conversation that was never
-         escalated to a human; inclusive adds ambiguous-timing matches. Lower is
+         escalated to a human. Lower is
          better — a containment-quality signal, not a definitive deflection-failure
          rate. Evidence rows are de-identified on this hosted page; customer names
          live in the sheet. */
       repeatContact: {
-        latest: {month:'Jul', eligible:180, confirmed:18, ambiguous:0, strictRate:10.0, inclusiveRate:10.0, momPp:3.8},
+        latest: {month:'Jul', eligible:180, confirmed:18, strictRate:10.0, momPp:3.8},
         monthly: {
           months:['Jun','Jul'],
           eligible:[145,180],
           confirmed:[9,18],
-          ambiguous:[1,0],
           strictRate:[6.2,10.0],
-          inclusiveRate:[6.9,10.0],
-          notes:['Baseline. One ambiguous match excluded from the strict rate.','18 confirmed same-subject tickets opened within 7 days.'],
+          notes:['Baseline.','18 confirmed same-subject tickets opened within 7 days.'],
         },
         evidence: [
           {month:'Jun', conv:'165107', ticket:'165093', cls:'Confirmed', note:'Gap: 6 min'},
@@ -1113,7 +1111,6 @@ function defaultState(){
           {month:'Jun', conv:'164054', ticket:'164096', cls:'Confirmed', note:'Gap: 23h'},
           {month:'Jun', conv:'164021', ticket:'164071', cls:'Confirmed', note:'Gap: 1 day'},
           {month:'Jun', conv:'165097', ticket:'165157', cls:'Confirmed', note:'Gap: 1 day'},
-          {month:'Jun', conv:'164916', ticket:'164911', cls:'Ambiguous', note:'Sequence not established from available evidence.'},
           {month:'Jul', conv:'165642', ticket:'165636', cls:'Confirmed', note:'Entra ID / SAML SSO for Redis Enterprise Software'},
           {month:'Jul', conv:'165888', ticket:'165869', cls:'Confirmed', note:'July 2026 tax invoice (only proforma issued)'},
           {month:'Jul', conv:'165922', ticket:'165913', cls:'Confirmed', note:'Two unrecognised card charges, no subscription'},
@@ -1404,7 +1401,6 @@ const KPI_DEFS = {
   'Recontact After Deflection':'Share of deflected conversations where the same customer opened a ticket within 7 days. Strict rate from the Widget Repeat Contact tab.',
   'Post-Widget Ticket Rate':'Confirmed cases where the same customer opened their own support ticket within 7 days of a never-escalated widget conversation, over all never-escalated conversations that month. From the Widget Repeat Contact tab.',
   'Confirmed Same-Issue Tickets':'Manually validated: same customer, same issue, correct chronology, within the 7-day window.',
-  'Inclusive Rate':'Strict confirmed cases plus ambiguous same-issue matches where the sequence cannot be established.',
   'MoM Change':'Percentage-point change in the strict rate versus the prior month.',
   'Ticket Autoresponder Coverage Rate':'Share of tickets that received a Forethought auto-response. Reads the coverage-rate label from the autoresponder section of the widget sheet.',
   'L1 Touches Removed':'Baseline-expected L1 touches (non-FT touch rate × FT volume) minus actual — from the FT L1 Touches Removed tracker, July 2026.',
@@ -1568,13 +1564,12 @@ function renderWidgetView(){
   renderKpis('kpi-widget-repeat', [
     {label:'Post-Widget Ticket Rate', value:fmtPct(rc.latest.strictRate,1).replace('%',''), unit:'%', sub:`${rc.latest.confirmed} confirmed of ${rc.latest.eligible} eligible no-handoff conversations — ${rc.latest.month}`, status:'bad'},
     {label:'Confirmed Same-Issue Tickets', value:String(rc.latest.confirmed), unit:'', sub:`Customer reopened with support within 7 days — ${rc.latest.month}`, status:'bad'},
-    {label:'Inclusive Rate', value:fmtPct(rc.latest.inclusiveRate,1).replace('%',''), unit:'%', sub:`Adds ${rc.latest.ambiguous} ambiguous timing ${rc.latest.ambiguous===1?'match':'matches'} — ${rc.latest.month}`, status:'neutral'},
     {label:'MoM Change', value:(rc.latest.momPp>0?'+':'')+rc.latest.momPp, unit:'pp', sub:'Strict rate vs the June baseline', status:rc.latest.momPp>0?'bad':'good'},
   ]);
   document.getElementById('tblRepeatMonthly').innerHTML = `
-    <tr><th>Month</th><th class="num">Eligible</th><th class="num">Confirmed</th><th class="num">Ambiguous</th><th class="num">Strict rate</th><th class="num">Inclusive</th></tr>
-    ${rc.monthly.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(rc.monthly.eligible[i])}</td><td class="num">${fmtNum(rc.monthly.confirmed[i])}</td><td class="num">${fmtNum(rc.monthly.ambiguous[i])}</td><td class="num">${fmtPct(rc.monthly.strictRate[i])}</td><td class="num">${fmtPct(rc.monthly.inclusiveRate[i])}</td></tr>`).join('')}
-    ${rc.monthly.months.map((m,i)=>`<tr><td colspan="6" style="color:var(--muted-dim); font-size:11.5px;">${m}: ${rc.monthly.notes[i]}</td></tr>`).join('')}
+    <tr><th>Month</th><th class="num">Eligible</th><th class="num">Confirmed</th><th class="num">Rate</th></tr>
+    ${rc.monthly.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(rc.monthly.eligible[i])}</td><td class="num">${fmtNum(rc.monthly.confirmed[i])}</td><td class="num">${fmtPct(rc.monthly.strictRate[i])}</td></tr>`).join('')}
+    ${rc.monthly.months.map((m,i)=>`<tr><td colspan="4" style="color:var(--muted-dim); font-size:11.5px;">${m}: ${rc.monthly.notes[i]}</td></tr>`).join('')}
   `;
   document.getElementById('tblRepeatEvidence').innerHTML = `
     <tr><th>Month</th><th class="num">Widget conv.</th><th class="num">Ticket</th><th>Class</th><th>Issue / gap</th></tr>
