@@ -1059,12 +1059,11 @@ function defaultState(){
       /* Program impact — populated ONLY from the widget sheet. Add these
          labels to the sheet (label cell, value one row below, sub-text two
          rows below, same pattern as the headline KPIs) and the feed picks
-         them up: "FT Coverage Rate", "Projected Coverage Rate",
-         "Support Nudges per Month", "L1 Touches Removed". Until then the
+         them up: "FT Coverage Rate", "Support Nudges per Month",
+         "L1 Touches Removed". Until then the
          section shows em-dashes. */
       impact: {
         coverageNowPct:5.6,
-        coverageProjectedPct:null,
         nudgesPerMonth:82,
         /* Now measured by the Widget Repeat Contact tab (strict rate, July). */
         recontactRatePct:10.0,
@@ -1406,7 +1405,6 @@ const KPI_DEFS = {
   'L1 Touches Removed':'Baseline-expected L1 touches (non-FT touch rate × FT volume) minus actual — from the FT L1 Touches Removed tracker, July 2026.',
   'Autoresponder Deflection':'Share of sent email autoresponses where the log shows no further human response was needed — from the autoresponder funnel.',
   'FT Response Coverage':'Share of all new tickets that received a Forethought first response. Reads the "FT Coverage Rate" label from the widget sheet.',
-  'Coverage After Expansion':'Projected coverage after the plan-tier expansion. Reads "Projected Coverage Rate" from the widget sheet.',
   'Support Nudges / Month':'Public support replies chasing a customer who had not yet responded. Reads "Support Nudges per Month" from the widget sheet.',
   'L1 Touches Removed':'Actual reduction in L1 follow-up replies on Forethought-covered tickets, measured post go-live.',
 };
@@ -1506,14 +1504,13 @@ function renderWidgetView(){
   const dash = v => (v===null||v===undefined) ? '—' : v;
   renderKpis('kpi-widget-impact', [
     {label:'FT Response Coverage', value:dash(im.coverageNowPct), unit:im.coverageNowPct!==null?'%':'', sub:'121 of 2,143 July tickets carried ft-email-automated', status:'neutral'},
-    {label:'Coverage After Expansion', value:dash(im.coverageProjectedPct), unit:im.coverageProjectedPct!==null?'%':'', sub:'From widget sheet', status:'neutral'},
     {label:'Support Nudges / Month', value:im.nudgesPerMonth===null?'—':fmtNum(im.nudgesPerMonth), unit:'', sub:'July: 12 FT + 70 non-FT L1-touched tickets tagged no_response', status:'neutral'},
     {label:'Recontact After Deflection', value:dash(im.recontactRatePct), unit:im.recontactRatePct!==null?'%':'', sub:'7-day same-issue ticket rate · Widget Repeat Contact tab, July', status:'neutral'},
     {label:'L1 Touches Removed', value:im.touchesRemovedActual===null?'—':fmtNum(im.touchesRemovedActual), unit:'', sub:'Actual, measured post go-live', status:'neutral'},
   ]);
   document.getElementById('tblImpact').innerHTML = `
     <tr><th>Item</th><th>Detail</th></tr>
-    <tr><td>Data source</td><td style="color:var(--muted); font-size:12px;">Populates from the widget sheet once these label cells exist: "FT Coverage Rate", "Projected Coverage Rate", "Support Nudges per Month", "L1 Touches Removed" (same label/value/sub layout as the headline KPIs).</td></tr>
+    <tr><td>Data source</td><td style="color:var(--muted); font-size:12px;">Populates from the widget sheet once these label cells exist: "FT Coverage Rate", "Support Nudges per Month", "L1 Touches Removed" (same label/value/sub layout as the headline KPIs).</td></tr>
     <tr><td>Measurement plan</td><td style="color:var(--muted); font-size:12px;">${im.measurement}</td></tr>
   `;
 
@@ -1931,9 +1928,11 @@ function renderOverview(){
       const cd = k.momSeries['Confirmed Deflections'] || [];
       const cdCur = cd[cd.length-1], cdPrior = cd[cd.length-2];
       const tdr = hl['Total Deflection Rate'];
-      const pts = (tdr.current - tdr.prior).toFixed(1);
+      const pts = Math.abs(tdr.current - tdr.prior).toFixed(1);
+      const tdrDir = tdr.current >= tdr.prior ? 'up' : 'down';
+      const cdVerb = cdCur >= cdPrior ? 'rose' : 'fell';
       return [
-        `Confirmed deflections rose from ${cdPrior} to ${cdCur} in ${rm.current} — total deflection up ${pts} pts vs. ${rm.prior}.`,
+        `Confirmed deflections ${cdVerb} from ${cdPrior} to ${cdCur} in ${rm.current} — total deflection ${tdrDir} ${pts} pts vs. ${rm.prior}.`,
         `Search proxies dipped in ${rm.current}, but its tickets-after-search methodology changed — directional until reconciled.`,
       ];
     })()},
