@@ -358,6 +358,17 @@
   }
   .goto-btn:hover{background:var(--red); color:#fff;}
   .kpi-row.autofit{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));}
+  /* Overview landing: even 4x2 KPI grid, compact tiles, equal-height story cards */
+  #kpi-overview{grid-template-columns:repeat(4,1fr);}
+  #kpi-overview .kpi{padding:14px 14px 12px;}
+  #kpi-overview .kpi .value{font-size:24px;}
+  #kpi-overview .kpi .sub{font-size:11px;}
+  @media (max-width:1000px){#kpi-overview{grid-template-columns:repeat(2,1fr);}}
+  #head-overview{margin-bottom:18px;}
+  #sec-o-01{margin-bottom:28px;}
+  .ov-card{display:flex; flex-direction:column;}
+  .ov-card ul{flex:1;}
+  .ov-card .goto-btn{margin-top:auto; align-self:flex-start;}
 
   /* ---------- mobile pass ---------- */
   @media (max-width:640px){
