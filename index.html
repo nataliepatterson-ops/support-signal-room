@@ -753,11 +753,12 @@
 
     <section class="block" id="sec-k-01b">
       <div class="block-head">
-        <h3>Self-service flow, <span id="kbFunnelMonth">July</span></h3>
-        <div class="note">Stage volumes for the reporting month. Stages come from different trackers and aren't strict subsets — read as flow shape, not a conversion chain.</div>
+        <h3>Search journey, <span id="kbFunnelMonth">July</span></h3>
+        <div class="note">True-subset funnel from the search tracker: each stage is a subset of the one above; result clicks are derived (searches × CTR, rounded). Sessions, article views, and deflections come from separate trackers with different denominators — shown as context tiles below, not funnel stages.</div>
       </div>
-      <div class="takeaway">The funnel shows where self-service leaks — each stage's gap is a fix candidate.</div>
+      <div class="takeaway">Search is the leaky step — only 48 of 131 searches (37%) get a click, though just 15 end in a ticket; 116 close without one. Deflection and article reach are separate-tracker context, not funnel stages.</div>
       <div class="card"><div class="bar-list" id="kbFunnel"></div></div>
+      <div class="kpi-row autofit" id="kbFlowContext" style="margin-top:12px;"></div>
     </section>
 
     <section class="block" id="sec-k-02">
@@ -1832,7 +1833,7 @@ function renderKbView(){
     ${k.searchFind.map(m=>`<tr><td>${m.metric}</td><td class="num">${m.isPct? fmtPct(m.current): fmtNum(m.current)}</td><td class="num">${m.isPct? fmtPct(m.prior): fmtNum(m.prior)}</td><td class="num">${momTag(m.mom)}</td></tr>`).join('')}
   `;
 
-  // ---- Self-service funnel: stage volumes derived from sheet-backed state ----
+  // ---- Search journey funnel (true subsets) + self-service context tiles ----
   setText('kbFunnelMonth', rm.current);
   const fSessions = hl['Total Deflection Rate'].den;
   const fSearches = k.searchFind.find(m=>m.metric==='Total Searches')?.current;
@@ -1840,23 +1841,29 @@ function renderKbView(){
   const fClicks = (fSearches!==null && fSearches!==undefined && fCtr!==null && fCtr!==undefined) ? Math.round(fSearches*fCtr/100) : null;
   const fViews = k.supportImpact.find(m=>m.metric==='Article Views')?.current;
   const fDefl = hl['Total Deflection Rate'].num;
+  const fDeflRate = hl['Total Deflection Rate'].current;
   const fTix = k.searchFind.find(m=>m.metric==='Tickets Created After Search')?.current;
+  const fContained = (fSearches!==null && fSearches!==undefined && fTix!==null && fTix!==undefined) ? fSearches - fTix : null;
   const stages = [
-    {name:'End-user sessions', v:fSessions},
     {name:'Searches run', v:fSearches},
-    {name:'Search results clicked', v:fClicks},
-    {name:'Articles viewed', v:fViews},
-    {name:'Deflected (conf + assumed)', v:fDefl},
+    {name:'Search results clicked (derived)', v:fClicks},
     {name:'Tickets created after search', v:fTix},
   ];
   document.getElementById('kbFunnel').innerHTML = stages.map(s=>{
-    const pct = (s.v!==null && s.v!==undefined && fSessions) ? Math.min(100, s.v/fSessions*100) : 0;
+    const pct = (s.v!==null && s.v!==undefined && fSearches) ? Math.min(100, s.v/fSearches*100) : 0;
+    const share = (s.v!==null && s.v!==undefined && fSearches) ? ` (${(s.v/fSearches*100).toFixed(0)}%)` : '';
     return `<div class="row">
       <div class="name">${s.name}</div>
       <div class="track"><div class="fill" style="width:${pct.toFixed(1)}%"></div></div>
-      <div class="pct">${fmtNum(s.v)}</div>
+      <div class="pct">${fmtNum(s.v)}${share}</div>
     </div>`;
   }).join('');
+  renderKpis('kbFlowContext', [
+    {label:'Search containment', value:fmtNum(fContained), unit:'', sub:`${fmtNum(fContained)} of ${fmtNum(fSearches)} searches ended without a ticket`, status:'watch'},
+    {label:'End-user sessions', value:fmtNum(fSessions), unit:'', sub:'All-sessions denominator \u2014 separate tracker, not a funnel stage', status:'good'},
+    {label:'Article views', value:fmtNum(fViews), unit:'', sub:'Guide reach metric; includes non-search traffic', status:'watch'},
+    {label:'Deflected (conf + assumed)', value:fmtNum(fDefl), unit:'', sub:`${fmtPct(fDeflRate)} of ${fmtNum(fSessions)} end-user sessions`, status:'good'},
+  ]);
 
   // ---- KB success vs ticket volume ----
   const ks = k.kbSuccess;
