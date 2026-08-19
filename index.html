@@ -492,7 +492,7 @@
     <div class="page-head" id="head-widget">
       <div class="eyebrow">Executive overview</div>
       <h2>Forethought widget performance</h2>
-      <p>Conversation volume, containment, and QA across the widget. 586 classified QA rows reviewed; 45 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 18, 2026.</p>
+      <p>Conversation volume, containment, and QA across the widget. 589 classified QA rows reviewed; 45 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 19, 2026.</p>
     </div>
 
     <div class="month-filter" id="widgetMonthFilter"></div>
@@ -508,7 +508,7 @@
         <h3>Monthly QA trend</h3>
         <div class="note">QA rows grouped by the month the conversation happened, joined to the conversation log's timestamps. Reviewed counts rows graded Pass, Partial pass, Fail, or System Update; pass rate is Pass ÷ (Pass + Partial + Fail). Apr* covers Apr 27–30 only and Aug* runs through Aug 10. Deflection is the share of logged conversations with the log's deflected flag — this flag basis runs higher than the headline no-handoff deflection.</div>
       </div>
-      <div class="takeaway">Pass rate has held in the low-to-mid 50s since May, with July at 57.8%; August's 40.8% is a partial month with only 49 reviewed rows. Flag-based deflection has held around 90% since May.</div>
+      <div class="takeaway">Pass rate has held in the low-to-mid 50s since May, with July at 57.8%; August's 42.3% is a partial month with only 52 reviewed rows. Flag-based deflection has held around 90% since May.</div>
       <div class="card">
         <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
       </div>
@@ -962,15 +962,15 @@ function defaultState(){
         conversations: {value:'595', sub:'Unique widget conversations'},
         deflection:    {value:83.5,  sub:'497 conversations without handoff'},
         handoff:       {value:16.5,  sub:'98 conversations handed off'},
-        qaPass:        {value:55.3,  sub:'299 passes / 541 scorable QA rows'},
-        improvement:   {value:44.7,  sub:'188 partial + 54 fail; 45 system updates excluded'},
+        qaPass:        {value:55.3,  sub:'301 passes / 544 scorable QA rows'},
+        improvement:   {value:44.7,  sub:'189 partial + 54 fail; 45 system updates excluded'},
       },
       quality: {
-        partialPass:  {value:34.8, sub:'188 useful but incomplete'},
-        trueFail:     {value:10.0, sub:'54 failed experiences'},
+        partialPass:  {value:34.7, sub:'189 useful but incomplete'},
+        trueFail:     {value:9.9, sub:'54 failed experiences'},
         dropoff:      {value:28.9, sub:'172 flagged by Forethought (automated signal)'},
         lowRelevance: {value:20.3, sub:'113 of 557 rated'},
-        kbUpdates:    {value:91,  sub:'15.5% of QA rows'},
+        kbUpdates:    {value:91,  sub:'15.4% of QA rows'},
       },
       drivers: [
         {cat:'KB/content gap', count:43, share:35.5, action:'Create or tighten KB and documentation coverage.'},
@@ -1098,7 +1098,7 @@ function defaultState(){
       csat: {csatAvg:null, csatCount:null, relevanceAvg:null, relevanceCount:null},
       /* Monthly QA trend — populates from a "Widget QA Monthly" tab
          (Month | Reviewed | Pass Rate | Deflection Rate). */
-      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,237,49], passRate:[90.0,53.0,53.7,57.8,40.8], deflectionRate:[85.0,90.6,90.7,91.6,88.5]},
+      monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,237,52], passRate:[90.0,53.0,53.7,57.8,42.3], deflectionRate:[85.0,90.6,90.7,91.6,88.5]},
       /* Widget Repeat Contact tab, Aug 14, 2026 — post-widget same-issue ticket
          rate. Strict = confirmed cases where the same customer opened their own
          support ticket within 7 days of a widget conversation that was never
@@ -1158,8 +1158,8 @@ function defaultState(){
         'Apr*': {conversations:20,  deflected:17,  deflection:85.0, handoffN:7, handoffRate:35.0, deflectionNH:65.0, reviewed:20,  scorable:20,  passN:18,  partial:1,   fail:1,  sysupd:0,  passRate:90.0, improvement:10.0, partialRate:5.0,  failRate:5.0,  kbUpdates:0,  kbPct:0.0},
         'May':  {conversations:117, deflected:106, deflection:90.6, handoffN:17, handoffRate:14.5, deflectionNH:85.5, reviewed:117, scorable:117, passN:62,  partial:34,  fail:21, sysupd:0,  passRate:53.0, improvement:47.0, partialRate:29.1, failRate:17.9, kbUpdates:0,  kbPct:0.0},
         'Jun':  {conversations:161, deflected:146, deflection:90.7, handoffN:27, handoffRate:16.8, deflectionNH:83.2, reviewed:161, scorable:147, passN:79,  partial:52,  fail:16, sysupd:14, passRate:53.7, improvement:46.3, partialRate:35.4, failRate:10.9, kbUpdates:18, kbPct:11.2},
-        'Jul':  {conversations:220, deflected:202, deflection:91.8, handoffN:40, handoffRate:18.2, deflectionNH:81.8, reviewed:237, scorable:212, passN:116, partial:80,  fail:16, sysupd:25, passRate:54.7, improvement:45.3, partialRate:37.7, failRate:7.5,  kbUpdates:53, kbPct:22.4},
-        'Aug*': {conversations:76,  deflected:66,  deflection:86.8, handoffN:7, handoffRate:9.2, deflectionNH:90.8, reviewed:49,  scorable:49,  passN:20,  partial:28,  fail:1,  sysupd:0,  passRate:40.8, improvement:59.2, partialRate:57.1, failRate:2.0,  kbUpdates:19, kbPct:38.8},
+        'Jul':  {conversations:220, deflected:202, deflection:91.8, handoffN:40, handoffRate:18.2, deflectionNH:81.8, reviewed:237, scorable:206, passN:119, partial:72,  fail:15, sysupd:31, passRate:57.8, improvement:42.2, partialRate:35.0, failRate:7.3,  kbUpdates:54, kbPct:22.8},
+        'Aug*': {conversations:76,  deflected:66,  deflection:86.8, handoffN:7, handoffRate:9.2, deflectionNH:90.8, reviewed:52,  scorable:52,  passN:22,  partial:29,  fail:1,  sysupd:0,  passRate:42.3, improvement:57.7, partialRate:55.8, failRate:1.9,  kbUpdates:19, kbPct:36.5},
       },
       /* Populates once the handoff-reply sample lives in the widget sheet
          (rows: outcome, count, share). Not shown until then — the dashboard
