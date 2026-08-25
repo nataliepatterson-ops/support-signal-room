@@ -559,6 +559,15 @@
       <div class="card" style="margin-top:12px;"><table id="tblMonthly"></table></div>
     </section>
 
+    <section class="block" id="sec-w-01e">
+      <div class="block-head">
+        <h3>Deflection by subject</h3>
+        <div class="note">Subject is the QA sheet's human-graded Support Type, joined to the conversation log's deflected flag (unique conversations, full period). 167 QA rows carry no Support Type — mostly partial passes and system updates — and conversations never QA'd sit in the unclassified row. Computed Aug 20, 2026.</div>
+      </div>
+      <div class="takeaway" id="wSubjectTakeaway"></div>
+      <div class="card"><table id="tblWidgetSubject"></table></div>
+    </section>
+
     <section class="block" id="sec-w-01f">
       <div class="block-head">
         <h3>Repeat contact after deflection</h3>
@@ -754,6 +763,15 @@
       <div class="card"><table id="tblFunnel"></table></div>
     </section>
 
+    <section class="block" id="sec-w-09d">
+      <div class="block-head">
+        <h3>Coverage by subject — July (Zendesk-verified)</h3>
+        <div class="note">Subject is the ticket's Zendesk group — the one dimension that is 100% populated — pulled live from the ZD API on Aug 20, 2026. Inbound counts via:mail tickets plus FT-created tickets per group (Forethought enters tickets through its API connection, so FT-handled email never shows as via:mail — counting via:mail alone undercounts). Responded = the ft-email-automated tag scoped to customer-facing groups; 59 of July's 121 tagged tickets are internal test traffic (Bots / KB Admins groups) and are excluded here. Deflection by subject needs the log's is_deflected flag joined to each ticket's group — that join is queued for the monthly pull; status-based deflection was rejected because every July FT ticket is solved/closed by now regardless of who resolved it.</div>
+      </div>
+      <div class="takeaway" id="eSubjectTakeaway"></div>
+      <div class="card"><table id="tblEmailSubject"></table></div>
+    </section>
+
     <section class="block" id="sec-w-10">
       <div class="block-head"><h3>Quality &amp; exclusions</h3></div>
       <div class="takeaway">83 of 162 reviewed rows (51.2%) are test or process noise, and 14 test rows still lack exclusion tags — tagging hygiene, not answer quality, is the gap to close.</div>
@@ -885,6 +903,12 @@
       </div>
     </section>
 
+    <section class="block" id="sec-k-07">
+      <div class="block-head"><h3>Deflection by subject — not yet measurable</h3></div>
+      <div class="card story">
+        <div class="s-row"><span class="s-pill na">data gap</span><span class="s-why">Zendesk's deflection export carries no topic or category, so KB deflections cannot be split into CS / Support / Billing the way the widget and autoresponder tabs now are. Two additions would close it: (1) include the deflecting article's Guide section/category in the deflection export, or (2) log the article ID on each deflection event and map it to the KB's category tree. Until then, the nearest context is the ticket-driver table above (which articles sit next to tickets) and ticket volume by group (where demand lives).</span></div>
+      </div>
+    </section>
   </div>
 
 </main>
@@ -1160,6 +1184,16 @@ function defaultState(){
       /* Monthly QA trend — populates from a "Widget QA Monthly" tab
          (Month | Reviewed | Pass Rate | Deflection Rate). */
       monthly: {months:['Apr*','May','Jun','Jul','Aug*'], reviewed:[20,117,161,167,75], passRate:[90.0,53.0,53.7,54.1,42.3], deflectionRate:[85.0,90.6,90.7,90.4,88.5]},
+      /* Deflection by subject — the QA sheet's human-graded "Support Type"
+         joined to the conversation log's deflected flag (unique conversations,
+         full period). Computed Aug 20, 2026. 167 QA rows carry no Support
+         Type; conversations never QA'd sit in the unclassified row. Static
+         until the live feed carries a subject column. */
+      bySubject: [
+        {subject:'Technical', total:239, contained:226, rate:94.6},
+        {subject:'Billing / Account', total:145, contained:120, rate:82.8},
+        {subject:'Not QA-classified', total:169, contained:149, rate:88.2},
+      ],
       /* Widget Repeat Contact tab, Aug 14, 2026 — post-widget same-issue ticket
          rate. Strict = confirmed cases where the same customer opened their own
          support ticket within 7 days of a widget conversation that was never
@@ -1292,6 +1326,20 @@ function defaultState(){
         'Jul':  {rows:115, scorable:66, passN:42, partial:17, fail:7, passRate:63.6, improvement:36.4, partialRate:25.8, failRate:10.6, test:42, testPct:36.5, process:7, processPct:6.1,  followUps:20, fuPct:17.4, inbound:576, sent:110, coverage:19.1},
         'Aug*': {rows:27,  scorable:8,  passN:2,  partial:4,  fail:2, passRate:25.0, improvement:75.0, partialRate:50.0, failRate:25.0, test:0,  testPct:0.0,  process:0, processPct:0.0,  followUps:0,  fuPct:0.0, inbound:27, sent:27, coverage:null},
       },
+      /* Deflection by subject — July 2026, pulled live from the Zendesk API
+         (Aug 20, 2026). Subject = the ticket's current ZD group (100% populated).
+         Inbound = via:mail tickets + FT-created tickets per group (FT enters
+         tickets via its API connection, so FT-handled email is never via:mail).
+         Responded = ft-email-automated tag, scoped to customer-facing groups —
+         59 of July's 121 tagged tickets are internal test traffic (Bots / KB
+         Admins groups) and are excluded. Deflection by subject requires joining
+         the log's is_deflected flag to each ticket's group — pending in the
+         monthly pull. */
+      bySubject: [
+        {subject:'Support (L1\u2013L3)', inbound:199, responded:20, coverage:10.1},
+        {subject:'Billing / Finance', inbound:368, responded:29, coverage:7.9},
+        {subject:'CS / TAM', inbound:30, responded:13, coverage:43.3},
+      ],
     },
     kb: {
       /* reportingMonth is overwritten by the live feed; every month label in
@@ -1408,6 +1456,7 @@ function defaultState(){
         {origin:'', article:'Safely Take a Node Offline for Upgrade or Patching', tickets:1},
       ],
       dataNeeded: [
+        {area:'Deflection by Subject', missing:'Topic/category (or the deflecting article\'s Guide section) on each Zendesk deflection event.', why:'Lets KB deflection split into CS / Support / Billing like the widget and autoresponder tabs.'},
         {area:'True Self-Service Success Rate', missing:'Session/article journey outcome: article viewed or search clicked, then no ticket within attribution window.', why:'Turns directional proxies into a defensible customer-success metric.'},
         {area:'KB Influence on Tickets', missing:'Full ticket universe and whether an article was viewed/suggested before ticket submission.', why:'Shows how KB assists Support even when it does not prevent a ticket.'},
         {area:'Top Ticket Drivers', missing:'Full driver/category/sub-driver on every support ticket.', why:'Connects KB priorities directly to Support\u2019s biggest workstreams.'},
@@ -1758,6 +1807,31 @@ function renderWidgetView(){
     `;
   } else {
     document.getElementById('tblMonthly').innerHTML = `<tr><th>Month</th><th class="num">Reviewed</th><th class="num">Pass rate</th><th class="num">Deflection</th></tr><tr><td colspan="4" style="color:var(--muted-dim); font-style:italic;">Populates from a "Widget QA Monthly" tab in the widget sheet (Month | Reviewed | Pass Rate | Deflection Rate), one row per month.</td></tr>`;
+  }
+
+  // ---- Deflection by subject (widget: QA Support Type × log deflected flag) ----
+  if(w.bySubject && w.bySubject.length){
+    const cls=w.bySubject.filter(x=>x.subject!=='Not QA-classified').sort((a,b)=>b.rate-a.rate);
+    const tkw=document.getElementById('wSubjectTakeaway');
+    if(tkw && cls.length>1){ const best=cls[0], worst=cls[cls.length-1];
+      tkw.textContent=`${best.subject} inquiries contain at ${fmtPct(best.rate)} vs ${fmtPct(worst.rate)} for ${worst.subject.toLowerCase()} — a ${(best.rate-worst.rate).toFixed(1)}pp gap that matches the partial-pass drivers: billing/account answers are the weak spot.`; }
+    const tw=document.getElementById('tblWidgetSubject');
+    if(tw) tw.innerHTML =
+      `<tr><th>Subject</th><th class="num">Conversations</th><th class="num">Contained</th><th class="num">Containment rate</th><th style="width:28%"></th></tr>`
+      + w.bySubject.map(x=>`<tr><td>${x.subject}</td><td class="num">${fmtNum(x.total)}</td><td class="num">${fmtNum(x.contained)}</td><td class="num">${fmtPct(x.rate)}</td><td><span style="display:block; height:8px; border-radius:4px; background:var(--panel-alt);"><span style="display:block; height:100%; width:${x.rate}%; border-radius:4px; background:${x.subject==='Not QA-classified'?'var(--muted)':'var(--green)'};"></span></span></td></tr>`).join('');
+  }
+
+  // ---- Coverage by subject (email: ZD groups, July) ----
+  if(e.bySubject && e.bySubject.length){
+    const tot=e.bySubject.reduce((s,x)=>s+x.inbound,0);
+    const big=[...e.bySubject].sort((a,b)=>b.inbound-a.inbound)[0];
+    const cov=[...e.bySubject].sort((a,b)=>b.coverage-a.coverage)[0];
+    const tke=document.getElementById('eSubjectTakeaway');
+    if(tke) tke.textContent=`${cov.subject} email is the best covered (${fmtPct(cov.coverage)} of ${fmtNum(cov.inbound)} inbound); ${big.subject} is the biggest stream (${fmtNum(big.inbound)} inbound, ${fmtPct(100*big.inbound/tot,0)} of email demand) at only ${fmtPct(big.coverage)} coverage — that is where expanding eligibility pays most.`;
+    const te=document.getElementById('tblEmailSubject');
+    if(te) te.innerHTML =
+      `<tr><th>Subject (Zendesk group)</th><th class="num">Email-origin inbound</th><th class="num">FT-responded</th><th class="num">Coverage</th><th class="num">Deflection</th></tr>`
+      + e.bySubject.map(x=>`<tr><td>${x.subject}</td><td class="num">${fmtNum(x.inbound)}</td><td class="num">${fmtNum(x.responded)}</td><td class="num">${fmtPct(x.coverage)}</td><td class="num" style="color:var(--muted-dim);">pending join</td></tr>`).join('');
   }
 
   // ---- Repeat contact after deflection (Widget Repeat Contact tab) ----
