@@ -1333,6 +1333,22 @@ function defaultState(){
       monthly: {months:['Jun*','Jul'], scorable:[5,66], pass:[2,42], partial:[2,17], fail:[1,7], passRate:[40.0,63.6]},
       /* July slice of the autoresponder raw logs (computed Aug 17, 2026) — feeds the overview's single-month headline. */
       funnelJul: {inbound:576, sent:110, deflected:73, deflRate:66.4},
+      /* Autoresponder eligibility story — computed once from the July Zendesk
+         "Tickets created by month/year" export, grouped by SLA Package × ARR
+         Spend Bucket × Priority (uploaded Aug 27, 2026). Not part of the live
+         feed — re-derive by hand if a fresher ticket export comes in.
+         Pilot = the original rollout scope (Basic only, <$50k ARR, Low/Normal
+         priority only — Urgent/High excluded). Current = where eligibility
+         actually stands now (all Basic + all Developer, any ARR, any
+         priority). proposedBusiness = adding all Business next, per Jay's
+         "prove it out with Business first". */
+      eligibilityJul: {
+        totalTickets: 1770,
+        pilot: {tickets:179, pct:10.1, note:'Basic only, under $50k ARR, Low/Normal priority only'},
+        current: {tickets:228, pct:12.9, note:'All Basic + all Developer, any ARR, any priority'},
+        proposedBusiness: {tickets:215, pct:12.1, note:'All Business, any ARR, any priority — next expansion candidate'},
+        proposedTotal: {tickets:443, pct:25.0, note:'Current scope (Basic + Developer) plus all Business'},
+      },
       /* Autoresponder funnel from the email raw logs (both tabs, deduplicated by
          conversation_id — the archive's 119 KEEP rows are now fully duplicated in
          the current log with identical flags), Aug 14, 2026.
@@ -2349,21 +2365,19 @@ function renderSupportImpact(){
 }
 
 /* Expansion / what's next — forward-looking roadmap content, not live
-   metrics. Autoresponder eligibility phasing keeps Premium/Enterprise out
-   of the near-term story per Jay: prove the model out on Business first
-   before exposing top-value accounts (Tesco, Bank of America, Citi,
-   Morgan Stanley, etc.) to it. */
+   metrics. */
 function renderExpansionNext(){
   const el = document.getElementById('expansionNext'); if(!el) return;
+  const el5 = (state.email && state.email.eligibilityJul) || null;
+  const eligRows = el5 ? `
+        <div class="s-row"><span class="s-pill na">Pilot (original scope)</span><span class="s-label">Basic only, &lt;$50k ARR, Low/Normal priority</span><span class="s-val">${fmtNum(el5.pilot.tickets)} tickets/mo</span><span class="s-why">${fmtPct(el5.pilot.pct,1)} of July's ${fmtNum(el5.totalTickets)} tickets</span></div>
+        <div class="s-row"><span class="s-pill on">Current</span><span class="s-label">All Basic + all Developer, any ARR, any priority</span><span class="s-val">${fmtNum(el5.current.tickets)} tickets/mo</span><span class="s-why">${fmtPct(el5.current.pct,1)} of July's tickets</span></div>
+        <div class="s-row"><span class="s-pill mid">Next: + Business</span><span class="s-label">All Business, any ARR, any priority</span><span class="s-val">+${fmtNum(el5.proposedBusiness.tickets)} tickets/mo</span><span class="s-why">would reach ${fmtNum(el5.proposedTotal.tickets)} tickets/mo — ${fmtPct(el5.proposedTotal.pct,1)} of July's volume</span></div>` : '';
   el.innerHTML = `
     <div class="exp-block">
       <div class="subhead">Autoresponder eligibility roadmap</div>
-      <div class="story">
-        <div class="s-row"><span class="s-pill on">Current</span><span class="s-label">Basic</span></div>
-        <div class="s-row"><span class="s-pill mid">Next</span><span class="s-label">Developer / Business</span></div>
-        <div class="s-row"><span class="s-pill na">Later, after validation</span><span class="s-label">Premium / Enterprise</span></div>
-      </div>
-      <div class="note" style="margin-top:8px;">Business is proven out before any high-value segment — Premium/Enterprise accounts include some of our largest customers (e.g. Tesco, Bank of America, Citi, Morgan Stanley), so those tiers wait until the model is validated further.</div>
+      <div class="story">${eligRows}</div>
+      <div class="note" style="margin-top:8px;">${el5 ? `Business alone (${fmtNum(el5.proposedBusiness.tickets)} tickets) is nearly as large as the current Basic + Developer scope combined (${fmtNum(el5.current.tickets)}) — it's the biggest single lever left to expand eligibility.` : ''}</div>
     </div>
     <div class="exp-block">
       <div class="subhead">What expands next</div>
@@ -2376,8 +2390,17 @@ function renderExpansionNext(){
       </ul>
     </div>
     <div class="exp-block">
-      <div class="subhead">Building toward: human-handled ticket volume</div>
-      <div class="note">Deflection rates alone don't show whether human Support touches are actually declining. Not tracked here yet — total tickets, tickets per person, L1 vs. L2/L3 split, and CSE/TAM volume by product line are the next layer to bring in, to see whether rising deflection is translating into fewer human touches.</div>
+      <div class="subhead">Building toward: fewer human touches, not just deflection %</div>
+      <div class="note">${(()=>{
+        const tr=(state.widget&&state.widget.automationTracker&&state.widget.automationTracker.rows)||[];
+        const baseRow=tr.find(r=>r.metric.indexOf('Baseline L1 touches expected')===0);
+        const removedRow=tr.find(r=>r.metric.indexOf('L1 touches removed')===0);
+        const mo=(state.widget.automationTracker.months||[]).slice(-1)[0]||'this month';
+        if(!baseRow||!removedRow) return '';
+        const baseline=+baseRow.vals.slice(-1)[0], removed=+removedRow.vals.slice(-1)[0];
+        const actual=(+(baseline-removed).toFixed(1));
+        return `Only proof point so far: FT-covered tickets got <strong>${fmtNum(removed)} fewer L1 touches</strong> than expected in ${mo} (${fmtNum(actual)} actual vs. ${fmtNum(baseline)} baseline). That's a small slice of all tickets, though. `;
+      })()}Next: pull in total tickets, tickets per person, L1 vs. L2/L3 split, and CSE/TAM volume by product line to see if it holds org-wide.</div>
     </div>
   `;
 }
@@ -2505,7 +2528,9 @@ function renderOverview(){
     ]},
     {title:'Ticket Autoresponder', big:fmtPct(ef.deflRate,1)+' deflection', goto:'ticket', points:[
       `${fmtNum(ef.deflected)} of ${fmtNum(ef.sent)} AI-responded tickets resolved without Support in July (of ${fmtNum(ejb.inbound)} total inbound — coverage, not quality, is the constraint).`,
-      `Next expansion: Developer + broader Basic eligibility. Potential eligible volume: TBD.`,
+      (()=>{ const el5=(e.eligibilityJul||null); return el5
+        ? `Eligibility now covers all Basic + Developer (${fmtNum(el5.current.tickets)} tickets/mo, ${fmtPct(el5.current.pct,1)} of July's volume) — up from a Basic-only, &lt;$50k, Low/Normal-priority pilot (${fmtNum(el5.pilot.tickets)}). Next: all Business, any priority — potential eligible volume +${fmtNum(el5.proposedBusiness.tickets)} tickets/mo (${fmtPct(el5.proposedTotal.pct,1)} of July's volume combined).`
+        : `Next expansion: Developer + broader Basic eligibility. Potential eligible volume: TBD.`; })(),
     ]},
     {title:'KB Program', big:fmtPct(hl['Total Deflection Rate'].current,1)+' total deflection', goto:'kb', points:(()=>{
       const rm = k.reportingMonth;
