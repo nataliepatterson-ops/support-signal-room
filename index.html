@@ -392,11 +392,10 @@
   /* ---------- hero banner (TLDR strip) ---------- */
   .hero-banner{
     background:var(--rds-midnight);
-    border-bottom:1px solid var(--rds-mars);
-    padding:30px 28px 28px;
-  }
-  .hero-banner .hb-inner{
-    max-width:1240px; margin:0 auto;
+    border:1px solid var(--rds-mars);
+    border-radius:14px;
+    padding:22px 26px;
+    margin:16px 0 20px;
   }
   .hero-banner .hb-eyebrow{
     display:block; font-family:var(--rds-font-mono); font-size:11px; letter-spacing:0.12em;
@@ -404,12 +403,12 @@
   }
   .hero-banner .hb-text{
     font-family:var(--rds-font-sans); font-weight:600; letter-spacing:-0.01em;
-    font-size:26px; line-height:1.5; color:#fff; max-width:980px;
+    font-size:23px; line-height:1.5; color:#fff; max-width:900px;
   }
   .hero-banner .hb-text b{ color:var(--rds-hyper); font-weight:700; }
   @media (max-width:640px){
-    .hero-banner{padding:22px 16px 20px;}
-    .hero-banner .hb-text{font-size:19px;}
+    .hero-banner{padding:16px 18px;}
+    .hero-banner .hb-text{font-size:18px;}
   }
 
   /* ---------- mobile pass ---------- */
@@ -427,8 +426,6 @@
 </style>
 </head>
 <body>
-
-<section class="hero-banner" id="heroBanner"></section>
 
 <header class="topbar">
   <div class="brand">
@@ -512,7 +509,7 @@
     <div class="page-head" id="head-overview">
       <div class="eyebrow">Executive summary</div>
       <h2>Support signal overview</h2>
-      <p>The one-screen story across the widget, ticket autoresponder, and the knowledge base. Each card opens its full tab. Headline KPIs and story cards are July 2026 — the latest complete month in all three sources; full source periods live in each tab.</p>
+      <section class="hero-banner" id="heroBanner"></section>
     </div>
 
     <section class="block" id="sec-o-00">
@@ -2292,12 +2289,12 @@ function renderDeflStory(){
 /* Hero banner — TLDR strip shown at the very top of the page, above the nav.
    Reuses the same numbers as the "Where support demand goes" waterfall so
    the two can never drift apart. White text, red numbers per brand ask. */
-function renderHero(mName, total, kbDefl, contained, arDefl, self, selfPct){
+function renderHero(monthLabel, total, kbDefl, contained, arDefl, self, selfPct){
   const el = document.getElementById('heroBanner');
   if(!el) return;
   el.innerHTML = `<div class="hb-inner">
-    <span class="hb-eyebrow">${mName} snapshot</span>
-    <div class="hb-text">In ${mName}, total demand reached <b>${fmtNum(total)}</b> cases. We deflected <b>${fmtNum(kbDefl)}</b> through our knowledge base, another <b>${fmtNum(contained)}</b> through chat conversations, and <b>${fmtNum(arDefl)}</b> more through AI-driven ticket responses. Together, that's <b>${fmtNum(self)}</b> cases self-served — a <b>${fmtPct(selfPct,0)}</b> deflection rate.</div>
+    <span class="hb-eyebrow">${monthLabel} snapshot</span>
+    <div class="hb-text">In ${monthLabel}, total demand reached <b>${fmtNum(total)}</b> cases. We deflected <b>${fmtNum(kbDefl)}</b> through our knowledge base, another <b>${fmtNum(contained)}</b> through chat conversations, and <b>${fmtNum(arDefl)}</b> more through AI-driven ticket responses. Together, that's <b>${fmtNum(self)}</b> cases self-served — a <b>${fmtPct(selfPct,0)}</b> deflection rate.</div>
   </div>`;
 }
 /* Potential-tickets waterfall — same four deflection layers as the table
@@ -2345,7 +2342,9 @@ function renderDemand(){
   const self=total-human;
   const selfPct=total?100*self/total:0;
   renderWaterfall(total, kbDefl, contained, arDefl, human);
-  renderHero(mName, total, kbDefl, contained, arDefl, self, selfPct);
+  // Hero copy spells the month out in full (e.g. "July") — reportingMonth
+  // carries the full name; mName stays abbreviated for the byMonth lookups above.
+  renderHero(k.reportingMonth.current || mName, total, kbDefl, contained, arDefl, self, selfPct);
   return {mName, total, kbDefl, contained, arDefl, human, self, selfPct};
 }
 
