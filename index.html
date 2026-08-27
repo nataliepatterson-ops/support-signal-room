@@ -179,10 +179,14 @@
   .page-head p{color:var(--muted); font-size:14px; max-width:720px; line-height:1.6; margin:0;}
 
   section.block{margin-bottom:44px;}
-  .block-head{display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:16px; flex-wrap:wrap;}
+  /* Stacked, not side-by-side: a long methodology note next to a short title
+     used to get shoved by justify-content:space-between all the way to the
+     right edge of the screen, with a big empty gap in between. Title on its
+     own line, note (or filter control) below it, both left-aligned. */
+  .block-head{display:flex; flex-direction:column; gap:6px; margin-bottom:16px;}
   .block-head h3{font-family:var(--rds-font-sans); font-size:17px; font-weight:600; letter-spacing:-0.01em; margin:0; display:flex; align-items:center; gap:10px;}
   .block-head h3 .idx{color:var(--muted-dim); font-family:var(--rds-font-mono); font-size:13px; font-weight:400;}
-  .block-head .note{font-size:12.5px; color:var(--muted-dim); max-width:420px; text-align:left; line-height:1.5;}
+  .block-head .note{font-size:12.5px; color:var(--muted-dim); max-width:760px; text-align:left; line-height:1.5;}
 
   /* ---------- range filter control (charts) ---------- */
   .range-filter{
@@ -421,7 +425,6 @@
     .kpi .label{min-height:0; font-size:10.5px;}
     .jumpnav{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;}
     .page-head h2{font-size:22px;}
-    .block-head .note{text-align:left;}
   }
 </style>
 </head>
@@ -461,9 +464,10 @@
     <a class="jn-pill" href="#head-widget">Overview</a>
     <a class="jn-pill" href="#sec-w-01">Headline</a>
     <a class="jn-pill" href="#sec-w-01d">QA trend</a>
+    <a class="jn-pill" href="#sec-w-01g">Subject breakdown</a>
+    <a class="jn-pill" href="#sec-w-01f">Repeat contact</a>
     <a class="jn-pill" href="#sec-w-01b">Program impact</a>
     <a class="jn-pill" href="#sec-w-01c">Automation</a>
-    <a class="jn-pill" href="#sec-w-01e">Check-in volume</a>
     <a class="jn-pill" href="#sec-w-02">Quality &amp; risk</a>
     <a class="jn-pill" href="#sec-w-03">Partial drivers</a>
     <a class="jn-pill" href="#sec-w-04">Drop-off signal</a>
@@ -471,7 +475,6 @@
     <a class="jn-pill" href="#sec-w-05b">Workflow handoffs</a>
     <a class="jn-pill" href="#sec-w-04c">Duration</a>
     <a class="jn-pill" href="#sec-w-04d">Customer feedback</a>
-    <a class="jn-pill" href="#sec-w-07c">KB backlog</a>
     <a class="jn-pill" href="#sec-w-08">Readout</a>
   </div>
   <div class="jumpnav" id="jumpnav-ticket" style="display:none;">
@@ -553,7 +556,7 @@
     <div class="month-filter" id="widgetMonthFilter"></div>
 
     <section class="block" id="sec-w-00">
-      <div class="block-head"><h3>Where this stands — <span id="storyWidgetMonth"></span></h3><div class="note">Each metric shows the latest complete month, movement vs the prior month (green = the right direction), and distance travelled since its first measured month.</div></div>
+      <div class="block-head"><h3>Where this stands — <span id="storyWidgetMonth"></span></h3><div class="note">Shows the month selected above (latest complete month by default), movement vs the prior month (green = the right direction), and distance travelled since its first measured month.</div></div>
       <div class="card story" id="story-widget"></div>
     </section>
 
@@ -575,7 +578,7 @@
       <div class="card" style="margin-top:12px;"><table id="tblMonthly"></table></div>
     </section>
 
-    <section class="block" id="sec-w-01e">
+    <section class="block" id="sec-w-01g">
       <div class="block-head">
         <h3>Deflection by subject</h3>
         <div class="note">Subject is the QA sheet's human-graded Support Type, joined to the conversation log's deflected flag (unique conversations, full period). 167 QA rows carry no Support Type — mostly partial passes and system updates — and conversations never QA'd sit in the unclassified row. Computed Aug 20, 2026.</div>
@@ -622,16 +625,7 @@
       <div class="card"><table id="tblAutomation"></table></div>
     </section>
 
-    <section class="block" id="sec-w-01e">
-      <div class="block-head">
-        <h3>Follow-up workload (check-in replies)</h3>
-        <div class="note">90-day directional floor estimate of follow-up touches on phrase-matched tickets — May 12 – Aug 10, 2026; 810 flagged tickets, 38-ticket sample. Workload and automation mix, not ticket outcomes.</div>
-      </div>
-      <div class="takeaway">4,448 estimated follow-up touches, 66% automated. CS carries most human replies; L3/L2 carry most automation — that's where auto-close rules pay off first.</div>
-      <div class="card"><table id="tblCheckin"></table></div>
-    </section>
 
-    
 
     <section class="block" id="sec-w-02">
       <div class="block-head"><h3>Quality &amp; risk</h3></div>
@@ -718,15 +712,6 @@
       </div>
       <div class="takeaway">19.4% of conversations end with negative sentiment — close to QA's 10.4% fail rate plus drop-off signal. CSAT and quick feedback are too sparse to headline yet.</div>
       <div class="card"><table id="tblCsat"></table></div>
-    </section>
-
-    <section class="block" id="sec-w-07c">
-      <div class="block-head">
-        <h3>QA → KB backlog</h3>
-        <div class="note">Content actions logged in the KB Feedback Backlog tab, driven by QA findings. Closure rate excludes the one Optional item.</div>
-      </div>
-      <div class="takeaway">11 of 46 actionable items are shipped (23.9%) — the QA loop is producing content, with 32 items still waiting on drafting.</div>
-      <div class="card"><table id="tblKbBacklog"></table></div>
     </section>
 
     <section class="block" id="sec-w-08">
@@ -1517,7 +1502,6 @@ const KPI_DEFS = {
   'Deflection Rate':'Share of widget conversations that ended without a handoff to a human.',
   'Handoff Rate':'Share of widget conversations passed to L1 or another human queue.',
   'Technical QA Pass Rate':'Passes divided by scorable QA rows. System Updates and test rows are excluded from the denominator.',
-  'Technical Improvement Rate':'Partial passes plus fails as a share of scorable rows.',
   'Partial Pass Rate':'Responses judged useful but incomplete.',
   'True Fail Rate':'Responses graded as failed experiences.',
   'Drop-off Rate':'Conversations flagged by Forethought\'s automated dropoff_rating as ending without resolution \u2014 an engagement signal, not human QA and not measured recontact.',
@@ -1588,23 +1572,44 @@ const STORY_METRICS = {
   ],
 };
 function lastCompleteIdx(months){ for(let i=months.length-1;i>=0;i--){ if(String(months[i]).indexOf('*')<0) return i; } return months.length-1; }
-function seriesPair(months, vals){
+function seriesPair(months, vals, forceMonth){
   if(!months || !months.length || !vals || !vals.length) return {month:null, value:null, prior:null, priorMonth:null, base:null, baseMonth:null};
-  const i = Math.min(lastCompleteIdx(months), vals.length-1);
+  let i;
+  if(forceMonth){
+    const fi = months.indexOf(forceMonth);
+    i = fi>=0 ? Math.min(fi, vals.length-1) : Math.min(lastCompleteIdx(months), vals.length-1);
+  } else {
+    i = Math.min(lastCompleteIdx(months), vals.length-1);
+  }
   let b = months.length; for(let j=0;j<months.length;j++){ if(String(months[j]).indexOf('*')<0){ b=j; break; } }
   return {month:months[i], value:(vals[i]===undefined?null:vals[i]),
           prior:(i>0&&vals[i-1]!==undefined)?vals[i-1]:null, priorMonth:i>0?months[i-1]:null,
           base:(b<i&&vals[b]!==undefined)?vals[b]:null, baseMonth:b<i?months[b]:null};
 }
-function storyValues(){
+function storyValues(widgetMonthOverride){
   const w=state.widget, e=state.email, k=state.kb;
   const out={widget:{}, email:{}, kb:{}};
-  out.widget.passRate = seriesPair(w.monthly.months, w.monthly.passRate);
-  out.widget.deflection = seriesPair(w.monthly.months, w.monthly.deflectionRate);
-  const rcm = (w.repeatContact && w.repeatContact.monthly) || {};
-  out.widget.repeatContact = seriesPair(rcm.months||[], rcm.strictRate||[]);
-  out.widget.coverage = {month:out.widget.passRate.month, value:w.impact.coverageNowPct, prior:null, priorMonth:null};
-  out.widget.month = out.widget.passRate.month;
+  if(widgetMonthOverride==='All'){
+    // "All" story: roll the whole source period into one number per metric
+    // instead of picking a single month — there is no single "prior month"
+    // to diff against, so these render as baseline/no-prior-month rows.
+    const rcm = (w.repeatContact && w.repeatContact.monthly) || {};
+    const rcElig = (rcm.eligible||[]).reduce((a,b)=>a+b,0);
+    const rcConf = (rcm.confirmed||[]).reduce((a,b)=>a+b,0);
+    const rcRate = rcElig ? +(100*rcConf/rcElig).toFixed(1) : null;
+    out.widget.passRate      = {month:'All months', value:w.headline.qaPass.value,     prior:null, priorMonth:null, base:null, baseMonth:null};
+    out.widget.deflection    = {month:'All months', value:w.headline.deflection.value, prior:null, priorMonth:null, base:null, baseMonth:null};
+    out.widget.repeatContact = {month:'All months', value:rcRate,                      prior:null, priorMonth:null, base:null, baseMonth:null};
+    out.widget.coverage      = {month:'All months', value:w.impact.coverageNowPct,     prior:null, priorMonth:null, base:null, baseMonth:null};
+    out.widget.month = 'All months';
+  } else {
+    out.widget.passRate = seriesPair(w.monthly.months, w.monthly.passRate, widgetMonthOverride);
+    out.widget.deflection = seriesPair(w.monthly.months, w.monthly.deflectionRate, widgetMonthOverride);
+    const rcm = (w.repeatContact && w.repeatContact.monthly) || {};
+    out.widget.repeatContact = seriesPair(rcm.months||[], rcm.strictRate||[], widgetMonthOverride);
+    out.widget.coverage = {month:out.widget.passRate.month, value:w.impact.coverageNowPct, prior:null, priorMonth:null};
+    out.widget.month = out.widget.passRate.month;
+  }
   out.email.passRate = seriesPair(e.monthly.months, e.monthly.passRate);
   const emKey = out.email.passRate.month, ebm=(e.byMonth&&e.byMonth[emKey])||{};
   out.email.coverage = {month:emKey, value:(ebm.coverage===undefined?null:ebm.coverage), prior:null, priorMonth:null};
@@ -1736,12 +1741,12 @@ function renderMonthChips(containerId, months, current, onPick, note){
 }
 
 function renderWidgetView(){
-  const SV = storyValues();
+  const SV = storyValues(widgetMonth);
   renderStory('story-widget','widget',SV); setText('storyWidgetMonth', SV.widget.month||'');
   renderStory('story-email','email',SV); setText('storyEmailMonth', SV.email.month||'');
   const w = state.widget, e = state.email;
-  renderMonthChips('widgetMonthFilter', ['All','Apr*','May','Jun','Jul','Aug*'], widgetMonth,
-    m=>{ widgetMonth=m; renderWidgetView(); }, 'Filters the KPI headers; tables and charts stay full-period.');
+  renderMonthChips('widgetMonthFilter', ['All','Apr*','May','Jun','Jul'], widgetMonth,
+    m=>{ widgetMonth=m; renderWidgetView(); }, 'Filters the KPI headers and Where this stands; tables and charts stay full-period.');
   renderMonthChips('emailMonthFilter', ['All','Jun*','Jul','Aug*'], emailMonth,
     m=>{ emailMonth=m; renderWidgetView(); }, 'Filters the KPI headers; tables and charts stay full-period.');
   const wm = widgetMonth==='All' ? null : w.byMonth[widgetMonth];
@@ -1751,14 +1756,12 @@ function renderWidgetView(){
     {label:'Total Conversations', value:String(wm.conversations), unit:'', sub:`Unique widget conversations — ${widgetMonth}`, status:'neutral'},
     {label:'Deflection Rate', value:fmtPct(wm.deflectionNH,1).replace('%',''), unit:'%', sub:`${wm.conversations-wm.handoffN} of ${wm.conversations} conversations without handoff`, status:kpiStatus('w','deflection',wm.deflectionNH)},
     {label:'Handoff Rate', value:wm.handoffRate, unit:'%', sub:`${wm.handoffN} of ${wm.conversations} conversations handed off`, status:kpiStatus('w','handoff',wm.handoffRate)},
-    {label:'Technical QA Pass Rate', value:wm.passRate, unit:'%', sub:`${wm.passN} passes / ${wm.scorable} scorable QA rows`, status:kpiStatus('w','qaPass',wm.passRate)},
-    {label:'Technical Improvement Rate', value:wm.improvement, unit:'%', sub:`${wm.partial} partial + ${wm.fail} fail; ${wm.sysupd} system updates excluded`, status:kpiStatus('w','improvement',wm.improvement)},
+    {label:'Technical QA Pass Rate', value:wm.passRate, unit:'%', sub:`${wm.passN} passes / ${wm.scorable} scorable QA rows — ${wm.partial} partial + ${wm.fail} fail; ${wm.sysupd} system updates excluded`, status:kpiStatus('w','qaPass',wm.passRate)},
   ] : [
     {label:'Total Conversations', value:w.headline.conversations.value, unit:'', sub:w.headline.conversations.sub, status:'neutral'},
     {label:'Deflection Rate', value:fmtPct(w.headline.deflection.value,1).replace('%',''), unit:'%', sub:w.headline.deflection.sub, status:kpiStatus('w','deflection',w.headline.deflection.value)},
     {label:'Handoff Rate', value:w.headline.handoff.value, unit:'%', sub:w.headline.handoff.sub, status:kpiStatus('w','handoff',w.headline.handoff.value)},
-    {label:'Technical QA Pass Rate', value:w.headline.qaPass.value, unit:'%', sub:w.headline.qaPass.sub, status:kpiStatus('w','qaPass',w.headline.qaPass.value)},
-    {label:'Technical Improvement Rate', value:w.headline.improvement.value, unit:'%', sub:w.headline.improvement.sub, status:kpiStatus('w','improvement',w.headline.improvement.value)},
+    {label:'Technical QA Pass Rate', value:w.headline.qaPass.value, unit:'%', sub:`${w.headline.qaPass.sub} — ${w.headline.improvement.sub}`, status:kpiStatus('w','qaPass',w.headline.qaPass.value)},
   ]);
   renderKpis('kpi-widget-quality', wm ? [
     {label:'Partial Pass Rate', value:wm.partialRate, unit:'%', sub:`${wm.partial} useful but incomplete`, status:kpiStatus('w','partialPass',wm.partialRate)},
@@ -1831,14 +1834,10 @@ function renderWidgetView(){
     <tr><td colspan="4" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">*June FT volume was confirmed test/pilot tickets — use the non-FT June row as the real before baseline. Auto-close counts are simulated against the proposed 4h+72h rule; no live automation exists yet. The tab's July pre/post-rollout L1 counts (44 + 22) do not reconcile with the full-month figure (13); full-month values shown.</td></tr>
   `;
 
-  // ---- Follow-up workload (Check-in Reply Volume tab) ----
-  const ck = w.checkin;
-  document.getElementById('tblCheckin').innerHTML = `
-    <tr><th>Group</th><th class="num">Flagged tickets</th><th class="num">Est. human replies</th><th class="num">Est. auto reminders</th><th class="num">Total touches</th><th class="num">Automation share</th></tr>
-    ${ck.teams.map(t=>`<tr><td>${t.group}</td><td class="num">${fmtNum(t.flagged)}</td><td class="num">${fmtNum(t.human)}</td><td class="num">${fmtNum(t.auto)}</td><td class="num">${fmtNum(t.total)}</td><td class="num">${t.autoShare===null?'—':fmtPct(t.autoShare,0)}</td></tr>`).join('')}
-    <tr><td><strong>Total</strong></td><td class="num"><strong>${fmtNum(ck.summary.flagged)}</strong></td><td class="num"><strong>${fmtNum(ck.summary.humanReplies)}</strong></td><td class="num"><strong>${fmtNum(ck.summary.autoReminders)}</strong></td><td class="num"><strong>${fmtNum(ck.summary.touches)}</strong></td><td class="num"><strong>${fmtPct(ck.summary.automatedShare,0)}</strong></td></tr>
-    <tr><td colspan="6" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">Directional floor estimate: sampled group rates applied to phrase-matched tickets. Finance matches were customers chasing Redis, not agent check-ins.</td></tr>
-  `;
+  // "Follow-up workload (check-in replies)" section was removed from the
+  // Widget tab (Aug 2026) — this data isn't specific to the widget and needs
+  // a proper home elsewhere. state.widget.checkin still holds the numbers
+  // (see defaultState()) so nothing is lost; just not rendered here.
 
   // ---- Monthly QA trend (sheet-fed) ----
   const mo = w.monthly;
@@ -1938,16 +1937,9 @@ function renderWidgetView(){
     ${w.workflows.map(x=>`<tr><td>${x.name}${x.byDesign?' <span style="color:var(--muted-dim); font-size:10.5px;">(by design)</span>':''}</td><td class="num">${fmtNum(x.convs)}</td><td class="num">${fmtNum(x.handoffs)}</td><td class="num">${fmtPct(x.rate)}</td></tr>`).join('')}
   `;
 
-  // ---- QA -> KB backlog (KB Feedback Backlog tab) ----
-  const kbb = w.kbBacklog;
-  document.getElementById('tblKbBacklog').innerHTML = `
-    <tr><th>Status</th><th class="num">Items</th><th>What it means</th></tr>
-    <tr><td>Proposed</td><td class="num">${fmtNum(kbb.proposed)}</td><td style="color:var(--muted); font-size:12px;">Waiting on drafting or approval.</td></tr>
-    <tr><td>In progress</td><td class="num">${fmtNum(kbb.inProgress)}</td><td style="color:var(--muted); font-size:12px;">Being written or in review.</td></tr>
-    <tr><td>Completed</td><td class="num">${fmtNum(kbb.completed)}</td><td style="color:var(--muted); font-size:12px;">Shipped to the knowledge base.</td></tr>
-    <tr><td>Optional</td><td class="num">${fmtNum(kbb.optional)}</td><td style="color:var(--muted); font-size:12px;">Excluded from the closure rate.</td></tr>
-    <tr><td><strong>Closure rate</strong></td><td class="num"><strong>${fmtPct(kbb.closureRate)}</strong></td><td style="color:var(--muted); font-size:12px;">Completed ÷ actionable items (${fmtNum(kbb.total-kbb.optional)}).</td></tr>
-  `;
+  // "QA → KB backlog" section was removed from the Widget tab (Aug 2026).
+  // state.widget.kbBacklog / kbPipeline still hold the numbers — just not
+  // rendered here.
 
   // ---- Autoresponder funnel ----
   document.getElementById('tblFunnel').innerHTML = `
@@ -1958,14 +1950,12 @@ function renderWidgetView(){
   renderKpis('kpi-email-headline', emm ? [
     {label:'Total QA Rows', value:String(emm.rows), unit:'', sub:`Classified QA rows — ${emailMonth}`, status:'neutral'},
     {label:'Scorable Autoresponder Responses', value:String(emm.scorable), unit:'', sub:`${emm.passN} pass + ${emm.partial} partial + ${emm.fail} fail`, status:'neutral'},
-    {label:'Technical QA Pass Rate', value:emm.passRate, unit:'%', sub:`${emm.passN} passes / ${emm.scorable} scorable rows`, status:kpiStatus('e','deflection',emm.passRate)},
-    {label:'Technical Improvement Rate', value:emm.improvement, unit:'%', sub:`${emm.partial} partial + ${emm.fail} fail`, status:kpiStatus('e','improvement',emm.improvement)},
+    {label:'Technical QA Pass Rate', value:emm.passRate, unit:'%', sub:`${emm.passN} passes / ${emm.scorable} scorable rows — ${emm.partial} partial + ${emm.fail} fail`, status:kpiStatus('e','deflection',emm.passRate)},
     {label:'Ticket Autoresponder Coverage Rate', value:(emm.coverage==null?'—':emm.coverage), unit:emm.coverage==null?'':'%', sub:emm.coverage==null?'Log captured only autoresponded emails this month — coverage not computable':`${emm.sent} of ${emm.inbound} inbound emails received an autoresponse`, status:'neutral'},
   ] : [
     {label:'Total QA Rows', value:e.headline.totalRows.value, unit:'', sub:e.headline.totalRows.sub, status:'neutral'},
     {label:'Scorable Autoresponder Responses', value:e.headline.scorable.value, unit:'', sub:e.headline.scorable.sub, status:'neutral'},
-    {label:'Technical QA Pass Rate', value:e.headline.qaPass.value, unit:'%', sub:e.headline.qaPass.sub, status:kpiStatus('e','deflection',e.headline.qaPass.value)},
-    {label:'Technical Improvement Rate', value:e.headline.improvement.value, unit:'%', sub:e.headline.improvement.sub, status:kpiStatus('e','improvement',e.headline.improvement.value)},
+    {label:'Technical QA Pass Rate', value:e.headline.qaPass.value, unit:'%', sub:`${e.headline.qaPass.sub} — ${e.headline.improvement.sub}`, status:kpiStatus('e','deflection',e.headline.qaPass.value)},
     {label:'Ticket Autoresponder Coverage Rate', value:(e.headline.emailCoverage.value===null?'—':e.headline.emailCoverage.value), unit:e.headline.emailCoverage.value!==null?'%':'', sub:e.headline.emailCoverage.sub, status:'neutral'},
   ]);
   renderKpis('kpi-email-quality', emm ? [
