@@ -410,6 +410,10 @@
     font-size:23px; line-height:1.5; color:#fff; max-width:900px;
   }
   .hero-banner .hb-text b{ color:var(--rds-hyper); font-weight:700; }
+  .hero-banner .hb-caveat{
+    margin-top:10px; font-family:var(--rds-font-mono); font-size:11px;
+    color:rgba(255,255,255,0.55);
+  }
   @media (max-width:640px){
     .hero-banner{padding:16px 18px;}
     .hero-banner .hb-text{font-size:18px;}
@@ -521,7 +525,7 @@
     </section>
 
     <section class="block" id="sec-o-01">
-      <div class="block-head"><h3>Cross-channel headline — July 2026</h3><div class="note">One reporting month across all channels — August is partial and excluded.<span class="info-dot">i<span class="tip">Deflection here uses the log's flag basis (month-splittable); the all-period no-handoff deflection (83.3%) lives on the Widget tab.</span></span></div></div>
+      <div class="block-head"><h3>Cross-channel headline — July 2026</h3><div class="note">One reporting month across all channels.<span class="info-dot">i<span class="tip">Deflection here uses the log's flag basis (month-splittable); the all-period no-handoff deflection (83.3%) lives on the Widget tab.</span></span></div></div>
       <div class="kpi-row autofit" id="kpi-overview"></div>
     </section>
 
@@ -2279,12 +2283,14 @@ function renderDeflStory(){
 /* Hero banner — TLDR strip shown at the very top of the page, above the nav.
    Reuses the same numbers as the "Where support demand goes" waterfall so
    the two can never drift apart. White text, red numbers per brand ask. */
-function renderHero(monthLabel, total, kbDefl, contained, arDefl, self, selfPct){
+function renderHero(monthLabel, total, kbDefl, contained, arDefl, self, selfPct, caveats){
   const el = document.getElementById('heroBanner');
   if(!el) return;
+  const caveatHtml = (caveats && caveats.length) ? `<div class="hb-caveat">Data lag: ${caveats.join('; ')}.</div>` : '';
   el.innerHTML = `<div class="hb-inner">
     <span class="hb-eyebrow">${monthLabel} snapshot</span>
     <div class="hb-text">In ${monthLabel}, total demand reached <b>${fmtNum(total)}</b> cases. We deflected <b>${fmtNum(kbDefl)}</b> through our knowledge base, another <b>${fmtNum(contained)}</b> through chat conversations, and <b>${fmtNum(arDefl)}</b> more through AI-driven ticket responses. Together, that's <b>${fmtNum(self)}</b> cases self-served — a <b>${fmtPct(selfPct,0)}</b> deflection rate.</div>
+    ${caveatHtml}
   </div>`;
 }
 /* Potential-tickets waterfall — same four deflection layers as the table
@@ -2318,14 +2324,33 @@ function renderWaterfall(total, kbDefl, contained, arDefl, human){
    Widget/KB tabs; this tab shows the one-month snapshot only. */
 function renderDemand(){
   const w=state.widget, e=state.email, k=state.kb;
+  // Anchor every lookup below to the KB tab's declared reporting month
+  // (reportingMonth.currentAbbr) instead of "whichever column is last in
+  // this particular array." A sheet edit that appends a new in-progress
+  // month to the ticket-volume tracker, or that trims the KB export a
+  // couple of months behind, must not silently get treated as "the" month
+  // this whole cross-channel snapshot reports on.
+  const rm = k.reportingMonth || {};
+  const curAbbr = rm.currentAbbr || null;
+  const caveats = [];
+
   const tSum=i=>{let s=0,ok=false; for(const g in k.ticketGroups){const v=k.ticketGroups[g][i]; if(v!=null){s+=v; ok=true;}} return ok?s:null;};
-  const mIdx=k.ticketGroupMonths.length-1, mName=k.ticketGroupMonths[mIdx];
+  let mIdx = curAbbr ? k.ticketGroupMonths.indexOf(curAbbr) : -1;
+  if(mIdx<0){ mIdx = k.ticketGroupMonths.length-1; caveats.push(`ticket volume has no "${curAbbr||'current'}" column yet — showing ${k.ticketGroupMonths[mIdx]||'—'}`); }
+  const mName=k.ticketGroupMonths[mIdx];
   const tickets=tSum(mIdx);
+
   const cd=k.momSeries['Confirmed Deflections']||[], ad=k.momSeries['Assumed Deflections']||[];
-  const cdN=cd[cd.length-1]||0, adN=ad[ad.length-1]||0, kbDefl=cdN+adN;
-  const wbm=(w.byMonth&&w.byMonth[mName])||{};
-  const rcNet=(w.repeatContact&&w.repeatContact.latest&&w.repeatContact.latest.month===mName)?(w.repeatContact.latest.confirmed||0):0;
+  let momIdx = curAbbr ? k.momMonths.indexOf(curAbbr) : -1;
+  if(momIdx<0){ momIdx = k.momMonths.length-1; caveats.push(`KB deflection export only runs through ${k.momMonths[momIdx]||'—'}`); }
+  const cdN=cd[momIdx]||0, adN=ad[momIdx]||0, kbDefl=cdN+adN;
+
+  const wKey = [curAbbr, curAbbr+'*'].find(key=>key && w.byMonth && w.byMonth[key]);
+  if(curAbbr && !wKey) caveats.push(`widget has no "${curAbbr}" data yet`);
+  const wbm = wKey ? w.byMonth[wKey] : {};
+  const rcNet=(w.repeatContact&&w.repeatContact.latest&&w.repeatContact.latest.month===curAbbr)?(w.repeatContact.latest.confirmed||0):0;
   const contained=(wbm.deflected!=null)?Math.max(wbm.deflected-rcNet,0):0;
+
   const arDefl=(e.funnelJul&&e.funnelJul.deflected)||0;
   const human=tickets!=null?tickets-arDefl:0;
   const total=human+arDefl+contained+kbDefl;
@@ -2333,15 +2358,16 @@ function renderDemand(){
   const selfPct=total?100*self/total:0;
   renderWaterfall(total, kbDefl, contained, arDefl, human);
   // Hero copy spells the month out in full (e.g. "July") — reportingMonth
-  // carries the full name; mName stays abbreviated for the byMonth lookups above.
-  renderHero(k.reportingMonth.current || mName, total, kbDefl, contained, arDefl, self, selfPct);
+  // carries the full name; curAbbr stays abbreviated for the lookups above.
+  renderHero(rm.current || mName, total, kbDefl, contained, arDefl, self, selfPct, caveats);
   return {mName, total, kbDefl, contained, arDefl, human, self, selfPct};
 }
 
 function renderOverview(){
   const w = state.widget, e = state.email, k = state.kb;
   const SV = storyValues();
-  renderOverviewStory(SV); setText('storyOverviewMonth', (SV.kb.month||'') + ' 2026');
+  const rm = k.reportingMonth || {};
+  renderOverviewStory(SV); setText('storyOverviewMonth', rm.current ? `${rm.current} ${rm.year||''}`.trim() : ((SV.kb.month||'') + ' 2026'));
   const demand = renderDemand();
   renderDeflStory();
   const hl = {}; k.headline.forEach(h=>hl[h.label]=h);
