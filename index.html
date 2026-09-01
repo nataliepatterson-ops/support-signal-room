@@ -3,10 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Support Signal Room — Widget, Ticket QA &amp; KB Console</title>
+<title>Support Signal Room — Widget, Ticket Autoresponder &amp; KB Console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';document.head.appendChild(s);"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+  // Fallback CDN if cdnjs is blocked/unreachable (e.g. corporate network policy).
+  // Uses document.write so this executes synchronously during page parse,
+  // guaranteeing Chart is defined (or truly unavailable) before the render
+  // script below checks for it — an appendChild-based fallback loads async
+  // and would lose that race, silently disabling every chart on the page.
+  if (typeof Chart === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"><\/script>');
+  }
+</script>
 <style>
   /* =====================================================================
      Redis 2024 Digital UI tokens — Midnight/Dusk surfaces, Hyper Red accent.
@@ -305,7 +315,6 @@
     font-family:var(--rds-font-mono); color:var(--muted-dim); font-size:12px; width:20px; display:inline-block;
   }
 
-
   /* ---------- narrative staleness banner ---------- */
   .narrative-banner{
     display:none;
@@ -471,13 +480,8 @@
     <span class="jn-label">Jump to</span>
     <a class="jn-pill" href="#head-widget">Overview</a>
     <a class="jn-pill" href="#sec-w-01">Headline</a>
-    <a class="jn-pill" href="#sec-w-01d">QA trend</a>
     <a class="jn-pill" href="#sec-w-01g">Subject breakdown</a>
     <a class="jn-pill" href="#sec-w-01f">Repeat contact</a>
-    <a class="jn-pill" href="#sec-w-01b">Program impact</a>
-    <a class="jn-pill" href="#sec-w-01c">Automation</a>
-    <a class="jn-pill" href="#sec-w-02">Quality &amp; risk</a>
-    <a class="jn-pill" href="#sec-w-03">Partial drivers</a>
     <a class="jn-pill" href="#sec-w-04">Drop-off signal</a>
     <a class="jn-pill" href="#sec-w-05">Handoff topics</a>
     <a class="jn-pill" href="#sec-w-05b">Workflow handoffs</a>
@@ -488,11 +492,9 @@
   <div class="jumpnav" id="jumpnav-ticket" style="display:none;">
     <span class="jn-label">Jump to</span>
     <a class="jn-pill" href="#head-email">Overview</a>
-    <a class="jn-pill" href="#sec-w-09">Headline</a>
-    <a class="jn-pill" href="#sec-w-09b">MoM trend</a>
     <a class="jn-pill" href="#sec-w-09c">Funnel</a>
-    <a class="jn-pill" href="#sec-w-10">Quality &amp; exclusions</a>
-    <a class="jn-pill" href="#sec-w-11">Mix &amp; signals</a>
+    <a class="jn-pill" href="#sec-w-09e">Solved vs. handoff</a>
+    <a class="jn-pill" href="#sec-w-09g">Support impact</a>
     <a class="jn-pill" href="#sec-w-12">Readout</a>
   </div>
   <div class="jumpnav" id="jumpnav-kb" style="display:none;">
@@ -508,7 +510,6 @@
     <a class="jn-pill" href="#sec-k-06">Ticket volume</a>
   </div>
 </div>
-
 
 <div class="narrative-banner" id="narrativeBanner"></div>
 
@@ -568,13 +569,13 @@
 
   </div>
 
-  <!-- ===================== VIEW 1: WIDGET QA ===================== -->
+  <!-- ===================== VIEW 1: WIDGET ===================== -->
   <div class="view" id="view-widget">
 
     <div class="page-head" id="head-widget">
       <div class="eyebrow">Executive overview</div>
       <h2>Forethought widget performance</h2>
-      <p>Conversation volume, containment, and QA across the widget. 632 classified QA rows reviewed; 80 System Updates are excluded from technical quality rates. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 19, 2026.</p>
+      <p>How the widget is affecting Support: conversation volume, containment, and how often deflected conversations actually stay resolved. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 19, 2026.</p>
     </div>
 
     <div class="month-filter" id="widgetMonthFilter"></div>
@@ -586,20 +587,8 @@
 
     <section class="block" id="sec-w-01">
       <div class="block-head"><h3>Headline performance</h3></div>
-      <div class="takeaway">Deflection is strong — the gap is answer completeness, not coverage.</div>
-      <div class="kpi-row" id="kpi-widget-headline"></div>
-    </section>
-
-<section class="block" id="sec-w-01d">
-      <div class="block-head">
-        <h3>Monthly QA trend</h3>
-        <div class="note">QA rows grouped by the month the conversation happened, joined to the conversation log's timestamps. Reviewed counts rows graded Pass, Partial pass, Fail, or System Update; pass rate is Pass ÷ (Pass + Partial + Fail). Apr* covers Apr 27–30 only. Deflection is the share of logged conversations with the log's deflected flag — this flag basis runs higher than the headline no-handoff deflection. Jul undercounts: 84 QA rows cannot be dated — 39 conversations are absent from the log export and 45 join only to log rows with broken (#REF!) timestamps.</div>
-      </div>
-      <div class="takeaway">Pass rate has held in the low-to-mid 50s since May, with July at 54.1%. Flag-based deflection has held around 90% since May.</div>
-      <div class="card">
-        <div class="chart-wrap"><canvas id="chartMonthly"></canvas></div>
-      </div>
-      <div class="card" style="margin-top:12px;"><table id="tblMonthly"></table></div>
+      <div class="takeaway">Deflection is strong — most widget conversations resolve without ever reaching a human.</div>
+      <div class="kpi-row autofit" id="kpi-widget-headline"></div>
     </section>
 
     <section class="block" id="sec-w-01g">
@@ -626,51 +615,6 @@
         <div class="card">
           <div class="subhead">Evidence — de-identified (customer names live in the sheet)</div>
           <div style="max-height:300px; overflow-y:auto;"><table id="tblRepeatEvidence"></table></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="block" id="sec-w-01b">
-      <div class="block-head">
-        <h3>Program impact &amp; coverage</h3>
-        <div class="note">The leadership view: how much of the ticket stream Forethought touches, and the manual work the approved automation removes.</div>
-      </div>
-      <div class="takeaway">Coverage is the leadership lever: FT touches 5.6% of the July ticket stream, so quality wins multiply only as coverage expands. Recontact now reads from the Widget Repeat Contact tab; touches-removed populates once its Zendesk query is added to the sheet.</div>
-      <div class="kpi-row autofit" id="kpi-widget-impact"></div>
-      <div class="card" style="margin-top:12px;"><table id="tblImpact"></table></div>
-    </section>
-
-    <section class="block" id="sec-w-01c">
-      <div class="block-head">
-        <h3>Automation program</h3>
-        <div class="note">Auto-reminder and auto-close on Forethought-covered tickets. Every reduction metric is shown next to its guardrail.</div>
-      </div>
-      <div class="takeaway">Reductions only count with the guardrail beside them — a low reopen rate is what makes the removed touches real.</div>
-      <div class="card"><table id="tblAutomation"></table></div>
-    </section>
-
-
-
-    <section class="block" id="sec-w-02">
-      <div class="block-head"><h3>Quality &amp; risk</h3></div>
-      <div class="takeaway">Partial passes, not outright failures, drive the improvement backlog.</div>
-      <div class="kpi-row" id="kpi-widget-quality"></div>
-    </section>
-
-    <section class="block" id="sec-w-03">
-      <div class="block-head">
-        <h3>Partial-pass drivers</h3>
-        <div class="note">What's behind the 212 "useful but incomplete" responses — 145 categorized to a root cause so far.</div>
-      </div>
-      <div class="takeaway">Nearly half of incomplete answers trace back to KB gaps — content work, not bot work.</div>
-      <div class="grid-2">
-        <div class="card">
-          <div class="subhead">Share of partial passes by root cause</div>
-          <div class="chart-wrap"><canvas id="chartPartialDrivers"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="subhead">Recommended action by driver</div>
-          <table id="tblPartialDrivers"></table>
         </div>
       </div>
     </section>
@@ -748,74 +692,55 @@
 
   </div>
 
-  <!-- ===================== VIEW 2: TICKET QA (EMAIL) ===================== -->
+  <!-- ===================== VIEW 2: TICKET AUTORESPONDER (EMAIL) ===================== -->
   <div class="view" id="view-ticket">
 
     <div class="page-head" id="head-email">
       <div class="eyebrow">Executive overview</div>
       <h2>Ticket Autoresponder</h2>
-      <p>Ticket autoresponder QA quality, exclusion mix, and follow-up workload. Technical rates exclude Test and Backend/process-update rows. QA sample spans Jun – Jul 2026 (Jun partial); bulk QA pull Jul 27, 2026.</p>
+      <p>How the ticket autoresponder is affecting Support: how many tickets it touches, how many it resolves outright vs. hands to L1, and whether it's actually reducing L1 touches. Jun–Jul are pilot months.</p>
     </div>
-
-    <div class="month-filter" id="emailMonthFilter"></div>
 
     <section class="block" id="sec-e-00">
       <div class="block-head"><h3>Where this stands — <span id="storyEmailMonth"></span></h3><div class="note">Each metric shows the latest complete month and movement vs the prior month (Jun* is a tiny partial sample — read its comparison loosely).</div></div>
       <div class="card story" id="story-email"></div>
     </section>
 
-    <section class="block" id="sec-w-09">
-      <div class="block-head"><h3>Headline performance</h3></div>
-      <div class="takeaway">Ticket autoresponder pass rate is 58.2% on a larger scorable sample (79) — the earlier 92.7% was a small-sample read.</div>
-      <div class="kpi-row" id="kpi-email-headline"></div>
-    </section>
-
-    <section class="block" id="sec-w-09b">
-      <div class="block-head">
-        <h3>Month-over-month QA trend</h3>
-        <div class="note">Ticket autoresponder QA results grouped by the month the conversation happened, joined from the autoresponder raw logs. Jun* is a partial sample.</div>
-      </div>
-      <div class="takeaway">July is the first month with a real sample — 66 scorable rows at 63.6% pass. June is too small to read alone.</div>
-      <div class="card"><table id="tblEmailMonthly"></table></div>
-    </section>
-
     <section class="block" id="sec-w-09c">
       <div class="block-head">
         <h3>Autoresponder funnel</h3>
-        <div class="note">From the autoresponder raw logs (current + archive, deduplicated by conversation), verified Aug 16, 2026. Deflected uses the log's flag; QA quality of the sent responses is graded above.</div>
+        <div class="note">From the autoresponder raw logs (current + archive, deduplicated by conversation), verified Aug 16, 2026. Deflected uses the log's flag; QA quality of the sent responses is graded further down this page.</div>
       </div>
       <div class="takeaway">Coverage is the constraint, not execution: only 25.4% of inbound email is eligible, but 98% of eligible emails get a response and 73% of those deflect.</div>
       <div class="card"><table id="tblFunnel"></table></div>
     </section>
 
-    <section class="block" id="sec-w-09d">
+    <section class="block" id="sec-w-09e">
       <div class="block-head">
-        <h3>Coverage by subject — July (Zendesk-verified)</h3>
-        <div class="note">Subject is the ticket's Zendesk group — the one dimension that is 100% populated — pulled live from the ZD API on Aug 20, 2026. Inbound counts via:mail tickets plus FT-created tickets per group (Forethought enters tickets through its API connection, so FT-handled email never shows as via:mail — counting via:mail alone undercounts). Responded = the ft-email-automated tag scoped to customer-facing groups; 59 of July's 121 tagged tickets are internal test traffic (Bots / KB Admins groups) and are excluded here. Deflection by subject needs the log's is_deflected flag joined to each ticket's group — that join is queued for the monthly pull; status-based deflection was rejected because every July FT ticket is solved/closed by now regardless of who resolved it.</div>
+        <h3>Solved by bot vs. handed to L1 — Support</h3>
+        <div class="note">Scope: Support only (CS-owned; Billing runs its own review and is tracked separately). Sent = <span class="mono">forethought_support_sent</span>, Solved = <span class="mono">forethought_support_solved</span>, Handed to L1 = <span class="mono">forethought_support_handoff</span>. Jun–Jul are pilot months — read loosely.<span class="info-dot">i<span class="tip">Solve rate is the only outcome directly attributable to the bot: an unsolved ticket would have gone to L1 whether or not the bot touched it, so handoff is shown as supporting detail, not a headline metric. The 4-hour no-response timeout is a narrow fallback, not the main driver of handoffs.</span></span></div>
       </div>
-      <div class="takeaway" id="eSubjectTakeaway"></div>
-      <div class="card"><table id="tblEmailSubject"></table></div>
-    </section>
-
-    <section class="block" id="sec-w-10">
-      <div class="block-head"><h3>Quality &amp; exclusions</h3></div>
-      <div class="takeaway">83 of 162 reviewed rows (51.2%) are test or process noise, and 14 test rows still lack exclusion tags — tagging hygiene, not answer quality, is the gap to close.</div>
-      <div class="kpi-row" id="kpi-email-quality"></div>
-    </section>
-
-    <section class="block" id="sec-w-11">
-      <div class="block-head"><h3>Ticket autoresponder QA mix &amp; operational signals</h3></div>
-      <div class="takeaway">Test grading and review-status tagging still disagree on 14 of 49 test rows.</div>
-      <div class="grid-2">
+      <div class="takeaway" id="supportFunnelTakeaway"></div>
+      <div class="kpi-row autofit" id="kpi-support-funnel"></div>
+      <div class="grid-2" style="margin-top:12px;">
         <div class="card">
-          <div class="subhead">Classification of all 143 reviewed rows</div>
-          <div class="chart-wrap"><canvas id="chartEmailMix"></canvas></div>
+          <div class="subhead">MoM trend</div>
+          <table id="tblSupportFunnel"></table>
         </div>
         <div class="card">
-          <div class="subhead">Operational signals</div>
-          <table id="tblEmailSignals"></table>
+          <div class="subhead">Why tickets get handed to L1</div>
+          <table id="tblHandoffReasons"></table>
         </div>
       </div>
+    </section>
+
+    <section class="block" id="sec-w-09g">
+      <div class="block-head">
+        <h3>Support impact — L1 touches &amp; nudges</h3>
+        <div class="note">Does the autoresponder actually reduce work for Support, independent of whether it fully solves the ticket? Compares FT-tagged (<span class="mono">ft-email-automated</span>) tickets against non-FT tickets on how often each reaches L1 and how often L1 has to send a follow-up nudge. From the Automation Baseline tab.<span class="info-dot">i<span class="tip">June's FT volume was confirmed test/pilot tickets, not organic — read June loosely. The tab's July pre/post-rollout L1-touched counts (44+22) don't reconcile with its own full-month figure (13); full-month values are shown as authoritative here since they match the Zendesk tag counts used elsewhere on this tab.</span></span></div>
+      </div>
+      <div class="takeaway">FT-tagged tickets reach L1 less often than non-FT tickets (10.7% vs. 15.1% in July) — a modest touches-removed signal, even though most FT-tagged tickets aren't fully solved by the bot (see above). Hours returned is still blocked on agreeing a minutes-per-touch value with Support leadership.</div>
+      <div class="card"><table id="tblAutomation"></table></div>
     </section>
 
     <section class="block" id="sec-w-12">
@@ -1059,7 +984,6 @@ function updateScrollSpy(){
 }
 window.addEventListener('scroll', updateScrollSpy, {passive:true});
 
-
 /* =========================================================================
    STATE — everything the page renders from.
    Text/rationale columns are treated as stable and stay static; every
@@ -1290,11 +1214,11 @@ function defaultState(){
         note:'Pending: add the L1 handoff-reply sample (handed-off conversations and whether the customer replied) to the widget sheet, and the feed will populate this section.',
       },
       readout: [
-        'Performance: <strong>83.3% deflection</strong>, but <strong>44.7%</strong> of graded responses still need improvement.',
-        'Partial-pass priorities: 43 KB/content (35.5%), 53 technical precision (43.8%), and 24 billing/account (19.8%).',
-        'Automated drop-off signal: Forethought flagged 155 conversations (28.1%), 80 with no follow-up \u2014 but July recontact tracking shows only 12.6% of contained conversations return as tickets.',
+        'Performance: <strong>83.3% deflection</strong> — most widget conversations resolve without ever reaching a human.',
+        'Recontact: 12.6% of July\'s contained conversations came back as a same-issue ticket within 7 days, up from 6.2% in June — the real cost of "contained but not actually solved."',
+        'Automated drop-off signal: Forethought flagged 155 conversations (28.1%) as drop-offs, 80 with no follow-up — but recontact tracking says most of those are not turning into tickets.',
       ],
-      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through August 10, 2026. Open QA ask: split L1 replies into "confirmed the same answer" vs. "had to change the response" — not yet sampled.',
+      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through August 10, 2026.',
     },
     email: {
       headline: {
@@ -1325,11 +1249,11 @@ function defaultState(){
         {signal:'Test rows missing exclusion status', count:14, rate:28.6, interp:'Test grading and review-status tagging are not fully aligned.'},
       ],
       readout: [
-        'Coverage: 162 of 162 ticket autoresponder QA rows are reviewed; 79 are technically scorable after exclusions.',
-        'Quality: <strong>58.2% technical pass rate</strong>, with 23 partial passes and 10 fails.',
-        'Exclusions: 83 test or process rows represent 51.2% of reviewed QA rows; 50 follow-ups are captured.',
+        'Solve rate: the bot resolved <strong>1.6% of August\'s 61 sent tickets</strong> outright (1 of 61) — the only outcome caused by the bot. Most of the rest go to L1 by default, the same place they\'d land without it.',
+        'Touches: FT-tagged tickets reach L1 less often than non-FT tickets (10.7% vs. 15.1% in July) — a real but modest reduction in L1 touches, not yet converted to an hours-returned figure.',
+        'Trend: August\'s solve rate (1.6%) is down from July\'s pilot-period 10.7% (8 of 75) while sent volume held roughly steady (75 → 61) — worth watching next month before calling it a trend.',
       ],
-      readoutCaveat: 'Data note: 14 of 49 Test rows are not marked Excluded from scoring in review_action_status.',
+      readoutCaveat: 'Note: June and July are Support pilot months, not a stable MoM baseline. Hours returned from reduced L1 touches is still blocked on agreeing a minutes-per-touch value with Support leadership.',
       monthly: {months:['Jun*','Jul'], scorable:[5,66], pass:[2,42], partial:[2,17], fail:[1,7], passRate:[40.0,63.6]},
       /* July slice of the autoresponder raw logs (computed Aug 17, 2026) — feeds the overview's single-month headline. */
       funnelJul: {inbound:576, sent:110, deflected:73, deflRate:66.4},
@@ -1365,20 +1289,43 @@ function defaultState(){
         'Jun*': {rows:20,  scorable:5,  passN:2,  partial:2,  fail:1, passRate:40.0, improvement:60.0, partialRate:40.0, failRate:20.0, test:7,  testPct:35.0, process:8, processPct:40.0, followUps:11, fuPct:55.0, inbound:20, sent:20, coverage:null},
         'Jul':  {rows:115, scorable:66, passN:42, partial:17, fail:7, passRate:63.6, improvement:36.4, partialRate:25.8, failRate:10.6, test:42, testPct:36.5, process:7, processPct:6.1,  followUps:20, fuPct:17.4, inbound:576, sent:110, coverage:19.1},
       },
-      /* Deflection by subject — July 2026, pulled live from the Zendesk API
-         (Aug 20, 2026). Subject = the ticket's current ZD group (100% populated).
-         Inbound = via:mail tickets + FT-created tickets per group (FT enters
-         tickets via its API connection, so FT-handled email is never via:mail).
-         Responded = ft-email-automated tag, scoped to customer-facing groups —
-         59 of July's 121 tagged tickets are internal test traffic (Bots / KB
-         Admins groups) and are excluded. Deflection by subject requires joining
-         the log's is_deflected flag to each ticket's group — pending in the
-         monthly pull. */
-      bySubject: [
-        {subject:'Support (L1\u2013L3)', inbound:199, responded:20, coverage:10.1},
-        {subject:'Billing / Finance', inbound:368, responded:29, coverage:7.9},
-        {subject:'CS / TAM', inbound:30, responded:13, coverage:43.3},
-      ],
+      /* Support-only ticket disposition after the FT automated email reply \u2014
+         from Zendesk tag counts (Autoresponder Billing v Technical tab),
+         pulled Aug 31, 2026. Billing runs its own separate tag chain
+         (forethought_billing_*) and is out of scope for this tab \u2014 Billing is
+         not CS-owned and is manually reviewed by that team.
+         Jun and Jul are pilot months (low/ramping volume) \u2014 read loosely, not
+         as a steady-state baseline. Solve rate is the only outcome directly
+         attributable to the bot: an unsolved ticket would go to L1 whether or
+         not the bot touched it, so handoff is supporting detail, not a
+         headline metric. The 4h no-response timeout is a narrow fallback, not
+         the main driver of handoffs (see handoffReasons below).
+         Pending = sent \u2212 solved \u2212 handoff (not yet resolved either way). */
+      supportFunnel: {
+        months: ['Jun*','Jul*','Aug'],
+        automated: [2, 78, 61],
+        sent:      [0, 75, 61],
+        solved:    [0, 8,  1],
+        handoff:   [0, 60, 41],
+        pending:   [0, 7,  19],
+        solveRate:   [null, 10.7, 1.6],
+        handoffRate: [null, 80.0, 67.2],
+        pendingRate: [null, 9.3,  31.1],
+        notes: [
+          'Pilot \u2014 negligible volume, not a fair baseline.',
+          'Pilot \u2014 first real volume; read loosely.',
+          'First post-pilot month. Pending % includes month-end timing lag.',
+        ],
+      },
+      /* Reason breakdown for forethought_support_handoff, from the same tag
+         pull. Rows sum to the handoff total for that month. */
+      handoffReasons: {
+        months: ['Jul*','Aug'],
+        negFeedback: [18, 7],
+        customerReplied: [11, 25],
+        timeout: [31, 9],
+        total: [60, 41],
+      },
     },
     kb: {
       /* reportingMonth is overwritten by the live feed; every month label in
@@ -1522,7 +1469,6 @@ let ticketRange = {from:0, to:null};
 // only the cross-channel "total demand" figure drops these.
 const EXCLUDED_TICKET_GROUPS = new Set(['CSE ICP', 'Unassigned', 'Other (14 groups)', 'Finance Licensing and Provisioning']);
 let widgetMonth = 'All';
-let emailMonth = 'All';
 let activeTicketGroups = null; // null = all groups shown
 
 function destroyChart(key){ if(charts[key]){ charts[key].destroy(); delete charts[key]; } }
@@ -1597,8 +1543,8 @@ const STORY_METRICS = {
      why:'Share of the ticket stream Forethought touches. Quality wins multiply only as this grows.'},
   ],
   email: [
-    {key:'passRate', label:'Technical QA pass rate', dir:'>=',
-     why:'Quality of sent autoresponses, judged on scorable QA rows.'},
+    {key:'solveRate', label:'Solved by bot (Support)', dir:'>=',
+     why:'The only ticket outcome the bot causes \u2014 sent tickets it doesn\u2019t solve default to L1 whether or not the bot exists.'},
     {key:'coverage', label:'Autoresponder coverage', dir:'>=',
      why:'Share of inbound email that gets an autoresponse \u2014 eligibility, not execution, is the constraint.'},
     {key:'deflRate', label:'Autoresponder deflection', dir:'>=',
@@ -1658,7 +1604,12 @@ function storyValues(widgetMonthOverride){
   const emKey = out.email.passRate.month, ebm=(e.byMonth&&e.byMonth[emKey])||{};
   out.email.coverage = {month:emKey, value:(ebm.coverage===undefined?null:ebm.coverage), prior:null, priorMonth:null};
   out.email.deflRate = {month:emKey, value:(e.funnelJul&&e.funnelJul.deflRate!==undefined)?e.funnelJul.deflRate:null, prior:null, priorMonth:null};
-  out.email.month = emKey;
+  // Support-only solve rate (sent -> solved by the bot, no human) replaces
+  // Technical QA pass rate as the headline "where this stands" metric —
+  // leadership doesn't track QA grading, and solve rate is the one outcome
+  // actually attributable to the bot. Sourced from the Zendesk tag funnel.
+  out.email.solveRate = seriesPair(e.supportFunnel.months, e.supportFunnel.solveRate);
+  out.email.month = out.email.solveRate.month;
   STORY_METRICS.kb.forEach(t=>{ const s=k.momSeries[t.key]; out.kb[t.key]= s?seriesPair(k.momMonths,s):{month:null,value:null,prior:null,priorMonth:null}; });
   out.kb.month = k.momMonths[k.momMonths.length-1];
   return out;
@@ -1791,46 +1742,17 @@ function renderWidgetView(){
   const w = state.widget, e = state.email;
   renderMonthChips('widgetMonthFilter', ['All','Apr*','May','Jun','Jul'], widgetMonth,
     m=>{ widgetMonth=m; renderWidgetView(); }, 'Filters the KPI headers and Where this stands; tables and charts stay full-period.');
-  renderMonthChips('emailMonthFilter', ['All','Jun*','Jul'], emailMonth,
-    m=>{ emailMonth=m; renderWidgetView(); }, 'Filters the KPI headers; tables and charts stay full-period.');
   const wm = widgetMonth==='All' ? null : w.byMonth[widgetMonth];
-  const emm = emailMonth==='All' ? null : e.byMonth[emailMonth];
 
   renderKpis('kpi-widget-headline', wm ? [
     {label:'Total Conversations', value:String(wm.conversations), unit:'', sub:`Unique widget conversations — ${widgetMonth}`, status:'neutral'},
     {label:'Deflection Rate', value:fmtPct(wm.deflectionNH,1).replace('%',''), unit:'%', sub:`${wm.conversations-wm.handoffN} of ${wm.conversations} conversations without handoff`, status:kpiStatus('w','deflection',wm.deflectionNH)},
     {label:'Handoff Rate', value:wm.handoffRate, unit:'%', sub:`${wm.handoffN} of ${wm.conversations} conversations handed off`, status:kpiStatus('w','handoff',wm.handoffRate)},
-    {label:'Technical QA Pass Rate', value:wm.passRate, unit:'%', sub:`${wm.passN} passes / ${wm.scorable} scorable QA rows — ${wm.partial} partial + ${wm.fail} fail; ${wm.sysupd} system updates excluded`, status:kpiStatus('w','qaPass',wm.passRate)},
   ] : [
     {label:'Total Conversations', value:w.headline.conversations.value, unit:'', sub:w.headline.conversations.sub, status:'neutral'},
     {label:'Deflection Rate', value:fmtPct(w.headline.deflection.value,1).replace('%',''), unit:'%', sub:w.headline.deflection.sub, status:kpiStatus('w','deflection',w.headline.deflection.value)},
     {label:'Handoff Rate', value:w.headline.handoff.value, unit:'%', sub:w.headline.handoff.sub, status:kpiStatus('w','handoff',w.headline.handoff.value)},
-    {label:'Technical QA Pass Rate', value:w.headline.qaPass.value, unit:'%', sub:`${w.headline.qaPass.sub} — ${w.headline.improvement.sub}`, status:kpiStatus('w','qaPass',w.headline.qaPass.value)},
   ]);
-  renderKpis('kpi-widget-quality', wm ? [
-    {label:'Partial Pass Rate', value:wm.partialRate, unit:'%', sub:`${wm.partial} useful but incomplete`, status:kpiStatus('w','partialPass',wm.partialRate)},
-    {label:'True Fail Rate', value:wm.failRate, unit:'%', sub:`${wm.fail} failed experiences`, status:kpiStatus('w','trueFail',wm.failRate)},
-    {label:'Drop-off Rate', value:'—', unit:'', sub:'All-period only — drop-off measure is not month-split', status:'neutral'},
-    {label:'Low / Failed Relevance', value:'—', unit:'', sub:'All-period only — relevance measure is not month-split', status:'neutral'},
-    {label:'KB Updates Needed', value:wm.kbUpdates, unit:'', sub:`${wm.kbPct}% of reviewed rows — ${widgetMonth}`, status:'bad'},
-  ] : [
-    {label:'Partial Pass Rate', value:w.quality.partialPass.value, unit:'%', sub:w.quality.partialPass.sub, status:kpiStatus('w','partialPass',w.quality.partialPass.value)},
-    {label:'True Fail Rate', value:w.quality.trueFail.value, unit:'%', sub:w.quality.trueFail.sub, status:kpiStatus('w','trueFail',w.quality.trueFail.value)},
-    {label:'Drop-off Rate', value:w.quality.dropoff.value, unit:'%', sub:w.quality.dropoff.sub, status:kpiStatus('w','dropoff',w.quality.dropoff.value)},
-    {label:'Low / Failed Relevance', value:w.quality.lowRelevance.value, unit:'%', sub:w.quality.lowRelevance.sub, status:kpiStatus('w','lowRelevance',w.quality.lowRelevance.value)},
-    {label:'KB Updates Needed', value:w.quality.kbUpdates.value, unit:'', sub:w.quality.kbUpdates.sub, status:'bad'},
-  ]);
-
-  destroyChart('partialDrivers');
-  charts.partialDrivers = safeChart('chartPartialDrivers', {
-    type:'doughnut',
-    data:{ labels:w.drivers.map(d=>d.cat), datasets:[{data:w.drivers.map(d=>d.count), backgroundColor:palette, borderColor:COLORS.ring, borderWidth:2}] },
-    options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, padding:14, color:COLORS.text}}}, cutout:'62%' }
-  });
-  document.getElementById('tblPartialDrivers').innerHTML = `
-    <tr><th>Driver</th><th class="num">Count</th><th class="num">Share</th><th>Recommended action</th></tr>
-    ${w.drivers.map(d=>`<tr><td>${d.cat}</td><td class="num">${fmtNum(d.count)}</td><td class="num">${fmtPct(d.share)}</td><td style="color:var(--muted); font-size:12px;">${d.action}</td></tr>`).join('')}
-  `;
 
   document.getElementById('tblJourney').innerHTML = `
     <tr><th>Signal</th><th class="num">Count</th><th class="num">Rate</th><th>Interpretation</th></tr>
@@ -1850,59 +1772,6 @@ function renderWidgetView(){
 
   document.getElementById('readoutWidget').innerHTML = w.readout.map(t=>`<li>${t}</li>`).join('') + `<li class="caveat">${w.readoutCaveat}</li>`;
 
-  // ---- Program impact & coverage (sheet-fed; em-dashes until the metrics exist there) ----
-  const im = w.impact;
-  const dash = v => (v===null||v===undefined) ? '—' : v;
-  renderKpis('kpi-widget-impact', [
-    {label:'FT Response Coverage', value:dash(im.coverageNowPct), unit:im.coverageNowPct!==null?'%':'', sub:'121 of 2,143 July tickets carried ft-email-automated', status:'neutral'},
-    {label:'Support Nudges / Month', value:im.nudgesPerMonth===null?'—':fmtNum(im.nudgesPerMonth), unit:'', sub:'July: 12 FT + 70 non-FT L1-touched tickets tagged no_response', status:'neutral'},
-    {label:'Recontact After Deflection', value:dash(im.recontactRatePct), unit:im.recontactRatePct!==null?'%':'', sub:'7-day same-issue ticket rate · Widget Repeat Contact tab, July', status:'neutral'},
-    {label:'L1 Touches Removed', value:im.touchesRemovedActual===null?'—':fmtNum(im.touchesRemovedActual), unit:'', sub:'Actual, measured post go-live', status:'neutral'},
-  ]);
-  document.getElementById('tblImpact').innerHTML = `
-    <tr><th>Item</th><th>Detail</th></tr>
-    <tr><td>Data source</td><td style="color:var(--muted); font-size:12px;">Populates from the widget sheet once these label cells exist: "FT Coverage Rate", "Support Nudges per Month", "L1 Touches Removed" (same label/value/sub layout as the headline KPIs).</td></tr>
-    <tr><td>Measurement plan</td><td style="color:var(--muted); font-size:12px;">${im.measurement}</td></tr>
-  `;
-
-  // ---- Automation program (sheet-fed; dashes until the Automation tab exists) ----
-  const au = w.automation;
-  const touchesRemoved = (au.baselineTouches!==null && au.actualTouches!==null) ? au.baselineTouches - au.actualTouches : null;
-  const hoursReturned = (touchesRemoved!==null && au.minutesPerTouch!==null) ? Math.round(touchesRemoved * au.minutesPerTouch / 60) : null;
-  const av = v => (v===null||v===undefined) ? '—' : fmtNum(v);
-  const ap = v => (v===null||v===undefined) ? '—' : fmtPct(v);
-  const tr = w.automationTracker;
-  document.getElementById('tblAutomation').innerHTML = `
-    <tr><th>Metric</th>${tr.months.map(m=>`<th class="num">${m}</th>`).join('')}<th>Guardrail / note</th></tr>
-    ${tr.rows.map(r=>`<tr><td>${r.metric}</td>${r.vals.map(v=>`<td class="num">${v}</td>`).join('')}<td style="color:var(--muted); font-size:12px;">${r.note}</td></tr>`).join('')}
-    <tr><td colspan="4" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">*June FT volume was confirmed test/pilot tickets — use the non-FT June row as the real before baseline. Auto-close counts are simulated against the proposed 4h+72h rule; no live automation exists yet. The tab's July pre/post-rollout L1 counts (44 + 22) do not reconcile with the full-month figure (13); full-month values shown.</td></tr>
-  `;
-
-  // "Follow-up workload (check-in replies)" section was removed from the
-  // Widget tab (Aug 2026) — this data isn't specific to the widget and needs
-  // a proper home elsewhere. state.widget.checkin still holds the numbers
-  // (see defaultState()) so nothing is lost; just not rendered here.
-
-  // ---- Monthly QA trend (sheet-fed) ----
-  const mo = w.monthly;
-  destroyChart('monthly');
-  if(mo.months.length){
-    charts.monthly = safeChart('chartMonthly', {
-      type:'line',
-      data:{ labels:mo.months, datasets:[
-        {label:'Pass rate %', data:mo.passRate, borderColor:COLORS.green, backgroundColor:COLORS.green, tension:0.35, pointRadius:3, borderWidth:2},
-        {label:'Deflection %', data:mo.deflectionRate, borderColor:COLORS.blue, backgroundColor:COLORS.blue, tension:0.35, pointRadius:3, borderWidth:2},
-      ]},
-      options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}}, scales:{ y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} }, interaction:{mode:'index', intersect:false} }
-    });
-    document.getElementById('tblMonthly').innerHTML = `
-      <tr><th>Month</th><th class="num">Reviewed</th><th class="num">Pass rate</th><th class="num">Δ MoM</th><th class="num">Deflection</th><th class="num">Δ MoM</th></tr>
-      ${mo.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(mo.reviewed[i])}</td><td class="num">${fmtPct(mo.passRate[i])}</td>${momCell(mo.passRate,i,true)}<td class="num">${fmtPct(mo.deflectionRate[i])}</td>${momCell(mo.deflectionRate,i,true)}</tr>`).join('')}
-    `;
-  } else {
-    document.getElementById('tblMonthly').innerHTML = `<tr><th>Month</th><th class="num">Reviewed</th><th class="num">Pass rate</th><th class="num">Deflection</th></tr><tr><td colspan="4" style="color:var(--muted-dim); font-style:italic;">Populates from a "Widget QA Monthly" tab in the widget sheet (Month | Reviewed | Pass Rate | Deflection Rate), one row per month.</td></tr>`;
-  }
-
   // ---- Deflection by subject (widget: QA Support Type × log deflected flag) ----
   if(w.bySubject && w.bySubject.length){
     const cls=w.bySubject.filter(x=>x.subject!=='Not QA-classified').sort((a,b)=>b.rate-a.rate);
@@ -1913,19 +1782,6 @@ function renderWidgetView(){
     if(tw) tw.innerHTML =
       `<tr><th>Subject</th><th class="num">Conversations</th><th class="num">Contained</th><th class="num">Containment rate</th><th style="width:28%"></th></tr>`
       + w.bySubject.map(x=>`<tr><td>${x.subject}</td><td class="num">${fmtNum(x.total)}</td><td class="num">${fmtNum(x.contained)}</td><td class="num">${fmtPct(x.rate)}</td><td><span style="display:block; height:8px; border-radius:4px; background:var(--panel-alt);"><span style="display:block; height:100%; width:${x.rate}%; border-radius:4px; background:${x.subject==='Not QA-classified'?'var(--muted)':'var(--green)'};"></span></span></td></tr>`).join('');
-  }
-
-  // ---- Coverage by subject (email: ZD groups, July) ----
-  if(e.bySubject && e.bySubject.length){
-    const tot=e.bySubject.reduce((s,x)=>s+x.inbound,0);
-    const big=[...e.bySubject].sort((a,b)=>b.inbound-a.inbound)[0];
-    const cov=[...e.bySubject].sort((a,b)=>b.coverage-a.coverage)[0];
-    const tke=document.getElementById('eSubjectTakeaway');
-    if(tke) tke.textContent=`${cov.subject} email is the best covered (${fmtPct(cov.coverage)} of ${fmtNum(cov.inbound)} inbound); ${big.subject} is the biggest stream (${fmtNum(big.inbound)} inbound, ${fmtPct(100*big.inbound/tot,0)} of email demand) at only ${fmtPct(big.coverage)} coverage — that is where expanding eligibility pays most.`;
-    const te=document.getElementById('tblEmailSubject');
-    if(te) te.innerHTML =
-      `<tr><th>Subject (Zendesk group)</th><th class="num">Email-origin inbound</th><th class="num">FT-responded</th><th class="num">Coverage</th><th class="num">Deflection</th></tr>`
-      + e.bySubject.map(x=>`<tr><td>${x.subject}</td><td class="num">${fmtNum(x.inbound)}</td><td class="num">${fmtNum(x.responded)}</td><td class="num">${fmtPct(x.coverage)}</td><td class="num" style="color:var(--muted-dim);">pending join</td></tr>`).join('');
   }
 
   // ---- Repeat contact after deflection (Widget Repeat Contact tab) ----
@@ -1956,7 +1812,6 @@ function renderWidgetView(){
     <tr><td>CSAT average</td><td class="num">${fb.csatAvg} / 5</td><td class="num">${fmtNum(fb.csatCount)}</td><td style="color:var(--muted); font-size:12px;">Too sparse to be representative — do not headline this.</td></tr>
     <tr><td>Quick feedback responses</td><td class="num">—</td><td class="num">${fmtNum(fb.quickFeedbackCount)}</td><td style="color:var(--muted); font-size:12px;">Also too sparse; consider making the feedback prompt more prominent.</td></tr>
   `;
-
 
   // ---- Conversation duration (computed from the conversation log) ----
   const du = w.durations || [];
@@ -1991,47 +1846,36 @@ function renderWidgetView(){
     ${e.funnel.map(f=>`<tr><td>${f.stage}</td><td class="num">${fmtNum(f.count)}</td><td class="num">${f.pctOfPrev===null?'—':fmtPct(f.pctOfPrev)}</td><td style="color:var(--muted); font-size:12px;">${f.note}</td></tr>`).join('')}
   `;
 
-  renderKpis('kpi-email-headline', emm ? [
-    {label:'Total QA Rows', value:String(emm.rows), unit:'', sub:`Classified QA rows — ${emailMonth}`, status:'neutral'},
-    {label:'Scorable Autoresponder Responses', value:String(emm.scorable), unit:'', sub:`${emm.passN} pass + ${emm.partial} partial + ${emm.fail} fail`, status:'neutral'},
-    {label:'Technical QA Pass Rate', value:emm.passRate, unit:'%', sub:`${emm.passN} passes / ${emm.scorable} scorable rows — ${emm.partial} partial + ${emm.fail} fail`, status:kpiStatus('e','deflection',emm.passRate)},
-    {label:'Ticket Autoresponder Coverage Rate', value:(emm.coverage==null?'—':emm.coverage), unit:emm.coverage==null?'':'%', sub:emm.coverage==null?'Log captured only autoresponded emails this month — coverage not computable':`${emm.sent} of ${emm.inbound} inbound emails received an autoresponse`, status:'neutral'},
-  ] : [
-    {label:'Total QA Rows', value:e.headline.totalRows.value, unit:'', sub:e.headline.totalRows.sub, status:'neutral'},
-    {label:'Scorable Autoresponder Responses', value:e.headline.scorable.value, unit:'', sub:e.headline.scorable.sub, status:'neutral'},
-    {label:'Technical QA Pass Rate', value:e.headline.qaPass.value, unit:'%', sub:`${e.headline.qaPass.sub} — ${e.headline.improvement.sub}`, status:kpiStatus('e','deflection',e.headline.qaPass.value)},
-    {label:'Ticket Autoresponder Coverage Rate', value:(e.headline.emailCoverage.value===null?'—':e.headline.emailCoverage.value), unit:e.headline.emailCoverage.value!==null?'%':'', sub:e.headline.emailCoverage.sub, status:'neutral'},
+  // ---- Support autoresponder disposition: solved by bot vs. handed to L1 ----
+  // (Support only — Billing has its own tag chain and review process, out of scope here.)
+  const sf = e.supportFunnel;
+  const hr = e.handoffReasons;
+  const sfLatestIdx = sf.sent.map((v,i)=>v>0?i:-1).filter(i=>i>=0).pop();
+  const sfLatestMonth = sf.months[sfLatestIdx];
+  document.getElementById('supportFunnelTakeaway').textContent =
+    `${sfLatestMonth}: ${fmtPct(sf.solveRate[sfLatestIdx],1)} solve rate (the only outcome the bot causes) on ${fmtNum(sf.sent[sfLatestIdx])} sent tickets. Handoff (${fmtPct(sf.handoffRate[sfLatestIdx],1)}) is the default outcome for anything the bot doesn't solve, not a regression it caused.`;
+  renderKpis('kpi-support-funnel', [
+    {label:'Sent', value:String(sf.sent[sfLatestIdx]), unit:'', sub:`${sf.automated[sfLatestIdx]} auto-classified — ${sfLatestMonth}`, status:'neutral'},
+    {label:'Solved by Bot', value:fmtPct(sf.solveRate[sfLatestIdx],1).replace('%',''), unit:'%', sub:`${sf.solved[sfLatestIdx]} of ${sf.sent[sfLatestIdx]} sent — the one outcome attributable to the bot`, status:sf.solveRate[sfLatestIdx]<5?'bad':(sf.solveRate[sfLatestIdx]<15?'watch':'good')},
+    {label:'Still Pending', value:fmtPct(sf.pendingRate[sfLatestIdx],1).replace('%',''), unit:'%', sub:`${sf.pending[sfLatestIdx]} of ${sf.sent[sfLatestIdx]} — neither solved nor handed off yet`, status:'watch'},
   ]);
-  renderKpis('kpi-email-quality', emm ? [
-    {label:'Partial Pass Rate', value:emm.partialRate, unit:'%', sub:`${emm.partial} of ${emm.scorable} scorable — useful but incomplete`, status:kpiStatus('e','partialPass',emm.partialRate)},
-    {label:'True Fail Rate', value:emm.failRate, unit:'%', sub:`${emm.fail} of ${emm.scorable} scorable — failed experiences`, status:kpiStatus('e','trueFail',emm.failRate)},
-    {label:'Test Traffic', value:emm.testPct, unit:'%', sub:`${emm.test} of ${emm.rows} QA rows excluded as test`, status:kpiStatus('e','testTraffic',emm.testPct)},
-    {label:'Process Updates', value:emm.processPct, unit:'%', sub:`${emm.process} of ${emm.rows} QA rows excluded as process`, status:'neutral'},
-    {label:'Captured Follow-ups', value:emm.followUps, unit:'', sub:`${emm.fuPct}% of ${emm.rows} QA rows — ${emailMonth}`, status:'neutral'},
-  ] : [
-    {label:'Partial Pass Rate', value:e.quality.partialPass.value, unit:'%', sub:e.quality.partialPass.sub, status:kpiStatus('e','partialPass',e.quality.partialPass.value)},
-    {label:'True Fail Rate', value:e.quality.trueFail.value, unit:'%', sub:e.quality.trueFail.sub, status:kpiStatus('e','trueFail',e.quality.trueFail.value)},
-    {label:'Test Traffic', value:e.quality.testTraffic.value, unit:'%', sub:e.quality.testTraffic.sub, status:kpiStatus('e','testTraffic',e.quality.testTraffic.value)},
-    {label:'Process Updates', value:e.quality.processUpdates.value, unit:'%', sub:e.quality.processUpdates.sub, status:'neutral'},
-    {label:'Captured Follow-ups', value:e.quality.followUps.value, unit:'', sub:e.quality.followUps.sub, status:'neutral'},
-  ]);
-
-  const em = e.monthly;
-  document.getElementById('tblEmailMonthly').innerHTML = `
-    <tr><th>Month</th><th class="num">Scorable</th><th class="num">Pass</th><th class="num">Partial</th><th class="num">Fail</th><th class="num">Pass rate</th><th class="num">Δ MoM</th></tr>
-    ${em.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(em.scorable[i])}</td><td class="num">${fmtNum(em.pass[i])}</td><td class="num">${fmtNum(em.partial[i])}</td><td class="num">${fmtNum(em.fail[i])}</td><td class="num">${fmtPct(em.passRate[i])}</td>${momCell(em.passRate,i,true)}</tr>`).join('')}
+  document.getElementById('tblSupportFunnel').innerHTML = `
+    <tr><th>Month</th><th class="num">Sent</th><th class="num">Solved</th><th class="num">Handoff</th><th class="num">Pending</th><th class="num">Solve %</th><th>Notes</th></tr>
+    ${sf.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(sf.sent[i])}</td><td class="num">${fmtNum(sf.solved[i])}</td><td class="num">${fmtNum(sf.handoff[i])}</td><td class="num">${fmtNum(sf.pending[i])}</td><td class="num">${sf.solveRate[i]===null?'—':fmtPct(sf.solveRate[i],1)}</td><td style="color:var(--muted); font-size:12px;">${sf.notes[i]}</td></tr>`).join('')}
+  `;
+  document.getElementById('tblHandoffReasons').innerHTML = `
+    <tr><th>Month</th><th class="num">Negative feedback</th><th class="num">Customer replied again</th><th class="num">No-response timeout</th><th class="num">Total handed off</th></tr>
+    ${hr.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(hr.negFeedback[i])} (${fmtPct(100*hr.negFeedback[i]/hr.total[i],1)})</td><td class="num">${fmtNum(hr.customerReplied[i])} (${fmtPct(100*hr.customerReplied[i]/hr.total[i],1)})</td><td class="num">${fmtNum(hr.timeout[i])} (${fmtPct(100*hr.timeout[i]/hr.total[i],1)})</td><td class="num">${fmtNum(hr.total[i])}</td></tr>`).join('')}
   `;
 
-  destroyChart('emailMix');
-  charts.emailMix = safeChart('chartEmailMix', {
-    type:'doughnut',
-    data:{ labels:e.mix.map(m=>m.cat), datasets:[{data:e.mix.map(m=>m.count), backgroundColor:[COLORS.green, COLORS.amber, COLORS.red, COLORS.muted], borderColor:COLORS.ring, borderWidth:2}] },
-    options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, padding:14, color:COLORS.text}}}, cutout:'62%' }
-  });
-  document.getElementById('tblEmailSignals').innerHTML = `
-    <tr><th>Signal</th><th class="num">Count</th><th class="num">Rate</th><th>Interpretation</th></tr>
-    ${e.signals.map(s=>`<tr><td>${s.signal}</td><td class="num">${fmtNum(s.count)}</td><td class="num">${fmtPct(s.rate)}</td><td style="color:var(--muted); font-size:12px;">${s.interp}</td></tr>`).join('')}
+  // ---- Support impact: FT-tagged vs. non-FT L1-touch rate & nudges (belongs to the email/autoresponder program, not widget) ----
+  const tr = w.automationTracker;
+  document.getElementById('tblAutomation').innerHTML = `
+    <tr><th>Metric</th>${tr.months.map(m=>`<th class="num">${m}</th>`).join('')}<th>Guardrail / note</th></tr>
+    ${tr.rows.map(r=>`<tr><td>${r.metric}</td>${r.vals.map(v=>`<td class="num">${v}</td>`).join('')}<td style="color:var(--muted); font-size:12px;">${r.note}</td></tr>`).join('')}
+    <tr><td colspan="4" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">*June FT volume was confirmed test/pilot tickets — use the non-FT June row as the real before baseline. Auto-close counts are simulated against the proposed 4h+72h rule; no live automation exists yet.</td></tr>
   `;
+
   document.getElementById('readoutEmail').innerHTML = e.readout.map(t=>`<li>${t}</li>`).join('') + `<li class="caveat">${e.readoutCaveat}</li>`;
 }
 
