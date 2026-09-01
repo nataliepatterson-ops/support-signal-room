@@ -701,6 +701,8 @@
       <p>How the ticket autoresponder is affecting Support: how many tickets it touches, how many it resolves outright vs. hands to L1, and whether it's actually reducing L1 touches. Jun–Jul are pilot months.</p>
     </div>
 
+    <div class="month-filter" id="emailMonthFilter"></div>
+
     <section class="block" id="sec-e-00">
       <div class="block-head"><h3>Where this stands — <span id="storyEmailMonth"></span></h3><div class="note">Each metric shows the latest complete month and movement vs the prior month (Jun* is a tiny partial sample — read its comparison loosely).</div></div>
       <div class="card story" id="story-email"></div>
@@ -761,6 +763,8 @@
       <h2>Knowledge Base Scorecard</h2>
       <p id="kbPageDesc">Self-service deflection, search behavior, and content health. Reporting month: July 2026 vs. June 2026. Workbook last refreshed for the July reporting period.</p>
     </div>
+
+    <div class="month-filter" id="kbMonthFilter"></div>
 
     <section class="block" id="sec-k-00">
       <div class="block-head"><h3>Where this stands — <span id="storyKbMonth"></span></h3><div class="note">Each metric shows the reporting month, movement vs the prior month (green = the right direction), and distance travelled since January.</div></div>
@@ -1469,6 +1473,8 @@ let ticketRange = {from:0, to:null};
 // only the cross-channel "total demand" figure drops these.
 const EXCLUDED_TICKET_GROUPS = new Set(['CSE ICP', 'Unassigned', 'Other (14 groups)', 'Finance Licensing and Provisioning']);
 let widgetMonth = 'All';
+let emailMonth = 'All';
+let kbMonth = 'All';
 let activeTicketGroups = null; // null = all groups shown
 
 function destroyChart(key){ if(charts[key]){ charts[key].destroy(); delete charts[key]; } }
@@ -1535,12 +1541,10 @@ const STORY_METRICS = {
   widget: [
     {key:'deflection', label:'Deflection (flag basis)', dir:'>=',
      why:'Share of conversations the widget contains. The volume shield \u2014 if this slips, ticket load comes back.'},
-    {key:'passRate', label:'Technical QA pass rate', dir:'>=',
-     why:'Quality of the answers behind the deflection number \u2014 the main improvement lever.'},
     {key:'repeatContact', label:'Repeat-contact rate (7-day)', dir:'<=',
      why:'Contained conversations that came back as tickets \u2014 deflection that did not stick.'},
     {key:'coverage', label:'FT response coverage', dir:'>=',
-     why:'Share of the ticket stream Forethought touches. Quality wins multiply only as this grows.'},
+     why:'Share of the ticket stream Forethought touches. More coverage means fewer conversations even reach a human to begin with.'},
   ],
   email: [
     {key:'solveRate', label:'Solved by bot (Support)', dir:'>=',
@@ -1850,14 +1854,18 @@ function renderWidgetView(){
   // (Support only — Billing has its own tag chain and review process, out of scope here.)
   const sf = e.supportFunnel;
   const hr = e.handoffReasons;
-  const sfLatestIdx = sf.sent.map((v,i)=>v>0?i:-1).filter(i=>i>=0).pop();
-  const sfLatestMonth = sf.months[sfLatestIdx];
+  renderMonthChips('emailMonthFilter', ['All', ...sf.months], emailMonth,
+    m=>{ emailMonth=m; renderWidgetView(); }, 'Filters the KPI header and Where this stands; MoM trend and handoff-reason tables stay full-period.');
+  const sfIdx = emailMonth==='All'
+    ? sf.sent.map((v,i)=>v>0?i:-1).filter(i=>i>=0).pop()
+    : sf.months.indexOf(emailMonth);
+  const sfMonth = sf.months[sfIdx];
   document.getElementById('supportFunnelTakeaway').textContent =
-    `${sfLatestMonth}: ${fmtPct(sf.solveRate[sfLatestIdx],1)} solve rate (the only outcome the bot causes) on ${fmtNum(sf.sent[sfLatestIdx])} sent tickets. Handoff (${fmtPct(sf.handoffRate[sfLatestIdx],1)}) is the default outcome for anything the bot doesn't solve, not a regression it caused.`;
+    `${sfMonth}: ${fmtPct(sf.solveRate[sfIdx],1)} solve rate (the only outcome the bot causes) on ${fmtNum(sf.sent[sfIdx])} sent tickets. Handoff (${fmtPct(sf.handoffRate[sfIdx],1)}) is the default outcome for anything the bot doesn't solve, not a regression it caused.`;
   renderKpis('kpi-support-funnel', [
-    {label:'Sent', value:String(sf.sent[sfLatestIdx]), unit:'', sub:`${sf.automated[sfLatestIdx]} auto-classified — ${sfLatestMonth}`, status:'neutral'},
-    {label:'Solved by Bot', value:fmtPct(sf.solveRate[sfLatestIdx],1).replace('%',''), unit:'%', sub:`${sf.solved[sfLatestIdx]} of ${sf.sent[sfLatestIdx]} sent — the one outcome attributable to the bot`, status:sf.solveRate[sfLatestIdx]<5?'bad':(sf.solveRate[sfLatestIdx]<15?'watch':'good')},
-    {label:'Still Pending', value:fmtPct(sf.pendingRate[sfLatestIdx],1).replace('%',''), unit:'%', sub:`${sf.pending[sfLatestIdx]} of ${sf.sent[sfLatestIdx]} — neither solved nor handed off yet`, status:'watch'},
+    {label:'Sent', value:String(sf.sent[sfIdx]), unit:'', sub:`${sf.automated[sfIdx]} auto-classified — ${sfMonth}`, status:'neutral'},
+    {label:'Solved by Bot', value:fmtPct(sf.solveRate[sfIdx],1).replace('%',''), unit:'%', sub:`${sf.solved[sfIdx]} of ${sf.sent[sfIdx]} sent — the one outcome attributable to the bot`, status:sf.solveRate[sfIdx]==null?'neutral':(sf.solveRate[sfIdx]<5?'bad':(sf.solveRate[sfIdx]<15?'watch':'good'))},
+    {label:'Still Pending', value:fmtPct(sf.pendingRate[sfIdx],1).replace('%',''), unit:'%', sub:`${sf.pending[sfIdx]} of ${sf.sent[sfIdx]} — neither solved nor handed off yet`, status:'watch'},
   ]);
   document.getElementById('tblSupportFunnel').innerHTML = `
     <tr><th>Month</th><th class="num">Sent</th><th class="num">Solved</th><th class="num">Handoff</th><th class="num">Pending</th><th class="num">Solve %</th><th>Notes</th></tr>
@@ -1963,13 +1971,56 @@ function renderKbView(){
   setText('kbTabPeriod', momSpan);
   setText('kbFooterRange', `${momSpan}${yr}`);
 
-  const hl = {}; k.headline.forEach(h=>hl[h.label]=h);
+  renderMonthChips('kbMonthFilter', ['All', ...k.momMonths], kbMonth,
+    m=>{ kbMonth=m; renderKbView(); }, 'Filters Headline metrics only; every other section (trend chart, segments, support impact, content health) stays full-period.');
+
+  // 'All' shows the workbook's current reporting month (the existing
+  // current/prior pairs below, each with its own num/den). A specific month
+  // is derived from the MoM trend series (momSeries/momMonths) \u2014 the only
+  // KB data with full month-by-month history \u2014 so headline cards can be
+  // viewed for any month without inventing figures the source sheet doesn't have.
+  let hl5;
+  if(kbMonth==='All'){
+    hl5 = k.headline;
+    setText('kbHeadMonths', `${rm.current} vs. ${rm.prior}`);
+  } else {
+    const mi = k.momMonths.indexOf(kbMonth);
+    const priorMi = mi>0 ? mi-1 : null;
+    const sessions = k.momSeries['End-user Sessions']||[];
+    const confirmed = k.momSeries['Confirmed Deflections']||[];
+    const assumed = k.momSeries['Assumed Deflections']||[];
+    const searchProxy = k.momSeries['Search Deflection Proxy %']||[];
+    const articleViews = k.momSeries['Article Views']||[];
+    const rateOf = (num,den) => (num==null||den==null||!den) ? null : +(100*num/den).toFixed(1);
+    const momPct = (cur,pri) => (cur==null||pri==null||!pri) ? null : +(100*(cur-pri)/pri).toFixed(1);
+    const confRate = rateOf(confirmed[mi], sessions[mi]);
+    const confRateP = priorMi!=null ? rateOf(confirmed[priorMi], sessions[priorMi]) : null;
+    const assumedRate = rateOf(assumed[mi], sessions[mi]);
+    const assumedRateP = priorMi!=null ? rateOf(assumed[priorMi], sessions[priorMi]) : null;
+    const totalNum = (confirmed[mi]||0)+(assumed[mi]||0);
+    const totalRate = rateOf(totalNum, sessions[mi]);
+    const totalNumP = priorMi!=null ? (confirmed[priorMi]||0)+(assumed[priorMi]||0) : null;
+    const totalRateP = priorMi!=null ? rateOf(totalNumP, sessions[priorMi]) : null;
+    const sProxy = searchProxy[mi]!=null ? searchProxy[mi] : null;
+    const sProxyP = priorMi!=null && searchProxy[priorMi]!=null ? searchProxy[priorMi] : null;
+    const aViews = articleViews[mi]!=null ? articleViews[mi] : null;
+    const aViewsP = priorMi!=null && articleViews[priorMi]!=null ? articleViews[priorMi] : null;
+    hl5 = [
+      {label:'Confirmed Deflection Rate', current:confRate, prior:confRateP, mom:momPct(confRate,confRateP), isPct:true, num:confirmed[mi], den:sessions[mi], denLabel:'sessions'},
+      {label:'Assumed Deflection Rate', current:assumedRate, prior:assumedRateP, mom:momPct(assumedRate,assumedRateP), isPct:true, num:assumed[mi], den:sessions[mi], denLabel:'sessions'},
+      {label:'Total Deflection Rate', current:totalRate, prior:totalRateP, mom:momPct(totalRate,totalRateP), isPct:true, num:totalNum, den:sessions[mi], denLabel:'sessions'},
+      {label:'Search Deflection Proxy', current:sProxy, prior:sProxyP, mom:momPct(sProxy,sProxyP), isPct:true},
+      {label:'Article Views', current:aViews, prior:aViewsP, mom:momPct(aViews,aViewsP), isPct:false},
+    ];
+    setText('kbHeadMonths', `${kbMonth} vs. ${priorMi!=null?k.momMonths[priorMi]:'\u2014'}`);
+  }
+  const hl = {}; hl5.forEach(h=>hl[h.label]=h);
 
   // Each headline rate carries its own numerator/denominator in state, so the
   // count+% pairing can never drift out of sync with the rate itself.
-  const kbSub = h => (h.num!==undefined && h.den!==undefined)
-    ? `${fmtNum(h.num)} of ${fmtNum(h.den)} ${h.denLabel||''} \u00b7 MoM ${h.mom>0?'+':''}${h.mom}%`
-    : `Prior ${h.prior} \u00b7 MoM ${h.mom>0?'+':''}${h.mom}%`;
+  const kbSub = h => (h.num!==undefined && h.den!==undefined && h.num!=null && h.den!=null)
+    ? `${fmtNum(h.num)} of ${fmtNum(h.den)} ${h.denLabel||''} \u00b7 MoM ${h.mom==null?'\u2014':(h.mom>0?'+':'')+h.mom+'%'}`
+    : `Prior ${h.prior==null?'\u2014':(h.isPct?fmtPct(h.prior):fmtNum(h.prior))} \u00b7 MoM ${h.mom==null?'\u2014':(h.mom>0?'+':'')+h.mom+'%'}`;
 
   renderKpis('kpi-kb-headline', [
     {label:'Confirmed Deflection Rate', value:hl['Confirmed Deflection Rate'].current, unit:'%', sub:kbSub(hl['Confirmed Deflection Rate']), status:'good'},
