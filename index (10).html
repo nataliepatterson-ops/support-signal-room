@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support Signal Room — Widget, Ticket Autoresponder &amp; KB Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+  // Fallback CDN if cdnjs is blocked/unreachable (e.g. corporate network policy).
+  // Uses document.write so this executes synchronously during page parse,
+  // guaranteeing Chart is defined (or truly unavailable) before the render
+  // script below checks for it — an appendChild-based fallback loads async
+  // and would lose that race, silently disabling every chart on the page.
+  if (typeof Chart === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"><\/script>');
+  }
+</script>
+<style>
+  /* =====================================================================
+     Redis 2024 Digital UI tokens — Midnight/Dusk surfaces, Hyper Red accent.
+     Local variable names below are kept so the rest of the stylesheet and
+     the render logic don't need to change; each one now aliases a --rds-*
+     token, so the whole screen re-themes from a single source of truth.
+     ===================================================================== */
+  :root{
+    --rds-font-sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --rds-font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+
+    --rds-hyper:#FF4438; --rds-mars:#8A221C; --rds-midnight:#091A23;
+    --rds-lily:#DCFF1E; --rds-sky:#33C2FB; --rds-violet:#C795E3;
+  }
+  :root[data-theme="dark"]{
+    --rds-bg:#091A23; --rds-surface:#0D2733; --rds-surface-2:#163341;
+    --rds-surface-hover:#2D4754; --rds-border:#163341; --rds-text:#F3F3F3;
+    --rds-muted:#8A99A0; --rds-muted-2:#5C707A; --rds-grid:#2D4754;
+    --rds-accent:var(--rds-hyper); --rds-accent-soft:rgba(255,68,56,0.16);
+    --rds-good:var(--rds-lily); --rds-info:var(--rds-sky); --rds-link:var(--rds-sky);
+    --rds-shadow:0 4px 18px rgba(9,26,35,0.50); --rds-shadow-hover:0 8px 26px rgba(255,68,56,0.18);
+    --rds-card-inset:inset 0 1px 0 rgba(255,255,255,0.04); --rds-cta-fill:#351D22;
+    --topbar-bg:rgba(9,26,35,0.92);
+  }
+  :root[data-theme="light"]{
+    --rds-bg:#FFFFFF; --rds-surface:#FBFCFC; --rds-surface-2:#F0F3F4;
+    --rds-surface-hover:#E5EBED; --rds-border:#DCE4E7; --rds-text:#091A23;
+    --rds-muted:#5C707A; --rds-muted-2:#8A99A0; --rds-grid:#DCE4E7;
+    --rds-accent:var(--rds-hyper); --rds-accent-soft:rgba(255,68,56,0.10);
+    --rds-good:#7FA800; --rds-info:#0C7BB3; --rds-link:#0C7BB3;
+    --rds-violet:#9A5BC7;
+    --rds-shadow:0 4px 14px rgba(9,26,35,0.08); --rds-shadow-hover:0 8px 22px rgba(255,68,56,0.14);
+    --rds-card-inset:inset 0 1px 0 rgba(255,255,255,0.6); --rds-cta-fill:#FFE9E7;
+    --topbar-bg:rgba(255,255,255,0.94);
+  }
+
+  :root{
+    /* App-level aliases onto the Redis tokens above. */
+    --bg:var(--rds-bg);
+    --panel:var(--rds-surface);
+    --panel-alt:var(--rds-surface-2);
+    --border:var(--rds-border);
+    --border-soft:var(--rds-border);
+    --text:var(--rds-text);
+    --muted:var(--rds-muted);
+    --muted-dim:var(--rds-muted-2);
+    --red:var(--rds-accent);
+    --red-dim:var(--rds-accent-soft);
+    --green:var(--rds-good);
+    --green-dim:color-mix(in srgb, var(--rds-good) 14%, transparent);
+    --amber:var(--rds-violet);
+    --amber-dim:color-mix(in srgb, var(--rds-violet) 16%, transparent);
+    --blue:var(--rds-info);
+    --blue-dim:color-mix(in srgb, var(--rds-info) 16%, transparent);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--rds-font-sans);
+    font-feature-settings:"cv11","ss01";
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  * { scrollbar-width: thin; scrollbar-color: var(--rds-surface-hover) transparent; }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb { background: var(--rds-surface-hover); border-radius: 999px; }
+  :focus-visible{ outline:2px solid var(--rds-accent); outline-offset:2px; }
+
+  .mono{font-family:var(--rds-font-mono);}
+  .display{font-family:var(--rds-font-sans); font-weight:600; letter-spacing:-0.01em;}
+
+  html{ scroll-behavior:smooth; }
+
+  /* ---------- Top bar ---------- */
+  header.topbar{
+    position:sticky; top:0; z-index:50;
+    background:var(--topbar-bg);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+    padding:16px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand svg{height:20px; width:auto; flex-shrink:0;}
+  .brand .divider{width:1px; height:16px; background:var(--border); display:inline-block;}
+  .brand h1{
+    font-family:var(--rds-font-sans);
+    font-size:17px; font-weight:600; letter-spacing:-0.01em; margin:0;
+    display:flex; align-items:center; gap:10px;
+  }
+  .brand .sub{color:var(--muted); font-size:12.5px; font-family:var(--rds-font-mono); margin-left:2px;}
+
+  nav.tabs{display:flex; gap:6px; background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:4px;}
+  nav.tabs button{
+    appearance:none; border:none; background:transparent; color:var(--muted);
+    font-family:var(--rds-font-sans); font-weight:500; font-size:12.5px; letter-spacing:0.01em;
+    padding:8px 14px; border-radius:7px; cursor:pointer; transition:all .15s ease;
+  }
+  nav.tabs button.active{background:var(--red); color:#fff;}
+  nav.tabs button.active:hover{background:var(--rds-mars);}
+  nav.tabs button:hover:not(.active){color:var(--text); background:var(--rds-surface-hover);}
+
+  .meta-strip{
+    font-family:var(--rds-font-mono); font-size:11.5px; color:var(--muted-dim);
+    text-align:right;
+  }
+  .meta-strip span{color:var(--muted);}
+
+  .sync-block{display:flex; align-items:center; gap:14px;}
+  .sync-btn{
+    appearance:none; border:1px solid var(--red); background:transparent; color:var(--text);
+    font-family:var(--rds-font-sans); font-weight:500; font-size:12px; letter-spacing:0.01em;
+    padding:8px 14px; border-radius:5px; cursor:pointer; display:flex; align-items:center; gap:8px;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .sync-btn:hover{background:var(--red); color:#fff;}
+  .sync-btn:disabled{cursor:default; opacity:0.7;}
+  .sync-dot{width:7px; height:7px; border-radius:50%; background:var(--muted-dim); display:inline-block; transition:background .2s ease;}
+  .sync-dot.loading{background:var(--amber); animation:pulse 0.9s ease-in-out infinite;}
+  .sync-dot.ok{background:var(--green);}
+  .sync-dot.err{background:var(--red);}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.25;}}
+  #syncMeta.err{color:var(--red);}
+
+  /* ---------- Jump nav (section quick-links) ---------- */
+  .jumpnav-wrap{
+    position:sticky; top:65px; z-index:40;
+    background:var(--topbar-bg);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .jumpnav{
+    max-width:1240px; margin:0 auto; padding:10px 28px;
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  }
+  .jumpnav .jn-label{
+    font-family:var(--rds-font-mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--muted-dim); margin-right:4px; flex-shrink:0;
+  }
+  .jumpnav a.jn-pill{
+    font-family:var(--rds-font-mono); font-size:11px; color:var(--muted);
+    background:var(--panel); border:1px solid var(--border); border-radius:999px;
+    padding:5px 11px; text-decoration:none; white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .jumpnav a.jn-pill:hover{ color:var(--text); border-color:var(--red); background:var(--rds-surface-hover); }
+  .jumpnav a.jn-pill.jn-divider{
+    background:transparent; border:none; color:var(--muted-dim); padding:5px 2px; cursor:default;
+  }
+
+  main{max-width:1240px; margin:0 auto; padding:36px 28px 90px;}
+
+  .view{display:none;}
+  .view.active{display:block; animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  section.block{ scroll-margin-top:120px; }
+
+  .page-head{margin-bottom:28px; scroll-margin-top:120px;}
+  .page-head .eyebrow{
+    font-family:var(--rds-font-mono); font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--red); margin-bottom:8px; display:flex; align-items:center; gap:8px;
+  }
+  .page-head .eyebrow::before{content:''; width:16px; height:1px; background:var(--red); display:inline-block;}
+  .page-head h2{font-family:var(--rds-font-sans); font-size:28px; font-weight:600; letter-spacing:-0.01em; margin:0 0 8px;}
+  .page-head p{color:var(--muted); font-size:14px; max-width:720px; line-height:1.6; margin:0;}
+
+  section.block{margin-bottom:44px;}
+  /* Stacked, not side-by-side: a long methodology note next to a short title
+     used to get shoved by justify-content:space-between all the way to the
+     right edge of the screen, with a big empty gap in between. Title on its
+     own line, note (or filter control) below it, both left-aligned. */
+  .block-head{display:flex; flex-direction:column; gap:6px; margin-bottom:16px;}
+  .block-head h3{font-family:var(--rds-font-sans); font-size:17px; font-weight:600; letter-spacing:-0.01em; margin:0; display:flex; align-items:center; gap:10px;}
+  .block-head h3 .idx{color:var(--muted-dim); font-family:var(--rds-font-mono); font-size:13px; font-weight:400;}
+  .block-head .note{font-size:12.5px; color:var(--muted-dim); max-width:760px; text-align:left; line-height:1.5;}
+
+  /* ---------- range filter control (charts) ---------- */
+  .range-filter{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    font-family:var(--rds-font-mono); font-size:11px; color:var(--muted);
+  }
+  .range-filter select{
+    background:var(--panel-alt); color:var(--text); border:1px solid var(--border);
+    border-radius:6px; padding:5px 8px; font-family:var(--rds-font-mono); font-size:11px;
+    cursor:pointer;
+  }
+  .range-filter select:hover{ border-color:var(--red); }
+  .range-filter .rf-reset{
+    background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:6px; padding:5px 9px; font-family:var(--rds-font-mono); font-size:10.5px;
+    cursor:pointer;
+  }
+  .range-filter .rf-reset:hover{ color:var(--text); border-color:var(--red); }
+  .month-filter{
+    display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:16px 0 2px;
+    font-family:var(--rds-font-mono); font-size:11px; color:var(--muted);
+  }
+  .month-filter .mf-chip{
+    background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:999px; padding:4px 11px; font-family:var(--rds-font-mono); font-size:11px; cursor:pointer;
+  }
+  .month-filter .mf-chip:hover{ color:var(--text); border-color:var(--red); }
+  .month-filter .mf-chip.active{ color:var(--text); border-color:var(--red); background:var(--panel-alt); }
+  .month-filter .mf-note{ font-size:10.5px; opacity:.75; margin-left:6px; }
+
+  /* ---------- KPI cards ---------- */
+  .kpi-row{display:grid; grid-template-columns:repeat(5,1fr); gap:12px;}
+  @media (max-width:1000px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
+  .kpi{
+    background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px 16px 14px;
+    position:relative; overflow:visible;
+    box-shadow: var(--rds-card-inset), var(--rds-shadow);
+  }
+  .kpi::before{content:''; position:absolute; top:0; left:0; bottom:0; width:3px; background:var(--status); border-radius:12px 0 0 12px;}
+  .kpi.good{--status:var(--green);}
+  .kpi.watch{--status:var(--amber);}
+  .kpi.bad{--status:var(--red);}
+  .kpi.neutral{--status:var(--blue);}
+  .kpi .label{font-size:11.5px; color:var(--muted); font-family:var(--rds-font-sans); font-weight:600; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px; min-height:28px;}
+  .kpi .value{font-family:var(--rds-font-mono); font-size:28px; font-weight:700; line-height:1; margin-bottom:6px;}
+  .kpi .value .unit{font-size:15px; color:var(--muted); font-weight:400;}
+  .kpi .sub{font-size:11.5px; color:var(--muted-dim); line-height:1.4;}
+  .kpi .dot{position:absolute; top:14px; right:14px; width:6px; height:6px; border-radius:50%; background:var(--status);}
+
+  /* ---------- generic cards / panels ---------- */
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:20px; box-shadow: var(--rds-card-inset), var(--rds-shadow);}
+  .grid-2{display:grid; grid-template-columns:1.1fr 0.9fr; gap:16px;}
+  .grid-2b{display:grid; grid-template-columns:0.9fr 1.1fr; gap:16px;}
+  @media (max-width:900px){.grid-2, .grid-2b{grid-template-columns:1fr;}}
+
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{
+    text-align:left; font-family:var(--rds-font-sans); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--muted); font-weight:600; padding:0 10px 10px 0; border-bottom:1px solid var(--border);
+  }
+  td{padding:9px 10px 9px 0; border-bottom:1px solid var(--border-soft); vertical-align:top; color:var(--text);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:var(--rds-surface-hover);}
+  td.num, th.num{text-align:right; font-family:var(--rds-font-mono); font-variant-numeric:tabular-nums;}
+  .tag{
+    display:inline-block; font-family:var(--rds-font-mono); font-size:10.5px; padding:2px 7px; border-radius:999px;
+    background:var(--panel-alt); color:var(--muted); border:1px solid var(--border);
+  }
+  .tag.up{color:var(--green); border-color:transparent; background:color-mix(in srgb, var(--green) 14%, transparent);}
+  .tag.down{color:var(--red); border-color:transparent; background:var(--red-dim);}
+  .tag.flat{color:var(--muted);}
+
+  .bar-list .row{display:grid; grid-template-columns:170px 1fr 56px; align-items:center; gap:10px; margin-bottom:12px;}
+  .bar-list .row .name{font-size:12.5px; color:var(--text);}
+  .bar-list .row .track{height:8px; background:var(--panel-alt); border-radius:4px; overflow:hidden; border:1px solid var(--border-soft);}
+  .bar-list .row .fill{height:100%; border-radius:4px; background:var(--red);}
+  .bar-list .row .pct{font-family:var(--rds-font-mono); font-size:12px; color:var(--muted); text-align:right;}
+
+  .readout{
+    background:var(--panel-alt); border:1px solid var(--border); border-left:3px solid var(--red);
+    border-radius:0 10px 10px 0; padding:18px 20px;
+  }
+  .readout .head{
+    font-family:var(--rds-font-mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--red); margin-bottom:12px;
+  }
+  .readout ul{margin:0; padding:0; list-style:none;}
+  .readout li{
+    font-size:13.5px; line-height:1.65; color:var(--text); padding:8px 0; border-top:1px solid var(--border-soft);
+  }
+  .readout li:first-child{border-top:none; padding-top:0;}
+  .readout li strong{color:var(--text); font-weight:600;}
+  .readout li.caveat{color:var(--muted); font-style:italic; font-size:12.5px;}
+
+  .chart-wrap{position:relative; height:230px;}
+  .chart-wrap.tall{height:280px;}
+
+  .legend-inline{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px;}
+  .legend-inline span{font-size:11.5px; color:var(--muted); display:flex; align-items:center; gap:6px; font-family:var(--rds-font-mono);}
+  .legend-inline .sw{width:9px; height:9px; border-radius:2px; display:inline-block;}
+
+  .signal-strip{display:flex; gap:3px; margin-top:14px; flex-wrap:wrap;}
+  .signal-strip i{width:9px; height:9px; border-radius:2px; display:inline-block; opacity:0.9;}
+
+  footer{
+    max-width:1240px; margin:0 auto; padding:0 28px 60px; color:var(--muted-dim); font-size:11.5px;
+    font-family:var(--rds-font-mono); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+
+  .two-col-cards{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:900px){.two-col-cards{grid-template-columns:1fr;}}
+
+  .subhead{font-family:var(--rds-font-sans); font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-dim); margin:0 0 12px;}
+
+  .priority-num{
+    font-family:var(--rds-font-mono); color:var(--muted-dim); font-size:12px; width:20px; display:inline-block;
+  }
+
+  /* ---------- narrative staleness banner ---------- */
+  .narrative-banner{
+    display:none;
+    background:color-mix(in srgb, var(--amber) 14%, transparent);
+    border-bottom:1px solid var(--amber);
+    color:var(--text); font-size:12.5px; line-height:1.5;
+    padding:10px 28px; text-align:center;
+  }
+  .narrative-banner strong{color:var(--amber);}
+
+  /* ---------- tab period badges ---------- */
+  nav.tabs button .tab-period{
+    display:block; font-family:var(--rds-font-mono); font-size:9px; letter-spacing:0.05em;
+    opacity:0.7; margin-top:2px; font-weight:400; text-transform:none;
+  }
+
+  /* ---------- scroll-spy active pill ---------- */
+  .jumpnav a.jn-pill.active{ color:#fff; background:var(--red); border-color:var(--red); }
+
+  /* ---------- section takeaway line ---------- */
+  .takeaway{
+    font-size:12.5px; color:var(--muted); font-style:italic;
+    margin:-6px 0 14px; display:flex; gap:8px; align-items:baseline; line-height:1.5;
+  }
+  .takeaway::before{content:'\2192'; color:var(--red); font-style:normal; font-family:var(--rds-font-mono); flex-shrink:0;}
+
+  /* ---------- KPI info tooltip ---------- */
+  .info-dot{
+    display:inline-flex; align-items:center; justify-content:center;
+    margin-left:6px; width:14px; height:14px; border-radius:50%;
+    border:1px solid var(--muted-dim); color:var(--muted-dim); font-size:9px;
+    cursor:help; position:relative; font-family:var(--rds-font-mono);
+    letter-spacing:0; vertical-align:middle; font-weight:400; text-transform:lowercase;
+  }
+  .info-dot .tip{
+    display:none; position:absolute; top:calc(100% + 8px); left:50%; transform:translateX(-50%);
+    width:230px; background:var(--panel-alt); border:1px solid var(--border); border-radius:8px;
+    padding:10px 12px; font-size:11.5px; line-height:1.5; color:var(--text); z-index:70;
+    box-shadow:var(--rds-shadow); font-family:var(--rds-font-sans); font-style:normal;
+    text-transform:none; letter-spacing:normal; text-align:left; font-weight:400; white-space:normal;
+  }
+  .info-dot:hover .tip{display:block;}
+
+  /* ---------- overview cards ---------- */
+  .three-col-cards{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:900px){.three-col-cards{grid-template-columns:1fr;}}
+  .ov-card .big{font-family:var(--rds-font-mono); font-size:28px; font-weight:700; margin:6px 0 12px;}
+  .ov-card ul{margin:0 0 16px; padding-left:16px; color:var(--muted); font-size:12.5px; line-height:1.65;}
+  .ov-card li{margin-bottom:6px;}
+  .goto-btn{
+    appearance:none; border:1px solid var(--red); background:transparent; color:var(--text);
+    font-family:var(--rds-font-sans); font-weight:500; font-size:12px;
+    padding:7px 13px; border-radius:5px; cursor:pointer; transition:all .15s ease;
+  }
+  .goto-btn:hover{background:var(--red); color:#fff;}
+  /* ---------- story banner (MoM verdicts) ---------- */
+  .story{padding:4px 16px 8px;}
+  .story .s-head{display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:10px 0 8px;}
+  .story .s-summary{font-family:var(--rds-font-mono); font-size:12px; color:var(--muted);}
+  .story .s-row{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 14px; padding:10px 0; border-top:1px solid var(--border-soft);}
+  .story .s-pill{font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:2px 9px; border-radius:999px; white-space:nowrap;}
+  .story .s-pill.on{color:var(--green); border:1px solid var(--green);}
+  .story .s-pill.off{color:var(--red); border:1px solid var(--red);}
+  .story .s-pill.mid{color:var(--amber); border:1px solid var(--amber);}
+  .story .s-pill.na{color:var(--muted-dim); border:1px solid var(--border);}
+  .story .s-label{font-weight:600; font-size:13.5px; min-width:220px;}
+  .story .s-val{font-family:var(--rds-font-mono); font-weight:700; font-size:15px;}
+  .story .s-delta{font-family:var(--rds-font-mono); font-size:12px; white-space:nowrap;}
+  .story .s-delta.good{color:var(--green);} .story .s-delta.bad{color:var(--red);} .story .s-delta.flat{color:var(--muted-dim);}
+  .story .s-base{font-size:12px; color:var(--muted); white-space:nowrap;}
+  .story .s-why{flex-basis:100%; font-size:12px; color:var(--muted-dim); line-height:1.45; margin-top:-2px;}
+  @media (max-width:700px){ .story .s-label{min-width:100%;} }
+  .kpi-row.autofit{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));}
+  /* Overview landing: compact tiles that auto-fit the row (card count can
+     change), equal-height story cards */
+  #kpi-overview .kpi{padding:14px 14px 12px;}
+  #kpi-overview .kpi .value{font-size:24px;}
+  #kpi-overview .kpi .sub{font-size:11px;}
+  #head-overview{margin-bottom:18px;}
+  #sec-o-01{margin-bottom:28px;}
+  .ov-card{display:flex; flex-direction:column;}
+  .ov-card ul{flex:1;}
+  .ov-card .goto-btn{margin-top:auto; align-self:flex-start;}
+  .exp-block{margin-bottom:22px;}
+  .exp-block:last-child{margin-bottom:0;}
+  .exp-list{margin:0; padding-left:16px; color:var(--muted); font-size:12.5px; line-height:1.7;}
+  .exp-list li{margin-bottom:4px;}
+  /* Repeat-contact section: space between KPI row and cards, calmer note rows */
+  #kpi-widget-repeat{margin-bottom:16px;}
+  #tblRepeatMonthly td[colspan]{border-bottom:none; padding-top:4px;}
+
+  /* ---------- hero banner (TLDR strip) ---------- */
+  .hero-banner{
+    background:var(--rds-midnight);
+    border:1px solid var(--rds-mars);
+    border-radius:14px;
+    padding:22px 26px;
+    margin:16px 0 20px;
+  }
+  .hero-banner .hb-eyebrow{
+    display:block; font-family:var(--rds-font-mono); font-size:11px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--rds-hyper); margin-bottom:10px;
+  }
+  .hero-banner .hb-text{
+    font-family:var(--rds-font-sans); font-weight:600; letter-spacing:-0.01em;
+    font-size:23px; line-height:1.5; color:#fff; max-width:900px;
+  }
+  .hero-banner .hb-text b{ color:var(--rds-hyper); font-weight:700; }
+  .hero-banner .hb-caveat{
+    margin-top:10px; font-family:var(--rds-font-mono); font-size:11px;
+    color:rgba(255,255,255,0.55);
+  }
+  @media (max-width:640px){
+    .hero-banner{padding:16px 18px;}
+    .hero-banner .hb-text{font-size:18px;}
+  }
+
+  /* ---------- mobile pass ---------- */
+  @media (max-width:640px){
+    main{padding:24px 16px 70px;}
+    header.topbar{padding:12px 16px;}
+    .kpi-row{grid-template-columns:1fr 1fr; gap:10px;}
+    .kpi{padding:13px 13px 12px;}
+    .kpi .value{font-size:21px;}
+    .kpi .label{min-height:0; font-size:10.5px;}
+    .jumpnav{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .page-head h2{font-size:22px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 85 27" fill="none" role="img" aria-label="Redis">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M75.2909 13.8125C75.2909 10.8448 77.4892 9.12284 80.2371 9.12284C82.2888 9.12284 84.1207 10.1121 85 12.5668C84.7435 13.8125 83.2047 15.2047 82.5453 15.4246C81.9957 14.2522 81.3728 13.556 80.7866 13.556C80.0539 13.556 80.0172 14.069 80.0172 14.7284C80.0172 15.1955 80.151 15.8834 80.3119 16.7112C80.5549 17.9615 80.8599 19.5309 80.8599 21.1401C80.8599 24.0711 78.8082 26.2328 75.6573 26.2328C72.7721 26.2328 71.1778 24.3414 70.4665 21.3198C68.5818 24.6972 65.8257 26.2328 63.7134 26.2328C60.411 26.2328 59.6338 23.7919 59.7121 21.3161C58.3852 23.6612 55.831 26.2328 53.3815 26.2328C50.8809 26.2328 49.9976 24.0563 50.2002 21.5215C48.702 24.3122 45.9919 26.2328 43.3793 26.2328C40.5442 26.2328 39.141 23.9806 39.5951 21.189C37.6878 23.5333 34.1374 26.2328 30.4461 26.2328C26.2373 26.2328 24.4053 23.9632 24.1882 21.1193C22.1568 24.375 19.4187 26.3427 16.1573 26.3427C11.4493 26.3427 9.76537 22.1561 9.52032 18.7315C7.77547 21.0681 5.81377 23.4923 3.40733 26.1961C3.15086 26.4526 2.93103 26.5991 2.67457 26.5991C1.8319 26.5991 0.109914 22.8621 0 21.4698C0.723099 20.3478 5.28119 15.3398 8.95093 11.3079C10.2409 9.89066 11.4211 8.594 12.2863 7.6291C10.0389 8.30726 7.72169 9.65975 4.79957 11.7608C4.28664 12.1272 2.85776 8.7931 2.8944 6.22845C6.26509 3.73707 11.3944 2.16164 15.5345 2.16164C21.3233 2.16164 24.6573 5.38578 24.6573 9.8556C24.6573 13.5927 21.5431 17.6961 17 17.8427C14.6377 17.904 13.1237 16.578 12.3494 14.9405C12.4419 17.473 13.7587 20.5905 17.2931 20.5905C21.1462 20.5905 22.9965 18.2646 25.7559 14.7958C25.9352 14.5704 26.1183 14.3403 26.306 14.1056C28.6509 11.2112 31.3621 8.64655 35.319 8.64655C37.7371 8.64655 39.3858 10.1487 39.3858 12.4203C39.3858 15.1681 36.1616 18.9784 31.6552 18.9784C30.8855 18.9784 30.1839 18.877 29.5917 18.6766C29.5768 18.7921 29.5668 18.9058 29.5668 19.0151C29.5668 20.2974 30.0431 21.0668 32.1315 21.0668C35.2091 21.0668 38.1034 19.2349 41.6207 14.9483C45.0647 10.7349 47.6659 8.90302 50.4138 8.90302C52.2687 8.90302 53.6765 9.90832 54.2969 11.6014C57.9796 6.28253 61.1038 2.51388 63.75 0C66.3513 1.09914 68.2198 3.26078 67.7069 3.70043C65.7651 5.45905 59.2802 12.5302 56.7155 16.7435C56.056 17.8427 55.4332 19.0517 55.4332 19.6379C55.4332 20.1875 55.7629 20.3707 56.1293 20.3707C57.8898 20.3707 61.4176 16.2147 64.4645 12.6253C65.6026 11.2845 66.6736 10.0228 67.5603 9.08621C69.6121 9.92888 71.7004 11.7241 71.1875 12.347C68.4763 15.5711 66.4246 18.2091 66.4246 19.7112C66.4246 20.1142 66.5711 20.3707 67.1207 20.3707C68.1466 20.3707 69.0991 19.4547 70.6746 17.5129C71.0043 17.1099 71.4073 17.1099 71.6638 17.7328C72.3599 19.4181 73.3858 20.3341 74.1918 20.3341C75.1444 20.3341 75.6207 19.4914 75.6207 18.2091C75.6207 17.3327 75.5137 16.3138 75.4217 15.4365C75.3521 14.7733 75.2909 14.191 75.2909 13.8125ZM16.194 13.3362C18.1358 13.3362 20.2608 12.2737 20.2608 10.1121C20.2608 8.80024 19.4466 7.59084 17.2708 7.22257C17.156 7.40192 17.042 7.58017 16.9287 7.75739C15.8231 9.4858 14.7804 11.116 13.7281 12.7095C14.3586 13.0636 15.156 13.3362 16.194 13.3362ZM35.8319 13.9957C35.8319 13.4095 35.4655 13.0065 34.8793 13.0065C33.4094 13.0065 31.1923 15.0693 30.149 17.0613C30.5341 17.2101 30.9862 17.2931 31.472 17.2931C34.0733 17.2931 35.8319 15.3147 35.8319 13.9957ZM45.4677 19.3082C45.4677 19.9677 45.834 20.4073 46.6034 20.4073C48.9849 20.4073 51.9526 16.0841 51.9526 14.3254C51.9526 13.5927 51.5496 13.153 50.8901 13.153C48.7285 13.153 45.4677 17.2565 45.4677 19.3082ZM76.0599 6.08207C75.2172 7.47431 73.9349 9.04974 73.4586 9.52603C71.2603 8.61008 69.2086 6.77819 69.5017 6.26525C70.3077 4.83638 71.6267 3.29758 72.103 2.82129C74.3012 3.73724 76.353 5.60577 76.0599 6.08207Z" fill="#FF4438"/>
+    </svg>
+    <span class="divider"></span>
+    <h1>Support Signal Room</h1>
+    <span class="sub">support ops</span>
+  </div>
+  <nav class="tabs">
+    <button class="tab-btn active" data-view="overview">Overview</button>
+    <button class="tab-btn" data-view="widget">Widget</button>
+    <button class="tab-btn" data-view="ticket">Ticket Autoresponder</button>
+    <button class="tab-btn" data-view="kb">KB Program</button>
+  </nav>
+  <div class="sync-block">
+    <button id="themeBtn" class="sync-btn" style="border-color:var(--border); padding:8px 11px;" title="Toggle light / dark theme">☀</button>
+    <button id="syncBtn" class="sync-btn">
+      <span class="sync-dot" id="syncDot"></span>
+      <span id="syncLabel">Sync live data</span>
+    </button>
+    <div class="meta-strip">
+      <span id="syncMeta">snapshot compiled <span id="snapDate"></span></span><br>
+      sources: Forethought widget QA, KB Scorecard
+    </div>
+  </div>
+</header>
+
+<div class="jumpnav-wrap" id="jumpnavWrap" style="display:none;">
+  <div class="jumpnav" id="jumpnav-widget">
+    <span class="jn-label">Jump to</span>
+    <a class="jn-pill" href="#head-widget">Overview</a>
+    <a class="jn-pill" href="#sec-w-01">Headline</a>
+    <a class="jn-pill" href="#sec-w-01g">Subject breakdown</a>
+    <a class="jn-pill" href="#sec-w-01f">Repeat contact</a>
+    <a class="jn-pill" href="#sec-w-04">Drop-off signal</a>
+    <a class="jn-pill" href="#sec-w-05">Handoff topics</a>
+    <a class="jn-pill" href="#sec-w-05b">Workflow handoffs</a>
+    <a class="jn-pill" href="#sec-w-04c">Duration</a>
+    <a class="jn-pill" href="#sec-w-04d">Customer feedback</a>
+    <a class="jn-pill" href="#sec-w-08">Readout</a>
+  </div>
+  <div class="jumpnav" id="jumpnav-ticket" style="display:none;">
+    <span class="jn-label">Jump to</span>
+    <a class="jn-pill" href="#head-email">Overview</a>
+    <a class="jn-pill" href="#sec-w-09c">Funnel</a>
+    <a class="jn-pill" href="#sec-w-09e">Solved vs. handoff</a>
+    <a class="jn-pill" href="#sec-w-09g">Support impact</a>
+    <a class="jn-pill" href="#sec-w-12">Readout</a>
+  </div>
+  <div class="jumpnav" id="jumpnav-kb" style="display:none;">
+    <span class="jn-label">Jump to</span>
+    <a class="jn-pill" href="#head-kb">Overview</a>
+    <a class="jn-pill" href="#sec-k-01">Headline</a>
+    <a class="jn-pill" href="#sec-k-01b">Funnel</a>
+    <a class="jn-pill" href="#sec-k-02">MoM trend</a>
+    <a class="jn-pill" href="#sec-k-02b">Success vs tickets</a>
+    <a class="jn-pill" href="#sec-k-03">Segments</a>
+    <a class="jn-pill" href="#sec-k-04">Support impact</a>
+    <a class="jn-pill" href="#sec-k-05">Content &amp; search</a>
+    <a class="jn-pill" href="#sec-k-06">Ticket volume</a>
+  </div>
+</div>
+
+<div class="narrative-banner" id="narrativeBanner"></div>
+
+<main>
+
+  <!-- ===================== VIEW 0: OVERVIEW ===================== -->
+  <div class="view active" id="view-overview">
+
+    <div class="page-head" id="head-overview">
+      <div class="eyebrow">Executive summary</div>
+      <h2>Support signal overview</h2>
+      <section class="hero-banner" id="heroBanner"></section>
+    </div>
+
+    <section class="block" id="sec-o-00">
+      <div class="block-head"><h3>Where we stand — <span id="storyOverviewMonth"></span></h3><div class="note">These are new programs, so verdicts show each channel's direction of travel: the latest complete month vs the month before. Partial months (*) are never judged.</div></div>
+      <div class="card story" id="story-overview"></div>
+    </section>
+
+    <section class="block" id="sec-o-01">
+      <div class="block-head"><h3>Cross-channel headline — July 2026</h3><div class="note">One reporting month across all channels.<span class="info-dot">i<span class="tip">Deflection here uses the log's flag basis (month-splittable); the all-period no-handoff deflection (83.3%) lives on the Widget tab.</span></span></div></div>
+      <div class="kpi-row autofit" id="kpi-overview"></div>
+    </section>
+
+    <section class="block" id="sec-o-01a">
+      <div class="block-head"><h3>Monthly deflection trend — <span id="deflStoryRange"></span></h3><div class="note">Is the share of demand deflected without a human increasing? KB has run since January, Widget went live Apr 27, and Autoresponder rolled out Jul 23 — each joined the line at a different point, so the upward trend is partly new programs coming online, not only existing programs improving. The phase breakdown below marks where each layer was added.<span class="info-dot">i<span class="tip">Total demand = tickets created + widget-contained conversations + KB deflections. Autoresponder deflections are already inside the ticket count, not added on top. Ticket volume excludes Proactive tickets (filtered at the source) — see Support impact below for the full group breakdown. Caveats: KB deflections are mostly assumed; widget-contained is net of confirmed 7-day repeat tickets; June's autoresponder traffic was test/pilot and is excluded.</span></span></div></div>
+      <div class="takeaway" id="deflStoryTakeaway"></div>
+      <div class="card">
+        <div class="chart-wrap"><canvas id="chartShareTrend"></canvas></div>
+      </div>
+      <div class="card story" id="deflPhases" style="margin-top:12px;"></div>
+    </section>
+
+    <section class="block" id="sec-o-01b">
+      <div class="block-head"><h3><span id="waterfallMonthLabel">July 2026</span> Deflection Impact</h3><div class="note">One month's composition, not a cumulative total across the programs' lifetime — this is what made up that month's deflection, shown above.</div></div>
+      <div class="takeaway" id="waterfallTakeaway"></div>
+      <div class="card">
+        <div class="chart-wrap tall"><canvas id="chartWaterfall"></canvas></div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-o-02">
+      <div class="block-head"><h3>Channel highlights</h3></div>
+      <div class="three-col-cards" id="overviewCards"></div>
+    </section>
+
+    <section class="block" id="sec-o-02b">
+      <div class="block-head"><h3>Support impact — <span id="supportImpactMonth"></span></h3><div class="note">Ticket volume split by Zendesk group, not AI classification — this is the routing data, not a modeled estimate.<span class="info-dot">i<span class="tip">Support/technical = Support L1+L2+L3. Billing/finance = Finance Billing + Accounts Receivable. Support-related demand adds CS and TAM (incl. TAM AMR West) to Support/technical, since Jay's "Support" story includes CS/advisory demand — that's also the rest of the total not otherwise shown here (Support/technical % + Billing/finance % + CS/TAM's share ≈ 100%). Proactive tickets are excluded at the source (CSE ICP, Unassigned, Other (14 groups), and Finance Licensing/Provisioning were part of the old proactive-inclusive export and no longer appear here).</span></span></div></div>
+      <div class="takeaway" id="supportImpactTakeaway"></div>
+      <div class="kpi-row autofit" id="kpi-support-impact"></div>
+    </section>
+
+    <section class="block" id="sec-o-03">
+      <div class="block-head"><h3>Expansion / what's next</h3><div class="note">Where the program goes from here — not yet live metrics.</div></div>
+      <div class="card" id="expansionNext"></div>
+    </section>
+
+  </div>
+
+  <!-- ===================== VIEW 1: WIDGET ===================== -->
+  <div class="view" id="view-widget">
+
+    <div class="page-head" id="head-widget">
+      <div class="eyebrow">Executive overview</div>
+      <h2>Forethought widget performance</h2>
+      <p>How the widget is affecting Support: conversation volume, containment, and how often deflected conversations actually stay resolved. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 19, 2026.</p>
+    </div>
+
+    <div class="month-filter" id="widgetMonthFilter"></div>
+
+    <section class="block" id="sec-w-00">
+      <div class="block-head"><h3>Where this stands — <span id="storyWidgetMonth"></span></h3><div class="note">Shows the month selected above (latest complete month by default), movement vs the prior month (green = the right direction), and distance travelled since its first measured month.</div></div>
+      <div class="card story" id="story-widget"></div>
+    </section>
+
+    <section class="block" id="sec-w-01">
+      <div class="block-head"><h3>Headline performance</h3></div>
+      <div class="takeaway">Deflection is strong — most widget conversations resolve without ever reaching a human.</div>
+      <div class="kpi-row autofit" id="kpi-widget-headline"></div>
+    </section>
+
+    <section class="block" id="sec-w-01g">
+      <div class="block-head">
+        <h3>Deflection by subject</h3>
+        <div class="note">Subject is the QA sheet's human-graded Support Type, joined to the conversation log's deflected flag (unique conversations, full period). 167 QA rows carry no Support Type — mostly partial passes and system updates — and conversations never QA'd sit in the unclassified row. Computed Aug 20, 2026.</div>
+      </div>
+      <div class="takeaway" id="wSubjectTakeaway"></div>
+      <div class="card"><table id="tblWidgetSubject"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-01f">
+      <div class="block-head">
+        <h3>Repeat contact after deflection</h3>
+        <div class="note">Same customer, same issue, own support ticket within 7 days of a fully-contained widget conversation. Lower is better — a containment-quality signal, not a deflection-failure rate. Widget Repeat Contact tab, refreshed Aug 20, 2026.</div>
+      </div>
+      <div class="takeaway">12.6% of July's contained conversations came back as same-issue tickets within 7 days, up from 6.2% in June — each one is counted as a win by the headline deflection rate.</div>
+      <div class="kpi-row autofit" id="kpi-widget-repeat"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="subhead">Monthly trend</div>
+          <table id="tblRepeatMonthly"></table>
+        </div>
+        <div class="card">
+          <div class="subhead">Evidence — de-identified (customer names live in the sheet)</div>
+          <div style="max-height:300px; overflow-y:auto;"><table id="tblRepeatEvidence"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-w-04">
+      <div class="block-head">
+        <h3>Drop-off signal (automated Forethought)</h3>
+        <div class="note">Forethought's automated drop-off signal — the conversation log's dropoff_rating and dropoff_reasoning, bucketed into patterns across 155 flagged conversations. This is bot-detected engagement, not human QA (intake grading is above) and not measured recontact: for whether contained conversations actually turn into tickets, see Repeat contact after deflection.</div>
+      </div>
+      <div class="takeaway">Most flagged drop-offs show no follow-up at all — consistent with self-resolution — and July's 10.0% repeat-contact rate says flagged drop-offs are mostly not turning into tickets. Treat as an engagement signal, not a validated risk.</div>
+      <div class="grid-2b">
+        <div class="card">
+          <div class="subhead">Drop-off signal breakdown</div>
+          <table id="tblJourney"></table>
+        </div>
+        <div class="card">
+          <div class="subhead">Signal rates (automated)</div>
+          <div class="chart-wrap"><canvas id="chartJourney"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-w-05">
+      <div class="block-head">
+        <h3>Handed-off topics &amp; unanswered questions</h3>
+        <div class="note">Detected topics and first customer question for conversations that were not deflected — computed from the conversation log, Aug 11, 2026.</div>
+      </div>
+      <div class="takeaway">Refunds/credits and payment issues lead the handoff list — billing process, not technical content, drives most escapes.</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="subhead">Topics on handed-off conversations</div>
+          <table id="tblTopicsHandoff"></table>
+        </div>
+        <div class="card">
+          <div class="subhead">Sample handed-off questions</div>
+          <table id="tblHandoffQueries"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-w-05b">
+      <div class="block-head">
+        <h3>Handoff rate by workflow</h3>
+        <div class="note">Unique conversations per detected workflow and how often each handed off. Standard Handoff and Contact Support hand off by design.</div>
+      </div>
+      <div class="takeaway">The two billing clarification workflows hand off at 36–39% — the clearest fix-first candidates. Knowledge retrieval holds ~7%.</div>
+      <div class="card"><table id="tblWorkflows"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-04c">
+      <div class="block-head">
+        <h3>Conversation duration</h3>
+        <div class="note">Median time spent in the widget, split by whether the conversation deflected or handed off.</div>
+      </div>
+      <div class="takeaway">Deflected conversations end in a median 48 seconds; handed-off ones run 7 minutes — when self-service works, it is roughly 9x faster for the customer.</div>
+      <div class="card"><table id="tblDurations"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-04d">
+      <div class="block-head">
+        <h3>Customer feedback</h3>
+        <div class="note">CSAT and relevance ratings from the widget conversation log — the customer's opinion of quality, next to QA's.</div>
+      </div>
+      <div class="takeaway">19.4% of conversations end with negative sentiment — close to QA's 10.4% fail rate plus drop-off signal. CSAT and quick feedback are too sparse to headline yet.</div>
+      <div class="card"><table id="tblCsat"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-08">
+      <div class="block-head"><h3>Management readout, widget</h3></div>
+      <div class="readout">
+        <div class="head">Executive summary</div>
+        <ul id="readoutWidget"></ul>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ===================== VIEW 2: TICKET AUTORESPONDER (EMAIL) ===================== -->
+  <div class="view" id="view-ticket">
+
+    <div class="page-head" id="head-email">
+      <div class="eyebrow">Executive overview</div>
+      <h2>Ticket Autoresponder</h2>
+      <p>How the ticket autoresponder is affecting Support: how many tickets it touches, how many it resolves outright vs. hands to L1, and whether it's actually reducing L1 touches. Jun–Jul are pilot months.</p>
+    </div>
+
+    <div class="month-filter" id="emailMonthFilter"></div>
+
+    <section class="block" id="sec-e-00">
+      <div class="block-head"><h3>Where this stands — <span id="storyEmailMonth"></span></h3><div class="note">Each metric shows the latest complete month and movement vs the prior month (Jun* is a tiny partial sample — read its comparison loosely).</div></div>
+      <div class="card story" id="story-email"></div>
+    </section>
+
+    <section class="block" id="sec-w-09c">
+      <div class="block-head">
+        <h3>Autoresponder funnel</h3>
+        <div class="note">From the autoresponder raw logs (current + archive, deduplicated by conversation), verified Aug 16, 2026. Deflected uses the log's flag; QA quality of the sent responses is graded further down this page.</div>
+      </div>
+      <div class="takeaway">Coverage is the constraint, not execution: only 25.4% of inbound email is eligible, but 98% of eligible emails get a response and 73% of those deflect.</div>
+      <div class="card"><table id="tblFunnel"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-09e">
+      <div class="block-head">
+        <h3>Solved by bot vs. handed to L1 — Support</h3>
+        <div class="note">Scope: Support only (CS-owned; Billing runs its own review and is tracked separately). Sent = <span class="mono">forethought_support_sent</span>, Solved = <span class="mono">forethought_support_solved</span>, Handed to L1 = <span class="mono">forethought_support_handoff</span>. Jun–Jul are pilot months — read loosely.<span class="info-dot">i<span class="tip">Solve rate is the only outcome directly attributable to the bot: an unsolved ticket would have gone to L1 whether or not the bot touched it, so handoff is shown as supporting detail, not a headline metric. The 4-hour no-response timeout is a narrow fallback, not the main driver of handoffs.</span></span></div>
+      </div>
+      <div class="takeaway" id="supportFunnelTakeaway"></div>
+      <div class="kpi-row autofit" id="kpi-support-funnel"></div>
+      <div class="grid-2" style="margin-top:12px;">
+        <div class="card">
+          <div class="subhead">MoM trend</div>
+          <table id="tblSupportFunnel"></table>
+        </div>
+        <div class="card">
+          <div class="subhead">Why tickets get handed to L1</div>
+          <table id="tblHandoffReasons"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-w-09g">
+      <div class="block-head">
+        <h3>Support impact — L1 touches &amp; nudges</h3>
+        <div class="note">Does the autoresponder actually reduce work for Support, independent of whether it fully solves the ticket? Compares FT-tagged (<span class="mono">ft-email-automated</span>) tickets against non-FT tickets on how often each reaches L1 and how often L1 has to send a follow-up nudge. From the Automation Baseline tab.<span class="info-dot">i<span class="tip">June's FT volume was confirmed test/pilot tickets, not organic — read June loosely. The tab's July pre/post-rollout L1-touched counts (44+22) don't reconcile with its own full-month figure (13); full-month values are shown as authoritative here since they match the Zendesk tag counts used elsewhere on this tab.</span></span></div>
+      </div>
+      <div class="takeaway">FT-tagged tickets reach L1 less often than non-FT tickets (10.7% vs. 15.1% in July) — a modest touches-removed signal, even though most FT-tagged tickets aren't fully solved by the bot (see above). Hours returned is still blocked on agreeing a minutes-per-touch value with Support leadership.</div>
+      <div class="card"><table id="tblAutomation"></table></div>
+    </section>
+
+    <section class="block" id="sec-w-12">
+      <div class="block-head"><h3>Management readout, ticket autoresponder</h3></div>
+      <div class="readout">
+        <div class="head">Executive summary</div>
+        <ul id="readoutEmail"></ul>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ===================== VIEW 3: KB SCORECARD ===================== -->
+  <div class="view" id="view-kb">
+
+    <div class="page-head" id="head-kb">
+      <div class="eyebrow">Executive overview</div>
+      <h2>Knowledge Base Scorecard</h2>
+      <p id="kbPageDesc">Self-service deflection, search behavior, and content health. Reporting month: July 2026 vs. June 2026. Workbook last refreshed for the July reporting period.</p>
+    </div>
+
+    <div class="month-filter" id="kbMonthFilter"></div>
+
+    <section class="block" id="sec-k-00">
+      <div class="block-head"><h3>Where this stands — <span id="storyKbMonth"></span></h3><div class="note">Each metric shows the reporting month, movement vs the prior month (green = the right direction), and distance travelled since January.</div></div>
+      <div class="card story" id="story-kb"></div>
+    </section>
+
+    <section class="block" id="sec-k-01">
+      <div class="block-head"><h3>Headline metrics, <span id="kbHeadMonths">July vs. June</span></h3></div>
+      <div class="takeaway">August's deflection mix held steady: confirmed fell 17.6% while assumed rose 1.0%, keeping total deflection flat at 19.8%. Search proxies weakened again — deflection proxy fell 8.4% to 83.8%.</div>
+      <div class="kpi-row" id="kpi-kb-headline"></div>
+    </section>
+
+    <section class="block" id="sec-k-01b">
+      <div class="block-head">
+        <h3>Search journey, <span id="kbFunnelMonth">July</span></h3>
+        <div class="note">True-subset funnel from the search tracker: each stage is a subset of the one above; result clicks are derived (searches × CTR, rounded). Sessions, article views, and deflections come from separate trackers with different denominators — shown as context tiles below, not funnel stages.</div>
+      </div>
+      <div class="takeaway">Search conversion tightened — click-through improved to 53% (74 of 139 searches), but tickets created after search doubled to 22, pulling the search deflection proxy down to 83.8%. Deflection and article reach are separate-tracker context, not funnel stages.</div>
+      <div class="card"><div class="bar-list" id="kbFunnel"></div></div>
+      <div class="kpi-row autofit" id="kbFlowContext" style="margin-top:12px;"></div>
+    </section>
+
+    <section class="block" id="sec-k-02">
+      <div class="block-head">
+        <h3>Month-over-month trend, <span id="kbTrendRange">Jan – Jul 2026</span></h3>
+        <div class="note" id="kbTrendNote">July is the current reporting month and June is the comparison month.</div>
+      </div>
+      <div class="takeaway">Sessions held roughly flat in August (-0.4%) while searches rebounded 6.1% — but conversion into tickets rose too, so total deflection stayed flat rather than improving.</div>
+      <div class="card">
+        <div class="range-filter" id="momRangeFilter" style="margin-bottom:14px;"></div>
+        <div class="chart-wrap tall"><canvas id="chartMomTrend"></canvas></div>
+        <div class="legend-inline" id="momLegend"></div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-k-02b">
+      <div class="block-head">
+        <h3>KB success vs. ticket volume</h3>
+        <div class="note">Total deflections as a share of (tickets created + deflections). Survives volume swings in a way raw deflection counts don't.</div>
+      </div>
+      <div class="takeaway">August's success rate held at 19.6% (226 deflections of 927 non-proactive tickets) — steady with July's revised 18.4%. Note: as of Sep 1, 2026 ticket volume excludes Proactive tickets at the source, which revises the full history (e.g. July was previously shown as 14.9% on a 1,300-ticket base that included Proactive tickets).</div>
+      <div class="card">
+        <div class="chart-wrap tall"><canvas id="chartKbSuccess"></canvas></div>
+      </div>
+      <div class="card" style="margin-top:12px;"><table id="tblKbSuccess"></table></div>
+    </section>
+
+    <section class="block" id="sec-k-03">
+      <div class="block-head"><h3>Deflections by user segment</h3><div class="note" id="kbSegNote">June's Deflections-by-Role export currently includes End user only; other segments show — until it's refreshed.</div></div>
+      <div class="takeaway">August's role export is complete: anonymous users drive most assumed deflections (582 of 834); end users account for all confirmed deflections.</div>
+      <div class="grid-2">
+        <div class="card"><table id="tblSegments"></table></div>
+        <div class="card">
+          <div class="subhead" id="kbSegChartSub">Assumed deflections by segment, May (last complete role export)</div>
+          <div class="chart-wrap"><canvas id="chartSegments"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-k-04">
+      <div class="block-head"><h3>Support impact, <span id="kbSupportMonth">July</span> view</h3></div>
+      <div class="takeaway">KB Influence on Tickets and Linked-Article Tickets can't be refreshed this month — the underlying Raw Ticket Article Links source is missing. Deflection rates and search proxies above are current through August.</div>
+      <div class="card"><table id="tblSupportImpact"></table></div>
+    </section>
+
+    <section class="block" id="sec-k-05">
+      <div class="block-head"><h3>Content health &amp; search / findability</h3></div>
+      <div class="takeaway">Searches rebounded 6.1% in August, but tickets created after search doubled — every containment proxy (search deflection proxy, result-click containment) declined even as CTR and the no-result rate both improved.</div>
+      <div class="two-col-cards">
+        <div class="card">
+          <div class="subhead">Content health</div>
+          <table id="tblContentHealth"></table>
+          <div class="note" style="margin-top:10px;">Next actions: open a dialogue with the SRE team (Joe Dunford's team) about their own KB — comparing their GitHub content against the existing Support KB to see what's worth pulling in as a trusted source.</div>
+        </div>
+        <div class="card">
+          <div class="subhead">Search &amp; findability</div>
+          <table id="tblSearch"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-k-06">
+      <div class="block-head">
+        <h3>Ticket volume by group, <span id="kbTicketRange">Jan – Jul 2026</span></h3>
+        <div class="range-filter" id="ticketRangeFilter"></div>
+      </div>
+      <div class="month-filter" id="ticketGroupFilter" style="margin:10px 0 12px;"></div>
+      <div class="takeaway">Support - L3 remains the largest queue (375 in August) even as it eases back from July's 402. Support - L2 has plateaued in the 125–130 range since April, and TAM has climbed steadily from 75 in January to 104 in August — the clearest upward trend in the group breakdown. Figures now exclude Proactive tickets at the source.</div>
+      <div class="card">
+        <div class="chart-wrap tall"><canvas id="chartTicketGroups"></canvas></div>
+      </div>
+    </section>
+
+    <section class="block" id="sec-k-07">
+      <div class="block-head"><h3>Deflection by subject — not yet measurable</h3></div>
+      <div class="card story">
+        <div class="s-row"><span class="s-pill na">data gap</span><span class="s-why">Zendesk's deflection export carries no topic or category, so KB deflections cannot be split into CS / Support / Billing the way the widget and autoresponder tabs now are. Two additions would close it: (1) include the deflecting article's Guide section/category in the deflection export, or (2) log the article ID on each deflection event and map it to the KB's category tree. Until then, the nearest context is ticket volume by group (where demand lives).</span></div>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  <span>Static snapshot, figures reflect the source sheets at time of export.</span>
+  <span>Widget/QA period: Apr 27 – Aug 10, 2026 · KB period: <span id="kbFooterRange">Jan – Jul 2026</span></span>
+</footer>
+
+<script>
+document.getElementById('snapDate').textContent = new Date().toISOString().slice(0,10);
+
+/* ---------------- shared chart theming ---------------- */
+const CHARTS_AVAILABLE = typeof Chart !== 'undefined';
+if (CHARTS_AVAILABLE) {
+  Chart.defaults.font.family = "'Space Mono', monospace";
+  Chart.defaults.font.size = 11.5;
+  Chart.defaults.color = '#8A99A0';
+  // Fill the fixed-height .chart-wrap containers; without this Chart.js
+  // imposes a 2:1 aspect ratio and overflows/clips on wide cards.
+  Chart.defaults.responsive = true;
+  Chart.defaults.maintainAspectRatio = false;
+} else {
+  console.warn('Chart.js failed to load from both CDNs — charts will be skipped, tables/KPIs still render.');
+}
+/* Redis 2024 Digital UI chart palette — official series order, do not invent colors. */
+const COLORS = {red:'#FF4438', green:'#DCFF1E', amber:'#C795E3', blue:'#33C2FB', muted:'#5C707A', grid:'#2D4754', text:'#F3F3F3', ring:'#0D2733'};
+const palette = ['#FF4438','#33C2FB','#C795E3','#DCFF1E','#FF8A82','#9B5DE5','#80D8FB','#A8C814'];
+
+/* Safe chart constructor: no-ops (and shows a small placeholder note) if Chart.js isn't available */
+function safeChart(canvasId, config){
+  if (!CHARTS_AVAILABLE) {
+    const el = document.getElementById(canvasId);
+    if (el && el.parentElement && !el.parentElement.querySelector('.chart-fallback-note')) {
+      const note = document.createElement('div');
+      note.className = 'chart-fallback-note';
+      note.style.cssText = 'color:var(--muted-dim); font-size:11.5px; font-family:var(--rds-font-mono); padding:8px 0;';
+      note.textContent = 'Chart unavailable (script failed to load) — see table for the same data.';
+      el.parentElement.appendChild(note);
+    }
+    return null;
+  }
+  try {
+    return new Chart(document.getElementById(canvasId), config);
+  } catch(e) {
+    console.error('Chart render failed for', canvasId, e);
+    return null;
+  }
+}
+
+function fmtDur(sec){
+  if(sec===null||sec===undefined) return '—';
+  const s = Math.round(Number(sec));
+  return s >= 60 ? `${Math.floor(s/60)}m ${s%60}s` : `${s}s`;
+}
+function syncPendingRow(cols){
+  return `<tr><td colspan="${cols}" style="color:var(--muted-dim); font-style:italic;">Populates on the first live sync — this section is tallied from the full QA sheet by the data feed.</td></tr>`;
+}
+function fmtPct(v, d=1){ return (v===null||v===undefined) ? '—' : Number(v).toFixed(d)+'%'; }
+function fmtNum(v){ return (v===null||v===undefined) ? '—' : Number(v).toLocaleString(); }
+function momCell(arr,i,goodUp=true){
+  if(i===0||arr[i]==null||arr[i-1]==null) return '<td class="num" style="color:var(--muted-dim);">\u2014</td>';
+  const d=+(arr[i]-arr[i-1]).toFixed(1);
+  if(d===0) return '<td class="num" style="color:var(--muted-dim);">\u2022 0.0pp</td>';
+  const good=goodUp?d>0:d<0; const sym=d>0?'\u25b2':'\u25bc';
+  return `<td class="num" style="color:${good?'var(--green)':'var(--red)'};">${sym} ${Math.abs(d).toFixed(1)}pp</td>`;
+}
+function momTag(v){
+  if(v===null||v===undefined) return '<span class="tag flat">n/a</span>';
+  const cls = v>0 ? 'up' : (v<0 ? 'down' : 'flat');
+  const arrow = v>0 ? '▲' : (v<0 ? '▼' : '·');
+  return `<span class="tag ${cls}">${arrow} ${Math.abs(v).toFixed(1)}%</span>`;
+}
+function statusFromRate(rate, goodAbove, badBelow){
+  if(rate===null||rate===undefined) return 'neutral';
+  if(rate>=goodAbove) return 'good';
+  if(rate<=badBelow) return 'bad';
+  return 'watch';
+}
+
+/* =========================================================================
+   VIEW SWITCH
+   ========================================================================= */
+let currentView = 'overview';
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    currentView = btn.dataset.view;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+currentView).classList.add('active');
+    document.getElementById('jumpnavWrap').style.display = currentView==='overview' ? 'none' : 'block';
+    ['widget','ticket','kb'].forEach(v=>{
+      const jn = document.getElementById('jumpnav-'+v);
+      if(jn) jn.style.display = currentView===v ? 'flex' : 'none';
+    });
+    window.scrollTo(0,0);
+    // Charts built while their tab was display:none couldn't measure their
+    // containers; re-measure now that this view is visible.
+    requestAnimationFrame(()=>{
+      Object.keys(charts).forEach(key=>{ try{ charts[key].resize(); }catch(e){} });
+    });
+    updateScrollSpy();
+  });
+});
+
+/* =========================================================================
+   SCROLL-SPY — highlights the jump-nav pill for the section currently in
+   view, so the nav doubles as a "you are here" indicator.
+   ========================================================================= */
+function updateScrollSpy(){
+  if(currentView==='overview') return;
+  const jn = document.getElementById('jumpnav-'+currentView);
+  if(!jn) return;
+  const pills = [...jn.querySelectorAll('a.jn-pill[href^="#"]')];
+  let activeHref = null;
+  pills.forEach(p=>{
+    const el = document.getElementById(p.getAttribute('href').slice(1));
+    if(el && el.getBoundingClientRect().top <= 170) activeHref = p.getAttribute('href');
+  });
+  pills.forEach(p=>p.classList.toggle('active', p.getAttribute('href')===activeHref));
+}
+window.addEventListener('scroll', updateScrollSpy, {passive:true});
+
+/* =========================================================================
+   STATE — everything the page renders from.
+   Text/rationale columns are treated as stable and stay static; every
+   number that lives in a KPI, table numeric column, or chart is here and
+   gets overwritten by a live sync when one succeeds.
+   ========================================================================= */
+function defaultState(){
+  return {
+    widget: {
+      headline: {
+        conversations: {value:'552', sub:'Unique widget conversations'},
+        deflection:    {value:83.3,  sub:'460 conversations without handoff'},
+        handoff:       {value:16.7,  sub:'92 conversations handed off'},
+        qaPass:        {value:55.3,  sub:'301 passes / 544 scorable QA rows'},
+        improvement:   {value:44.7,  sub:'189 partial + 54 fail; 80 system updates excluded'},
+      },
+      quality: {
+        partialPass:  {value:34.7, sub:'189 useful but incomplete'},
+        trueFail:     {value:9.9, sub:'54 failed experiences'},
+        dropoff:      {value:28.1, sub:'155 flagged by Forethought (automated signal)'},
+        lowRelevance: {value:26.5, sub:'148 of 558 rated'},
+        kbUpdates:    {value:91,  sub:'14.6% of QA rows'},
+      },
+      drivers: [
+        {cat:'KB/content gap', count:43, share:35.5, action:'Create or tighten KB and documentation coverage.'},
+        {cat:'Technical precision gap', count:53, share:43.8, action:'Improve technical specificity, scoping, and troubleshooting steps.'},
+        {cat:'Billing/account guidance gap', count:24, share:19.8, action:'Clarify process ownership, limitations, and escalation paths.'},
+        {cat:'Uncategorized / review', count:1, share:0.8, action:'Review the QA note and assign the best category.'},
+      ],
+      journey: [
+        {signal:'Drop-off conversations', count:155, rate:28.1, interp:'Flagged by Forethought\'s automated dropoff_rating.'},
+        {signal:'No follow-up', count:80, rate:51.6, interp:'Largest drop-off type; review answer closure and CTA.'},
+        {signal:'Incomplete handoff', count:24, rate:15.5, interp:'Tighten required ticket-intake prompts and fields.'},
+        {signal:'Relevant-answer drop-offs', count:91, rate:58.7, interp:'May indicate CTA or resolution-confirmation ambiguity.'},
+        {signal:'Likely true drop-offs', count:111, rate:71.6, interp:'Automated validation of Forethought\'s own signal \u2014 not human QA.'},
+      ],
+      /* Feed-computed sections: these start empty and populate on the first
+         successful live sync (the feed tallies them from the full QA sheet,
+         tracker, and conversation log, which are too large to snapshot here). */
+      topics: [],
+      /* Computed Aug 11, 2026 from the conversation log (per unique conversation). */
+      durations: [
+        {group:'Deflected (no handoff)', median:48, n:537},
+        {group:'Handed off to support', median:420, n:57},
+      ],
+      /* Customer signals from the conversation log, Aug 11, 2026. Sentiment is
+         per unique conversation; CSAT and quick feedback are too sparse to
+         treat as representative — shown with sample sizes for honesty. */
+      feedback: {
+        sentiment: {positive:42, neutral:423, negative:112, rated:577},
+        csatAvg:3.6, csatCount:7, quickFeedbackCount:12,
+      },
+      /* Handed-off topics and unanswered questions — detected_topics and first
+         user_query of non-deflected conversations, Aug 11, 2026. */
+      topicsHandoff: [
+        {topic:'Refunds and Credits', handoffs:8, mentions:9},
+        {topic:'Payment Issues', handoffs:5, mentions:11},
+        {topic:'Technical Support — Others', handoffs:5, mentions:29},
+        {topic:'Account Access and Security', handoffs:3, mentions:11},
+        {topic:'General Connectivity Issues', handoffs:3, mentions:10},
+        {topic:'Failover and Recovery Support', handoffs:3, mentions:11},
+        {topic:'Billing Inquiries', handoffs:3, mentions:8},
+      ],
+      sampleHandoffQueries: [
+        'Our prod db is down, what\u2019s happening?',
+        'We need a Redis analyst to help with a production outage on Redis Cloud',
+        'I\u2019m running into DNS errors and I need to speak to an agent immediately',
+        'Authentication error connecting to my database in Redis Insight',
+        'ECONNREFUSED when connecting since last night (sandbox database)',
+        'Trying to replace the credit card on my subscription but the add button fails',
+      ],
+      /* Handoff rate by detected workflow (unique conversations), Aug 11, 2026.
+         Standard Handoff and Contact Support hand off by design. */
+      workflows: [
+        {name:'Standard Handoff', convs:98, handoffs:47, rate:48.0, byDesign:true},
+        {name:'Billing Invoice Clarification', convs:18, handoffs:7, rate:38.9, byDesign:false},
+        {name:'Billing Marketplace CSP', convs:11, handoffs:4, rate:36.4, byDesign:false},
+        {name:'Contact Support', convs:115, handoffs:33, rate:28.7, byDesign:true},
+        {name:'Billing Payment Failure Retry', convs:11, handoffs:1, rate:9.1, byDesign:false},
+        {name:'KR Autoflow', convs:526, handoffs:38, rate:7.2, byDesign:false},
+        {name:'Knowledge Retrieval', convs:496, handoffs:34, rate:6.9, byDesign:false},
+      ],
+      /* FT L1 Touches Removed tracker — from the Automation Baseline tab.
+         June FT volume was confirmed test/pilot tickets; use the non-FT June
+         row as the real before baseline. Note: the tab's July pre/post-rollout
+         L1-touched counts (44 + 22) do not reconcile with its full-month
+         figure (13) — full-month values shown as authoritative. */
+      automationTracker: {
+        months:['Jun 2026*','Jul 2026'],
+        rows:[
+          {metric:'Total tickets created', vals:['1,683','2,143'], note:'All Zendesk tickets in the month.'},
+          {metric:'FT-tagged tickets (ft-email-automated)', vals:['21','121'], note:'June was test/pilot volume, not organic.'},
+          {metric:'FT-tagged: L1-touch rate', vals:['9.5%','10.7%'], note:'13 of 121 FT tickets reached L1 in July.'},
+          {metric:'Non-FT: L1-touch rate', vals:['16.9%','15.1%'], note:'The comparison baseline — FT runs ~4.4pts lower in July.'},
+          {metric:'FT-tagged: nudge count', vals:['2','12'], note:'L1-touched + no_response.'},
+          {metric:'Non-FT: nudge count', vals:['79','70'], note:''},
+          {metric:'Auto-closeable under proposed 4h+72h rule', vals:['0','2'], note:'Simulated against the proposed rule — no live automation yet.'},
+          {metric:'Baseline L1 touches expected', vals:['3.6','18.3'], note:'Non-FT touch rate \u00d7 FT volume.'},
+          {metric:'L1 touches removed (baseline \u2212 actual)', vals:['1.6','5.3'], note:'The reduction story so far.'},
+          {metric:'Hours returned', vals:['\u2014','\u2014'], note:'Blocked on the minutes-per-L1-touch decision with Support leadership.'},
+        ],
+      },
+      /* Check-in Reply Volume tab — 90-day directional floor estimate,
+         May 12 \u2013 Aug 10, 2026; 810 flagged tickets, 38-ticket sample. */
+      checkin: {
+        summary: {touches:4448, automatedShare:66, humanReplies:1518, autoReminders:2930, flagged:810},
+        teams: [
+          {group:'CS', flagged:370, human:1000, auto:815, total:1815, autoShare:45},
+          {group:'Support - L3', flagged:205, human:320, auto:1415, total:1735, autoShare:82},
+          {group:'Support - L2', flagged:66, human:66, auto:330, total:396, autoShare:83},
+          {group:'TAM', flagged:57, human:57, auto:190, total:247, autoShare:77},
+          {group:'Support - L1', flagged:45, human:0, auto:45, total:45, autoShare:100},
+          {group:'CSE ICP', flagged:24, human:55, auto:105, total:160, autoShare:66},
+          {group:'Finance Billing', flagged:17, human:0, auto:0, total:0, autoShare:null},
+          {group:'Finance AR', flagged:16, human:0, auto:0, total:0, autoShare:null},
+          {group:'Other / unassigned', flagged:10, human:20, auto:30, total:50, autoShare:60},
+        ],
+      },
+      /* KB Feedback Backlog tab, Aug 11, 2026. Closure rate excludes the
+         Optional item. */
+      kbBacklog: {proposed:32, inProgress:3, completed:11, optional:1, total:47, closureRate:23.9},
+      kbPipeline: {flagged:91, actions:null, proposed:null, inProgress:null, completed:null, optional:null},
+      /* Program impact — populated ONLY from the widget sheet. Add these
+         labels to the sheet (label cell, value one row below, sub-text two
+         rows below, same pattern as the headline KPIs) and the feed picks
+         them up: "FT Coverage Rate", "Support Nudges per Month",
+         "L1 Touches Removed". Until then the
+         section shows em-dashes. */
+      impact: {
+        coverageNowPct:5.6,
+        nudgesPerMonth:82,
+        /* Now measured by the Widget Repeat Contact tab (strict rate, July). */
+        recontactRatePct:12.6,
+        touchesRemovedActual:null,
+        measurement:'Count L1 public replies on Forethought-covered tickets before vs. after the automation go-live; report monthly next to coverage.',
+      },
+      /* Automation program — populates from an "Automation" tab in the widget
+         sheet (Metric | Value columns; labels listed in MAINTENANCE.md). Every
+         reduction metric is paired with its guardrail. */
+      automation: {
+        remindersSent:null, replyRateAfterReminder:null,
+        autoCloses:null, reopenRateAfterClose:null,
+        baselineTouches:null, actualTouches:null, minutesPerTouch:null,
+      },
+      /* Customer feedback — feed-computed from the conversation log's csat and
+         relevance_rating columns on sync. */
+      csat: {csatAvg:null, csatCount:null, relevanceAvg:null, relevanceCount:null},
+      /* Monthly QA trend — populates from a "Widget QA Monthly" tab
+         (Month | Reviewed | Pass Rate | Deflection Rate). */
+      monthly: {months:['Apr*','May','Jun','Jul'], reviewed:[20,117,161,167], passRate:[90.0,53.0,53.7,54.1], deflectionRate:[85.0,90.6,90.7,90.4]},
+      /* Deflection by subject — the QA sheet's human-graded "Support Type"
+         joined to the conversation log's deflected flag (unique conversations,
+         full period). Computed Aug 20, 2026. 167 QA rows carry no Support
+         Type; conversations never QA'd sit in the unclassified row. Static
+         until the live feed carries a subject column. */
+      bySubject: [
+        {subject:'Technical', total:239, contained:226, rate:94.6},
+        {subject:'Billing / Account', total:145, contained:120, rate:82.8},
+        {subject:'Not QA-classified', total:169, contained:149, rate:88.2},
+      ],
+      /* Widget Repeat Contact tab, Aug 14, 2026 — post-widget same-issue ticket
+         rate. Strict = confirmed cases where the same customer opened their own
+         support ticket within 7 days of a widget conversation that was never
+         escalated to a human. Lower is
+         better — a containment-quality signal, not a definitive deflection-failure
+         rate. Evidence rows are de-identified on this hosted page; customer names
+         live in the sheet. */
+      repeatContact: {
+        latest: {month:'Jul', eligible:143, confirmed:18, strictRate:12.6, momPp:6.4},
+        monthly: {
+          months:['Jun','Jul'],
+          eligible:[145,143],
+          confirmed:[9,18],
+          strictRate:[6.2,12.6],
+          notes:['Baseline.','18 confirmed same-subject tickets opened within 7 days.'],
+        },
+        evidence: [
+          {month:'Jun', conv:'165107', ticket:'165093', cls:'Confirmed', note:'Gap: 6 min'},
+          {month:'Jun', conv:'164768', ticket:'164777', cls:'Confirmed', note:'Gap: 1h 20m'},
+          {month:'Jun', conv:'165082', ticket:'165086', cls:'Confirmed', note:'Gap: 3h'},
+          {month:'Jun', conv:'164982', ticket:'164967', cls:'Confirmed', note:'Gap: ~3h'},
+          {month:'Jun', conv:'164998', ticket:'164977', cls:'Confirmed', note:'Gap: ~3h'},
+          {month:'Jun', conv:'165269', ticket:'165286', cls:'Confirmed', note:'Gap: 5h 45m'},
+          {month:'Jun', conv:'164054', ticket:'164096', cls:'Confirmed', note:'Gap: 23h'},
+          {month:'Jun', conv:'164021', ticket:'164071', cls:'Confirmed', note:'Gap: 1 day'},
+          {month:'Jun', conv:'165097', ticket:'165157', cls:'Confirmed', note:'Gap: 1 day'},
+          {month:'Jul', conv:'165642', ticket:'165636', cls:'Confirmed', note:'Entra ID / SAML SSO for Redis Enterprise Software'},
+          {month:'Jul', conv:'165888', ticket:'165869', cls:'Confirmed', note:'July 2026 tax invoice (only proforma issued)'},
+          {month:'Jul', conv:'165922', ticket:'165913', cls:'Confirmed', note:'Two unrecognised card charges, no subscription'},
+          {month:'Jul', conv:'165750', ticket:'166048', cls:'Confirmed', note:'Seeding a new cluster from a 16 TB prod cluster'},
+          {month:'Jul', conv:'166246', ticket:'166368', cls:'Confirmed', note:'RDI change-data-capture from a MySQL replica'},
+          {month:'Jul', conv:'166252', ticket:'166235', cls:'Confirmed', note:'RIOT-X --unlock-token, Valkey support'},
+          {month:'Jul', conv:'166301', ticket:'166852', cls:'Confirmed', note:'RediSearch GC threshold on Cloud'},
+          {month:'Jul', conv:'166375', ticket:'166365', cls:'Confirmed', note:'Will scaling memory up delete my data'},
+          {month:'Jul', conv:'166521', ticket:'166668', cls:'Confirmed', note:'Change the GCP billing account'},
+          {month:'Jul', conv:'166653', ticket:'166627', cls:'Confirmed', note:'License reuse, on-prem → Azure migration'},
+          {month:'Jul', conv:'166914', ticket:'166912', cls:'Confirmed', note:'Temporary connection-limit raise for World Cup'},
+          {month:'Jul', conv:'167230', ticket:'167213', cls:'Confirmed', note:'Duplicate Cloud accounts, restore access'},
+          {month:'Jul', conv:'167290', ticket:'167274', cls:'Confirmed', note:'Forced social login, restore password access'},
+          {month:'Jul', conv:'167365', ticket:'167359', cls:'Confirmed', note:'Increase DB size and shard count via API'},
+          {month:'Jul', conv:'167414', ticket:'167410', cls:'Confirmed', note:'Which Redis certifications are free'},
+          {month:'Jul', conv:'167494', ticket:'167471', cls:'Confirmed', note:'Redis upgrade procedure and prerequisites'},
+          {month:'Jul', conv:'167583', ticket:'167565', cls:'Confirmed', note:'Reissue legacy course certificates'},
+          {month:'Jul', conv:'167672', ticket:'168212', cls:'Confirmed', note:'SSO linking across multiple Cloud accounts'},
+        ],
+      },
+      /* Per-month KPI slices on a unique-conversation basis: 64 conversations
+         (all July) were reviewed twice in the QA sheet — the latest review wins.
+         37 QA'd July conversations are absent from the conversation log (export
+         gap) and are dated from the QA sheet. handoffN/handoffRate count unique
+         conversations whose detected_workflows includes the Handoff intent — the
+         same basis as the headline (reconciles to 98 / 16.5%). deflectionNH is the
+         no-handoff complement (headline basis) and also feeds the monthly trend
+         chart; the 'deflection' field keeps the log's deflected-flag basis for
+         reference only. Drop-off and relevance have no month-split basis. */
+      byMonth: {
+        'Apr*': {conversations:20,  deflected:17,  deflection:85.0, handoffN:7, handoffRate:35.0, deflectionNH:65.0, reviewed:20,  scorable:20,  passN:18,  partial:1,   fail:1,  sysupd:0,  passRate:90.0, improvement:10.0, partialRate:5.0,  failRate:5.0,  kbUpdates:0,  kbPct:0.0},
+        'May':  {conversations:117, deflected:106, deflection:90.6, handoffN:17, handoffRate:14.5, deflectionNH:85.5, reviewed:117, scorable:117, passN:62,  partial:34,  fail:21, sysupd:0,  passRate:53.0, improvement:47.0, partialRate:29.1, failRate:17.9, kbUpdates:0,  kbPct:0.0},
+        'Jun':  {conversations:161, deflected:146, deflection:90.7, handoffN:27, handoffRate:16.8, deflectionNH:83.2, reviewed:161, scorable:147, passN:79,  partial:52,  fail:16, sysupd:14, passRate:53.7, improvement:46.3, partialRate:35.4, failRate:10.9, kbUpdates:18, kbPct:11.2},
+        'Jul':  {conversations:220, deflected:202, deflection:91.8, handoffN:40, handoffRate:18.2, deflectionNH:81.8, reviewed:237, scorable:206, passN:119, partial:72,  fail:15, sysupd:31, passRate:57.8, improvement:42.2, partialRate:35.0, failRate:7.3,  kbUpdates:54, kbPct:22.8},
+      },
+      /* Populates once the handoff-reply sample lives in the widget sheet
+         (rows: outcome, count, share). Not shown until then — the dashboard
+         only presents numbers that exist in a source spreadsheet. */
+      handoffNecessity: {
+        sampleSize: null,
+        rows: [],
+        note:'Pending: add the L1 handoff-reply sample (handed-off conversations and whether the customer replied) to the widget sheet, and the feed will populate this section.',
+      },
+      readout: [
+        'Performance: <strong>83.3% deflection</strong> — most widget conversations resolve without ever reaching a human.',
+        'Recontact: 12.6% of July\'s contained conversations came back as a same-issue ticket within 7 days, up from 6.2% in June — the real cost of "contained but not actually solved."',
+        'Automated drop-off signal: Forethought flagged 155 conversations (28.1%) as drop-offs, 80 with no follow-up — but recontact tracking says most of those are not turning into tickets.',
+      ],
+      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026, while widget data extends through August 10, 2026.',
+    },
+    email: {
+      headline: {
+        totalRows: {value:'162', sub:'162 of 162 QA rows classified'},
+        scorable:  {value:'79', sub:'46 pass + 23 partial + 10 fail'},
+        qaPass:    {value:58.2, sub:'46 passes / 79 scorable rows'},
+        improvement: {value:41.8, sub:'23 partial + 10 fail'},
+        emailCoverage: {value:25.0, sub:'157 of 629 inbound emails received an autoresponse'},
+      },
+      quality: {
+        partialPass:  {value:29.1, sub:'23 of 79 scorable — useful but incomplete'},
+        trueFail:     {value:12.7, sub:'10 of 79 scorable — failed experiences'},
+        testTraffic:  {value:30.2, sub:'49 of 162 QA rows excluded as test'},
+        processUpdates:{value:21.0, sub:'34 of 162 QA rows excluded as process'},
+        followUps:    {value:50,   sub:'30.9% of 162 reviewed QA rows'},
+      },
+      mix: [
+        {cat:'Pass', count:46, share:28.4},
+        {cat:'Partial pass', count:23, share:14.2},
+        {cat:'Fail', count:10, share:6.2},
+        {cat:'Test + process exclusions', count:83, share:51.2},
+      ],
+      signals: [
+        {signal:'Scorable QA rows', count:79, rate:48.8, interp:'Technical pass, partial, and fail denominator.'},
+        {signal:'Captured follow-ups', count:50, rate:30.9, interp:'Improvement work or process follow-up logged.'},
+        {signal:'Reviewed / no action', count:59, rate:36.4, interp:'No immediate QA or workflow change recorded.'},
+        {signal:'Workflow-tagged exclusions', count:35, rate:21.6, interp:'Rows explicitly excluded by review_action_status.'},
+        {signal:'Test rows missing exclusion status', count:14, rate:28.6, interp:'Test grading and review-status tagging are not fully aligned.'},
+      ],
+      readout: [
+        'Solve rate: the bot resolved <strong>1.6% of August\'s 61 sent tickets</strong> outright (1 of 61) — the only outcome caused by the bot. Most of the rest go to L1 by default, the same place they\'d land without it.',
+        'Touches: FT-tagged tickets reach L1 less often than non-FT tickets (10.7% vs. 15.1% in July) — a real but modest reduction in L1 touches, not yet converted to an hours-returned figure.',
+        'Trend: August\'s solve rate (1.6%) is down from July\'s pilot-period 10.7% (8 of 75) while sent volume held roughly steady (75 → 61) — worth watching next month before calling it a trend.',
+      ],
+      readoutCaveat: 'Note: June and July are Support pilot months, not a stable MoM baseline. Hours returned from reduced L1 touches is still blocked on agreeing a minutes-per-touch value with Support leadership.',
+      monthly: {months:['Jun*','Jul'], scorable:[5,66], pass:[2,42], partial:[2,17], fail:[1,7], passRate:[40.0,63.6]},
+      /* July slice of the autoresponder raw logs (computed Aug 17, 2026) — feeds the overview's single-month headline. */
+      funnelJul: {inbound:576, sent:110, deflected:73, deflRate:66.4},
+      /* Autoresponder eligibility story — computed once from the July Zendesk
+         "Tickets created by month/year" export, grouped by SLA Package × ARR
+         Spend Bucket × Priority (uploaded Aug 27, 2026). Not part of the live
+         feed — re-derive by hand if a fresher ticket export comes in.
+         Pilot = the original rollout scope (Basic only, <$50k ARR, Low/Normal
+         priority only — Urgent/High excluded). Current = where eligibility
+         actually stands now (all Basic + all Developer, any ARR, any
+         priority). proposedBusiness = adding all Business next, per Jay's
+         "prove it out with Business first". */
+      eligibilityJul: {
+        totalTickets: 1770,
+        pilot: {tickets:179, pct:10.1, note:'Basic only, under $50k ARR, Low/Normal priority only'},
+        current: {tickets:228, pct:12.9, note:'All Basic + all Developer, any ARR, any priority'},
+        proposedBusiness: {tickets:215, pct:12.1, note:'All Business, any ARR, any priority — next expansion candidate'},
+        proposedTotal: {tickets:443, pct:25.0, note:'Current scope (Basic + Developer) plus all Business'},
+      },
+      /* Autoresponder funnel from the email raw logs (both tabs, deduplicated by
+         conversation_id — the archive's 119 KEEP rows are now fully duplicated in
+         the current log with identical flags), Aug 14, 2026.
+         463 emails skipped as email_automation. */
+      funnel: [
+        {stage:'Inbound emails captured', count:629, pctOfPrev:null, note:'Unique conversations across the autoresponder logs.'},
+        {stage:'Eligible for autoresponse', count:160, pctOfPrev:25.4, note:'469 skipped as email_automation.'},
+        {stage:'Autoresponse sent', count:157, pctOfPrev:98.1, note:'Coverage: 25.0% of all inbound email.'},
+        {stage:'Deflected', count:114, pctOfPrev:72.6, note:'No further human response needed per the log flag.'},
+      ],
+      /* Per-month KPI slices, joined from the autoresponder raw logs. rows = classified
+         QA rows that month. */
+      byMonth: {
+        'Jun*': {rows:20,  scorable:5,  passN:2,  partial:2,  fail:1, passRate:40.0, improvement:60.0, partialRate:40.0, failRate:20.0, test:7,  testPct:35.0, process:8, processPct:40.0, followUps:11, fuPct:55.0, inbound:20, sent:20, coverage:null},
+        'Jul':  {rows:115, scorable:66, passN:42, partial:17, fail:7, passRate:63.6, improvement:36.4, partialRate:25.8, failRate:10.6, test:42, testPct:36.5, process:7, processPct:6.1,  followUps:20, fuPct:17.4, inbound:576, sent:110, coverage:19.1},
+      },
+      /* Support-only ticket disposition after the FT automated email reply \u2014
+         from Zendesk tag counts (Autoresponder Billing v Technical tab),
+         pulled Aug 31, 2026. Billing runs its own separate tag chain
+         (forethought_billing_*) and is out of scope for this tab \u2014 Billing is
+         not CS-owned and is manually reviewed by that team.
+         Jun and Jul are pilot months (low/ramping volume) \u2014 read loosely, not
+         as a steady-state baseline. Solve rate is the only outcome directly
+         attributable to the bot: an unsolved ticket would go to L1 whether or
+         not the bot touched it, so handoff is supporting detail, not a
+         headline metric. The 4h no-response timeout is a narrow fallback, not
+         the main driver of handoffs (see handoffReasons below).
+         Pending = sent \u2212 solved \u2212 handoff (not yet resolved either way). */
+      supportFunnel: {
+        months: ['Jun*','Jul*','Aug'],
+        automated: [2, 78, 61],
+        sent:      [0, 75, 61],
+        solved:    [0, 8,  1],
+        handoff:   [0, 60, 41],
+        pending:   [0, 7,  19],
+        solveRate:   [null, 10.7, 1.6],
+        handoffRate: [null, 80.0, 67.2],
+        pendingRate: [null, 9.3,  31.1],
+        notes: [
+          'Pilot \u2014 negligible volume, not a fair baseline.',
+          'Pilot \u2014 first real volume; read loosely.',
+          'First post-pilot month. Pending % includes month-end timing lag.',
+        ],
+      },
+      /* Reason breakdown for forethought_support_handoff, from the same tag
+         pull. Rows sum to the handoff total for that month. */
+      handoffReasons: {
+        months: ['Jul*','Aug'],
+        negFeedback: [18, 7],
+        customerReplied: [11, 25],
+        timeout: [31, 9],
+        total: [60, 41],
+      },
+    },
+    kb: {
+      /* reportingMonth is overwritten by the live feed; every month label in
+         the KB tab renders from it, so rolling the sheet forward re-labels the
+         dashboard automatically. narrativeMonth is NOT sent by the feed: bump
+         it by hand after you've reviewed the takeaway lines, readouts, and
+         overview text for a new month. If it lags reportingMonth, a warning
+         banner appears. */
+      reportingMonth: {current:'August', prior:'July', currentAbbr:'Aug', priorAbbr:'Jul', year:'2026'},
+      narrativeMonth: 'August',
+      headline: [
+        /* August 2026 current vs July 2026 prior — matches KB Scorecard reporting month. num/den are explicit so the count+% pairing never drifts from the rate. */
+        {label:'Confirmed Deflection Rate', current:1.2, prior:1.5, mom:-17.3, isPct:true, num:14, den:1140, denLabel:'sessions'},
+        {label:'Assumed Deflection Rate', current:18.6, prior:18.3, mom:1.4, isPct:true, num:212, den:1140, denLabel:'sessions'},
+        {label:'Total Deflection Rate', current:19.8, prior:19.8, mom:0.0, isPct:true, num:226, den:1140, denLabel:'sessions'},
+        {label:'Search Deflection Proxy', current:83.8, prior:91.5, mom:-8.4, isPct:true, num:117, den:139, denLabel:'searches'},
+        {label:'Article Views', current:217, prior:188, mom:15.4, isPct:false},
+      ],
+      momMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+      momSeries: {
+        'Article Views': [393,329,286,278,254,197,188,217],
+        'Confirmed Deflections': [31,18,29,21,11,24,17,14],
+        'Assumed Deflections': [191,254,228,208,214,151,210,212],
+        'End-user Sessions': [1187,1251,1227,1243,1131,1049,1145,1140],
+        'Total Deflection Rate %': [18.7,21.7,20.9,18.4,19.9,16.7,19.8,19.8],
+        /* Jul revised from 88.5 to 91.5 in the August KPI tracker export — using the source's updated figure. */
+        'Search Deflection Proxy %': [97.5,96.6,97.1,96.8,95.8,94.1,91.5,83.8],
+      },
+      /* Field names read may/apr but mean current/prior (kept for feed compatibility).
+         Current = August 2026, prior = July 2026. August's Deflections-by-Role export
+         is complete across all roles. */
+      segments: [
+        {seg:'End user', mayConf:14, aprConf:17, confMom:-17.6, mayAssumed:212, aprAssumed:210, assumedMom:1.0},
+        {seg:'Anonymous', mayConf:0, aprConf:0, confMom:null, mayAssumed:582, aprAssumed:765, assumedMom:-23.9},
+        {seg:'Agent', mayConf:0, aprConf:0, confMom:null, mayAssumed:19, aprAssumed:31, assumedMom:-38.7},
+        {seg:'Admin', mayConf:0, aprConf:0, confMom:null, mayAssumed:21, aprAssumed:26, assumedMom:-19.2},
+        {seg:'Total', mayConf:14, aprConf:17, confMom:-17.6, mayAssumed:834, aprAssumed:1032, assumedMom:-19.2},
+      ],
+      supportImpact: [
+        {metric:'End-user Sessions', current:1140, prior:1145, mom:-0.4, isPct:false},
+        {metric:'Confirmed Deflection Rate', current:1.2, prior:1.5, mom:-17.3, isPct:true},
+        {metric:'Assumed Deflection Rate', current:18.6, prior:18.3, mom:1.4, isPct:true},
+        {metric:'Total Deflection Rate', current:19.8, prior:19.8, mom:0.0, isPct:true},
+        {metric:'Search Deflection Proxy', current:83.8, prior:91.5, mom:-8.4, isPct:true},
+        {metric:'Search Containment Count', current:117, prior:120, mom:-2.5, isPct:false},
+        {metric:'Result-Click Containment Proxy', current:61.3, prior:76.8, mom:-20.2, isPct:true},
+        {metric:'Article Views', current:217, prior:188, mom:15.4, isPct:false},
+      ],
+      contentHealth: [
+        {metric:'Monthly Article Review Backlog', current:'8', prior:'—', mom:null},
+      ],
+      /* No-Result Search % intentionally omitted: the workbook flags its definition
+         as unverified (user-run Zendesk report disagrees) and says not to present it.
+         The raw no-result count stays. */
+      searchFind: [
+        {metric:'Total Searches', current:139, prior:131, mom:6.1, isPct:false},
+        {metric:'Search CTR', current:53.3, prior:42.0, mom:27.0, isPct:true},
+        {metric:'Tickets Created After Search', current:22, prior:11, mom:100.0, isPct:false},
+        {metric:'Searches with No Results', current:18, prior:26, mom:-30.8, isPct:false},
+      ],
+      ticketGroupMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+      /* Replaced Sep 1, 2026 with the "Support: Tickets [default]" dataset,
+         Proactive Vs Non-Proactive filter set to exclude Proactive tickets.
+         This is the authoritative ticket-volume-by-group source going
+         forward — it does not carry CSE ICP / Unassigned / Finance
+         Licensing and Provisioning / Other (14 groups), which were part of
+         the prior (proactive-inclusive) export and are not reconcilable
+         against this table. September is month-to-date and excluded. */
+      ticketGroups: {
+        'Support - L3':[421,432,446,417,372,366,402,375],
+        'Support - L1':[209,212,252,260,253,186,227,194],
+        'Support - L2':[2,null,5,91,115,129,126,128],
+        'CS':[119,127,112,103,108,95,108,84],
+        'TAM':[75,57,50,57,60,68,88,104],
+        'Finance Accounts Receivable':[41,43,29,34,24,27,27,19],
+        'Finance Billing':[7,6,7,6,6,8,6,6],
+        'TAM AMR West':[11,7,11,9,10,4,10,10],
+        'Finance Operations':[2,4,1,2,1,1,3,2],
+        'Decodable':[null,null,5,3,4,2,5,1],
+        'TAM AMR East':[null,1,null,2,3,1,3,4],
+      },
+      priorities: [
+        {n:1, what:'Investigate search containment decline', why:'July search deflection fell to 88.5%, containment volume fell 27.0%, and result-click containment fell to 68.8%.', kpi:'Search Deflection Proxy; Search Containment Count; Result-Click Containment Proxy', owner:'KB Owner / Support Ops', status:'Watch'},
+        {n:2, what:'Validate the deflection mix', why:'Confirmed deflections fell 29.2% while assumed deflections rose 39.1%; validate classification and journey quality before interpreting the higher total rate.', kpi:'Confirmed Deflections; Assumed Deflections; Total Deflection Rate', owner:'Support Ops', status:'Watch'},
+        {n:3, what:'Review KB influence decline', why:'July KB Influence on Tickets was 1.9%, down 36.5% from June; confirm whether tagging behavior or article usage changed.', kpi:'Monthly KPI Trend \u2014 KB Influence on Tickets', owner:'Content Ops / Support Ops', status:'Watch'},
+        {n:4, what:'Monitor article reach and feedback', why:'Article views declined 4.6% to 188 and July recorded no feedback responses; keep the low-volume feedback caveat visible.', kpi:'Article Views; Article Positive Feedback Rate', owner:'Content Ops', status:'Review'},
+        {n:5, what:'Maintain the clean July refresh', why:'All required dashboard sources are loaded through July 2026.', kpi:'Raw Data Refresh Review; dashboard source checks', owner:'Dashboard Owner', status:'Ready'},
+      ],
+      /* KB Success vs Tickets — from the workbook's monthly table:
+         total deflections / (tickets created + deflections). Tickets Created
+         re-based Aug 13, 2026 to core support queues only. */
+      kbSuccess: {
+        /* Revised Sep 1, 2026: tickets now sourced from the "Support: Tickets
+           [default]" dataset with Proactive tickets excluded (same source as
+           ticketGroups above). This changes the whole history, not just
+           August — the old tickets series (1102...1300) included Proactive
+           tickets in its denominator. */
+        months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+        tickets:[887,889,918,984,956,887,1005,927],
+        deflections:[222,272,257,229,225,175,227,226],
+        rate:[20.0,23.4,21.9,18.9,19.1,16.5,18.4,19.6],
+      },
+      dataNeeded: [
+        {area:'Deflection by Subject', missing:'Topic/category (or the deflecting article\'s Guide section) on each Zendesk deflection event.', why:'Lets KB deflection split into CS / Support / Billing like the widget and autoresponder tabs.'},
+        {area:'True Self-Service Success Rate', missing:'Session/article journey outcome: article viewed or search clicked, then no ticket within attribution window.', why:'Turns directional proxies into a defensible customer-success metric.'},
+        {area:'KB Influence on Tickets', missing:'Full ticket universe and whether an article was viewed/suggested before ticket submission.', why:'Shows how KB assists Support even when it does not prevent a ticket.'},
+        {area:'Top Ticket Drivers', missing:'Full driver/category/sub-driver on every support ticket.', why:'Connects KB priorities directly to Support\u2019s biggest workstreams.'},
+        {area:'Driver Coverage by KB', missing:'Complete driver list plus explicit article coverage mapping, including uncovered drivers.', why:'Quantifies whether KB content covers the problems creating tickets.'},
+        {area:'Ticket-to-Article Conversion', missing:'Content request/backlog workflow tied to driver or ticket source.', why:'Shows content operations follow-through from Support pain to KB improvement.'},
+        {area:'Support vs Billing Separation', missing:'Channel/category or intent classification for searches, tickets, and article links.', why:'Keeps Support impact metrics from being diluted by billing/account traffic.'},
+      ],
+    }
+  };
+}
+
+let state = defaultState();
+const charts = {}; // registry so we can destroy + recreate on every render
+let activeMomSeries = ['Total Deflection Rate %','Search Deflection Proxy %','Assumed Deflections'];
+
+// Quick-win #3: time-range filters for the two multi-month trend charts.
+// Ranges are indices into the respective month-label arrays; null = full range.
+let momRange = {from:0, to:null};
+let ticketRange = {from:0, to:null};
+// Groups excluded from "total demand" everywhere it's computed (Hero,
+// waterfall, monthly deflection trend, Support impact) — not addressable
+// support/billing volume in the same sense as the rest, per Natalie's call.
+// The full per-group breakdown chart on the KB tab still shows every group;
+// only the cross-channel "total demand" figure drops these.
+const EXCLUDED_TICKET_GROUPS = new Set(['CSE ICP', 'Unassigned', 'Other (14 groups)', 'Finance Licensing and Provisioning']);
+let widgetMonth = 'All';
+let emailMonth = 'All';
+let kbMonth = 'All';
+let activeTicketGroups = null; // null = all groups shown
+
+function destroyChart(key){ if(charts[key]){ charts[key].destroy(); delete charts[key]; } }
+
+/* =========================================================================
+   RENDER
+   ========================================================================= */
+function kpiStatus(group, key, value){
+  // simple heuristics per known metric direction; falls back to neutral
+  const higherIsBetter = {deflection:1, qaPass:1, reviewComplete:1};
+  const lowerIsBetter = {handoff:1, improvement:1, partialPass:1, trueFail:1, dropoff:1, lowRelevance:1, kbUpdates:1, testTraffic:1};
+  if(higherIsBetter[key]) return value>=80?'good':(value>=60?'watch':'bad');
+  if(lowerIsBetter[key]) return value<=10?'good':(value<=35?'watch':'bad');
+  return 'neutral';
+}
+
+/* Hover definitions for KPI labels — stops the "wait, what counts as
+   assumed?" question in every review meeting. */
+const KPI_DEFS = {
+  'Deflection Share':'Deflection = any activity that prevents a human from needing to get involved. Numerator is KB deflections + widget-contained conversations + autoresponder deflections; denominator is total demand (that sum plus tickets created).',
+  'Total Conversations':'Unique widget conversations in the source period.',
+  'Deflection Rate':'Share of widget conversations that ended without a handoff to a human.',
+  'Handoff Rate':'Share of widget conversations passed to L1 or another human queue.',
+  'Technical QA Pass Rate':'Passes divided by scorable QA rows. System Updates and test rows are excluded from the denominator.',
+  'Partial Pass Rate':'Responses judged useful but incomplete.',
+  'True Fail Rate':'Responses graded as failed experiences.',
+  'Drop-off Rate':'Conversations flagged by Forethought\'s automated dropoff_rating as ending without resolution \u2014 an engagement signal, not human QA and not measured recontact.',
+  'Low / Failed Relevance':'Answers rated as not clearly matching the customer issue.',
+  'KB Updates Needed':'QA rows explicitly flagged as needing knowledge-base work.',
+  'Total QA Rows':'All ticket autoresponder QA rows classified in the sample period.',
+  'Scorable Autoresponder Responses':'Rows remaining after excluding test and process-update rows.',
+  'Review Complete':'Share of the QA sample fully reviewed.',
+  'Test Traffic':'Internal test rows, excluded from technical scoring.',
+  'Process Updates':'Backend / process-update rows, excluded from technical scoring.',
+  'Captured Follow-ups':'QA rows with an improvement or process follow-up logged.',
+  'Confirmed Deflection Rate':'Sessions where the user explicitly confirmed the article answered their question.',
+  'Assumed Deflection Rate':'Sessions with article views or search clicks and no ticket — a directional proxy, not a confirmed outcome.',
+  'Total Deflection Rate':'Confirmed plus assumed deflections per end-user session.',
+  'Search Deflection Proxy':'Searches that did not lead to a ticket — a directional proxy.',
+  'Article Views':'Total knowledge-base article views in the reporting month.',
+  'Widget Deflection':'Share of widget conversations that ended without a handoff to a human.',
+  'Widget Needs Improvement':'Partial passes plus fails as a share of scorable widget QA rows.',
+  'KB Success Rate':'Total deflections as a share of tickets created plus deflections, from the workbook monthly table.',
+  'Ticket Autoresponder QA Pass':'Passes divided by scorable ticket autoresponder QA rows, after test/process exclusions.',
+  'KB Total Deflection':'Confirmed plus assumed deflections per end-user session.',
+  'KB Updates Flagged':'Widget QA rows explicitly flagged as needing knowledge-base work.',
+  'Recontact After Deflection':'Share of deflected conversations where the same customer opened a ticket within 7 days. From the Widget Repeat Contact tab.',
+  'Post-Widget Ticket Rate':'Confirmed cases where the same customer opened their own support ticket within 7 days of a never-escalated widget conversation, over all never-escalated conversations that month. From the Widget Repeat Contact tab.',
+  'Confirmed Same-Issue Tickets':'Manually validated: same customer, same issue, correct chronology, within the 7-day window.',
+  'MoM Change':'Percentage-point change in the post-widget ticket rate versus the prior month.',
+  'Ticket Autoresponder Coverage Rate':'Share of tickets that received a Forethought auto-response. Reads the coverage-rate label from the autoresponder section of the widget sheet.',
+  'Autoresponder Deflection':'Deflected emails ÷ all inbound email that month — not just the emails that got an autoresponse. Coverage (how many even got a response) is a separate constraint from this rate.',
+  'FT Response Coverage':'Share of all new tickets that received a Forethought first response. Reads the "FT Coverage Rate" label from the widget sheet.',
+  'Support Nudges / Month':'Public support replies chasing a customer who had not yet responded. Reads "Support Nudges per Month" from the widget sheet.',
+  'L1 Touches Removed':'Actual reduction in L1 follow-up replies on Forethought-covered tickets, measured post go-live.',
+};
+/* =================== STORY LAYER: MoM verdicts ===================
+   The single place that defines which headline metrics tell each tab's
+   story and which direction is good ('>=' = higher is better). Verdicts
+   are direction-of-travel: the latest complete month vs the prior month,
+   plus distance from the first measured month. Values are read live from
+   state, so a sheet sync refreshes every verdict. */
+const STORY_METRICS = {
+  widget: [
+    {key:'deflection', label:'Deflection (flag basis)', dir:'>=',
+     why:'Share of conversations the widget contains. The volume shield \u2014 if this slips, ticket load comes back.'},
+    {key:'repeatContact', label:'Repeat-contact rate (7-day)', dir:'<=',
+     why:'Contained conversations that came back as tickets \u2014 deflection that did not stick.'},
+    {key:'coverage', label:'FT response coverage', dir:'>=',
+     why:'Share of the ticket stream Forethought touches. More coverage means fewer conversations even reach a human to begin with.'},
+  ],
+  email: [
+    {key:'solveRate', label:'Solved by bot (Support)', dir:'>=',
+     why:'The only ticket outcome the bot causes \u2014 sent tickets it doesn\u2019t solve default to L1 whether or not the bot exists.'},
+    {key:'coverage', label:'Autoresponder coverage', dir:'>=',
+     why:'Share of inbound email that gets an autoresponse \u2014 eligibility, not execution, is the constraint.'},
+    {key:'deflRate', label:'Autoresponder deflection', dir:'>=',
+     why:'Sent autoresponses that needed no human follow-up.'},
+  ],
+  kb: [
+    {key:'Total Deflection Rate %', label:'Total deflection rate', dir:'>=',
+     why:'Confirmed + assumed deflections per end-user session.'},
+    {key:'Search Deflection Proxy %', label:'Search deflection proxy', dir:'>=',
+     why:'Searches that did not end in a ticket \u2014 directional, and in decline for three straight months.'},
+    {key:'Article Views', label:'Article views', dir:'>=',
+     why:'Reach of KB content with end users.'},
+    {key:'Confirmed Deflections', label:'Confirmed deflections', dir:'>=',
+     why:'The only deflection count a customer explicitly confirmed.'},
+  ],
+};
+function lastCompleteIdx(months){ for(let i=months.length-1;i>=0;i--){ if(String(months[i]).indexOf('*')<0) return i; } return months.length-1; }
+function seriesPair(months, vals, forceMonth){
+  if(!months || !months.length || !vals || !vals.length) return {month:null, value:null, prior:null, priorMonth:null, base:null, baseMonth:null};
+  let i;
+  if(forceMonth){
+    const fi = months.indexOf(forceMonth);
+    i = fi>=0 ? Math.min(fi, vals.length-1) : Math.min(lastCompleteIdx(months), vals.length-1);
+  } else {
+    i = Math.min(lastCompleteIdx(months), vals.length-1);
+  }
+  let b = months.length; for(let j=0;j<months.length;j++){ if(String(months[j]).indexOf('*')<0){ b=j; break; } }
+  return {month:months[i], value:(vals[i]===undefined?null:vals[i]),
+          prior:(i>0&&vals[i-1]!==undefined)?vals[i-1]:null, priorMonth:i>0?months[i-1]:null,
+          base:(b<i&&vals[b]!==undefined)?vals[b]:null, baseMonth:b<i?months[b]:null};
+}
+function storyValues(widgetMonthOverride){
+  const w=state.widget, e=state.email, k=state.kb;
+  const out={widget:{}, email:{}, kb:{}};
+  if(widgetMonthOverride==='All'){
+    // "All" story: roll the whole source period into one number per metric
+    // instead of picking a single month — there is no single "prior month"
+    // to diff against, so these render as baseline/no-prior-month rows.
+    const rcm = (w.repeatContact && w.repeatContact.monthly) || {};
+    const rcElig = (rcm.eligible||[]).reduce((a,b)=>a+b,0);
+    const rcConf = (rcm.confirmed||[]).reduce((a,b)=>a+b,0);
+    const rcRate = rcElig ? +(100*rcConf/rcElig).toFixed(1) : null;
+    out.widget.passRate      = {month:'All months', value:w.headline.qaPass.value,     prior:null, priorMonth:null, base:null, baseMonth:null};
+    out.widget.deflection    = {month:'All months', value:w.headline.deflection.value, prior:null, priorMonth:null, base:null, baseMonth:null};
+    out.widget.repeatContact = {month:'All months', value:rcRate,                      prior:null, priorMonth:null, base:null, baseMonth:null};
+    out.widget.coverage      = {month:'All months', value:w.impact.coverageNowPct,     prior:null, priorMonth:null, base:null, baseMonth:null};
+    out.widget.month = 'All months';
+  } else {
+    out.widget.passRate = seriesPair(w.monthly.months, w.monthly.passRate, widgetMonthOverride);
+    out.widget.deflection = seriesPair(w.monthly.months, w.monthly.deflectionRate, widgetMonthOverride);
+    const rcm = (w.repeatContact && w.repeatContact.monthly) || {};
+    out.widget.repeatContact = seriesPair(rcm.months||[], rcm.strictRate||[], widgetMonthOverride);
+    out.widget.coverage = {month:out.widget.passRate.month, value:w.impact.coverageNowPct, prior:null, priorMonth:null};
+    out.widget.month = out.widget.passRate.month;
+  }
+  out.email.passRate = seriesPair(e.monthly.months, e.monthly.passRate);
+  const emKey = out.email.passRate.month, ebm=(e.byMonth&&e.byMonth[emKey])||{};
+  out.email.coverage = {month:emKey, value:(ebm.coverage===undefined?null:ebm.coverage), prior:null, priorMonth:null};
+  out.email.deflRate = {month:emKey, value:(e.funnelJul&&e.funnelJul.deflRate!==undefined)?e.funnelJul.deflRate:null, prior:null, priorMonth:null};
+  // Support-only solve rate (sent -> solved by the bot, no human) replaces
+  // Technical QA pass rate as the headline "where this stands" metric —
+  // leadership doesn't track QA grading, and solve rate is the one outcome
+  // actually attributable to the bot. Sourced from the Zendesk tag funnel.
+  out.email.solveRate = seriesPair(e.supportFunnel.months, e.supportFunnel.solveRate);
+  out.email.month = out.email.solveRate.month;
+  STORY_METRICS.kb.forEach(t=>{ const s=k.momSeries[t.key]; out.kb[t.key]= s?seriesPair(k.momMonths,s):{month:null,value:null,prior:null,priorMonth:null}; });
+  out.kb.month = k.momMonths[k.momMonths.length-1];
+  return out;
+}
+function storyRows(tab, vals){
+  return STORY_METRICS[tab].map(t=>{
+    const v = vals[tab][t.key] || {value:null, prior:null, priorMonth:null};
+    let delta=null;
+    if(v.value!==null && v.prior!==null){
+      const d=+(v.value-v.prior).toFixed(1);
+      delta={d, good: d===0?null:(t.dir==='>='?d>0:d<0), vs:v.priorMonth};
+    }
+    return {t, v, delta, isCount:(t.key==='Article Views'||t.key==='Confirmed Deflections')};
+  });
+}
+function storyDeltaChip(r){
+  if(!r.delta) return '<span class="s-delta flat">\u2014 no prior month</span>';
+  const d=r.delta, sym=d.d>0?'\u25b2':(d.d<0?'\u25bc':'\u2022');
+  const cls=d.good===null?'flat':(d.good?'good':'bad');
+  const mag=Math.abs(d.d), magTxt=(mag%1===0?mag.toFixed(0):mag.toFixed(1))+(r.isCount?'':'pp');
+  return `<span class="s-delta ${cls}">${sym} ${magTxt} vs ${d.vs}</span>`;
+}
+function trendPill(r){
+  if(!r.delta) return '<span class="s-pill na">new — baseline</span>';
+  if(r.delta.good===null) return '<span class="s-pill na">flat</span>';
+  return r.delta.good ? '<span class="s-pill on">improving</span>' : '<span class="s-pill off">declining</span>';
+}
+function renderStory(containerId, tab, vals){
+  const el=document.getElementById(containerId); if(!el) return;
+  const rows=storyRows(tab, vals);
+  const imp=rows.filter(r=>r.delta&&r.delta.good===true).length;
+  const dec=rows.filter(r=>r.delta&&r.delta.good===false).length;
+  const headCls = dec===0?'on':(imp>=dec?'mid':'off');
+  el.innerHTML = `
+    <div class="s-head"><span class="s-pill ${headCls}">${imp} improving · ${dec} declining</span>
+      <span class="s-summary">new programs — verdicts show direction of travel vs the prior month</span></div>
+    ${rows.map(r=>{
+      const val = r.v.value===null ? '—' : (r.isCount?fmtNum(r.v.value):fmtPct(r.v.value));
+      let baseTxt='';
+      if(r.v.base!=null && r.v.value!=null){
+        const bd=+(r.v.value-r.v.base).toFixed(1);
+        const mag=(Math.abs(bd)%1===0?Math.abs(bd).toFixed(0):Math.abs(bd).toFixed(1))+(r.isCount?'':'pp');
+        baseTxt=`<span class="s-base">since ${r.v.baseMonth}: ${bd>0?'+':(bd<0?'−':'')}${mag}</span>`;
+      }
+      return `<div class="s-row">${trendPill(r)}<span class="s-label">${r.t.label}</span><span class="s-val">${val}</span>${storyDeltaChip(r)}${baseTxt}<span class="s-why">${r.t.why}</span></div>`;
+    }).join('')}`;
+}
+/* "Where we stand" — one hand-picked headline metric per channel, chosen for
+   exec relevance rather than whichever metric moved most automatically.
+   Each channel's data has its own quirks (see comments below), so each is
+   built explicitly rather than through one generic "biggest mover" rule. */
+function renderOverviewStory(vals){
+  const el=document.getElementById('story-overview'); if(!el) return;
+  const row = (name, cls, status, txt) => `<div class="s-row"><span class="s-pill ${cls}">${status}</span><span class="s-label">${name}</span><span class="s-why">${txt}</span></div>`;
+
+  // Widget — contained-conversation volume (how many conversations the
+  // widget actually absorbed), trended Jul vs Jun vs May, not the
+  // repeat-contact rate.
+  const w = state.widget;
+  const rc = (w.repeatContact&&w.repeatContact.monthly)||{};
+  const rcOf = m => { const i=(rc.months||[]).indexOf(m); return i>=0?(rc.confirmed[i]||0):0; };
+  const containedOf = m => { const wm=(w.byMonth&&w.byMonth[m])||null; return (wm&&wm.deflected!=null) ? Math.max(wm.deflected-rcOf(m),0) : null; };
+  const wJul=containedOf('Jul'), wJun=containedOf('Jun'), wMay=containedOf('May');
+  const wCls = (wJul!=null&&wJun!=null) ? (wJul>=wJun?'on':'off') : 'na';
+  const wStatus = (wJul!=null&&wJun!=null) ? (wJul>=wJun?'Improving':'Needs attention') : 'New';
+  const wDir = (wJul!=null&&wJun!=null&&wJul<wJun) ? 'fell to' : 'rose to';
+  const wTrail = [wJun!=null?`${fmtNum(wJun)} in June`:null, wMay!=null?`${fmtNum(wMay)} in May`:null].filter(Boolean).join(' and ');
+  const wTxt = wJul==null ? 'Not enough data yet to size widget containment.'
+    : `Widget-contained conversations ${wDir} ${fmtNum(wJul)} in July${wTrail?`, from ${wTrail}`:''}.`;
+
+  // Ticket autoresponder — deflection level, not the QA grading score.
+  // Coverage and deflection are both single-month snapshots in the source
+  // data (no monthly history yet), so this is framed as a level, not a trend.
+  const ef = state.email.funnelJul || {};
+  const eVal = (ef.deflRate!=null) ? fmtPct(ef.deflRate,1) : '—';
+  const eDetail = (ef.deflected!=null && ef.sent!=null)
+    ? `${fmtNum(ef.deflected)} of ${fmtNum(ef.sent)} sent responses needed no human follow-up`
+    : 'not enough sent responses yet to size the rate';
+  const eTxt = `Autoresponder deflection is at ${eVal} this month — ${eDetail}. Too new for a month-over-month read yet.`;
+
+  // KB — total deflection rate (confirmed + assumed, against the full
+  // session base), not the confirmed-only count: 17 confirmed deflections on
+  // its own doesn't convey scale against 1,145 monthly sessions.
+  const k = state.kb;
+  const khl = {}; k.headline.forEach(h=>khl[h.label]=h);
+  const td = khl['Total Deflection Rate'];
+  const kCls = td.current>=td.prior?'on':'off';
+  const kStatus = td.current>=td.prior?'Improving':'Needs attention';
+  const kDir = td.current>=td.prior?'rose to':'fell to';
+  const kPp = Math.abs(td.current-td.prior).toFixed(1);
+  const kTxt = `Total deflection rate ${kDir} ${fmtPct(td.current)} (${fmtNum(td.num)} of ${fmtNum(td.den)} sessions), ${td.current>=td.prior?'+':'−'}${kPp} points vs. ${k.reportingMonth.prior}.`;
+
+  el.innerHTML = [
+    row('Widget', wCls, wStatus, wTxt),
+    row('Ticket autoresponder', 'na', 'New', eTxt),
+    row('Knowledge base', kCls, kStatus, kTxt),
+  ].join('');
+}
+
+function setText(id, text){ const el = document.getElementById(id); if(el) el.textContent = text; }
+
+function renderKpis(containerId, items){
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map(k=>{
+    const def = KPI_DEFS[k.label];
+    const info = def ? `<span class="info-dot">i<span class="tip">${def}</span></span>` : '';
+    return `
+    <div class="kpi ${k.status}">
+      <div class="dot"></div>
+      <div class="label">${k.label}${info}</div>
+      <div class="value">${k.value}<span class="unit">${k.unit}</span></div>
+      <div class="sub">${k.sub}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderMonthChips(containerId, months, current, onPick, note){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = `<span>Month</span>` +
+    months.map(m=>`<button class="mf-chip ${m===current?'active':''}" data-m="${m}">${m}</button>`).join('') +
+    (note ? `<span class="mf-note">${note}</span>` : '');
+  el.querySelectorAll('.mf-chip').forEach(b=>b.addEventListener('click', ()=>onPick(b.dataset.m)));
+}
+
+function renderWidgetView(){
+  const SV = storyValues(widgetMonth);
+  renderStory('story-widget','widget',SV); setText('storyWidgetMonth', SV.widget.month||'');
+  renderStory('story-email','email',SV); setText('storyEmailMonth', SV.email.month||'');
+  const w = state.widget, e = state.email;
+  renderMonthChips('widgetMonthFilter', ['All','Apr*','May','Jun','Jul'], widgetMonth,
+    m=>{ widgetMonth=m; renderWidgetView(); }, 'Filters the KPI headers and Where this stands; tables and charts stay full-period.');
+  const wm = widgetMonth==='All' ? null : w.byMonth[widgetMonth];
+
+  renderKpis('kpi-widget-headline', wm ? [
+    {label:'Total Conversations', value:String(wm.conversations), unit:'', sub:`Unique widget conversations — ${widgetMonth}`, status:'neutral'},
+    {label:'Deflection Rate', value:fmtPct(wm.deflectionNH,1).replace('%',''), unit:'%', sub:`${wm.conversations-wm.handoffN} of ${wm.conversations} conversations without handoff`, status:kpiStatus('w','deflection',wm.deflectionNH)},
+    {label:'Handoff Rate', value:wm.handoffRate, unit:'%', sub:`${wm.handoffN} of ${wm.conversations} conversations handed off`, status:kpiStatus('w','handoff',wm.handoffRate)},
+  ] : [
+    {label:'Total Conversations', value:w.headline.conversations.value, unit:'', sub:w.headline.conversations.sub, status:'neutral'},
+    {label:'Deflection Rate', value:fmtPct(w.headline.deflection.value,1).replace('%',''), unit:'%', sub:w.headline.deflection.sub, status:kpiStatus('w','deflection',w.headline.deflection.value)},
+    {label:'Handoff Rate', value:w.headline.handoff.value, unit:'%', sub:w.headline.handoff.sub, status:kpiStatus('w','handoff',w.headline.handoff.value)},
+  ]);
+
+  document.getElementById('tblJourney').innerHTML = `
+    <tr><th>Signal</th><th class="num">Count</th><th class="num">Rate</th><th>Interpretation</th></tr>
+    ${w.journey.map(j=>`<tr><td>${j.signal}</td><td class="num">${fmtNum(j.count)}</td><td class="num">${fmtPct(j.rate)}</td><td style="color:var(--muted); font-size:12px;">${j.interp}</td></tr>`).join('')}
+  `;
+  destroyChart('journey');
+  const jm = {}; w.journey.forEach(j=>jm[j.signal]=j.rate);
+  charts.journey = safeChart('chartJourney', {
+    type:'bar',
+    data:{
+      labels:['No follow-up','Incomplete handoff','Relevant-answer drop-off','Likely true drop-off'],
+      datasets:[{ data:[jm['No follow-up'], jm['Incomplete handoff'], jm['Relevant-answer drop-offs'], jm['Likely true drop-offs']],
+        backgroundColor:[COLORS.red, COLORS.amber, COLORS.blue, COLORS.green], borderRadius:4, maxBarThickness:34 }]
+    },
+    options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{max:100, grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, y:{grid:{display:false}} } }
+  });
+
+  document.getElementById('readoutWidget').innerHTML = w.readout.map(t=>`<li>${t}</li>`).join('') + `<li class="caveat">${w.readoutCaveat}</li>`;
+
+  // ---- Deflection by subject (widget: QA Support Type × log deflected flag) ----
+  if(w.bySubject && w.bySubject.length){
+    const cls=w.bySubject.filter(x=>x.subject!=='Not QA-classified').sort((a,b)=>b.rate-a.rate);
+    const tkw=document.getElementById('wSubjectTakeaway');
+    if(tkw && cls.length>1){ const best=cls[0], worst=cls[cls.length-1];
+      tkw.textContent=`${best.subject} inquiries contain at ${fmtPct(best.rate)} vs ${fmtPct(worst.rate)} for ${worst.subject.toLowerCase()} — a ${(best.rate-worst.rate).toFixed(1)}pp gap that matches the partial-pass drivers: billing/account answers are the weak spot.`; }
+    const tw=document.getElementById('tblWidgetSubject');
+    if(tw) tw.innerHTML =
+      `<tr><th>Subject</th><th class="num">Conversations</th><th class="num">Contained</th><th class="num">Containment rate</th><th style="width:28%"></th></tr>`
+      + w.bySubject.map(x=>`<tr><td>${x.subject}</td><td class="num">${fmtNum(x.total)}</td><td class="num">${fmtNum(x.contained)}</td><td class="num">${fmtPct(x.rate)}</td><td><span style="display:block; height:8px; border-radius:4px; background:var(--panel-alt);"><span style="display:block; height:100%; width:${x.rate}%; border-radius:4px; background:${x.subject==='Not QA-classified'?'var(--muted)':'var(--green)'};"></span></span></td></tr>`).join('');
+  }
+
+  // ---- Repeat contact after deflection (Widget Repeat Contact tab) ----
+  const rc = w.repeatContact;
+  renderKpis('kpi-widget-repeat', [
+    {label:'Post-Widget Ticket Rate', value:fmtPct(rc.latest.strictRate,1).replace('%',''), unit:'%', sub:`${rc.latest.confirmed} confirmed of ${rc.latest.eligible} eligible no-handoff conversations — ${rc.latest.month}`, status:'bad'},
+    {label:'Confirmed Same-Issue Tickets', value:String(rc.latest.confirmed), unit:'', sub:`Customer reopened with support within 7 days — ${rc.latest.month}`, status:'bad'},
+    {label:'MoM Change', value:(rc.latest.momPp>0?'+':'')+rc.latest.momPp, unit:'pp', sub:'Post-widget ticket rate vs the June baseline', status:rc.latest.momPp>0?'bad':'good'},
+  ]);
+  document.getElementById('tblRepeatMonthly').innerHTML = `
+    <tr><th>Month</th><th class="num">Eligible</th><th class="num">Confirmed</th><th class="num">Rate</th></tr>
+    ${rc.monthly.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(rc.monthly.eligible[i])}</td><td class="num">${fmtNum(rc.monthly.confirmed[i])}</td><td class="num">${fmtPct(rc.monthly.strictRate[i])}</td></tr>`).join('')}
+    ${rc.monthly.months.map((m,i)=>`<tr><td colspan="4" style="color:var(--muted-dim); font-size:11.5px;">${m}: ${rc.monthly.notes[i]}</td></tr>`).join('')}
+  `;
+  document.getElementById('tblRepeatEvidence').innerHTML = `
+    <tr><th>Month</th><th class="num">Widget conv.</th><th class="num">Ticket</th><th>Class</th><th>Issue / gap</th></tr>
+    ${rc.evidence.map(v=>`<tr><td>${v.month}</td><td class="num">${v.conv}</td><td class="num">${v.ticket}</td><td>${v.cls}</td><td style="color:var(--muted); font-size:12px;">${v.note}</td></tr>`).join('')}
+  `;
+
+  // ---- Customer feedback (computed from the conversation log) ----
+  const fb = w.feedback;
+  const sTot = fb.sentiment.rated;
+  document.getElementById('tblCsat').innerHTML = `
+    <tr><th>Signal</th><th class="num">Value</th><th class="num">Sample</th><th>Read</th></tr>
+    <tr><td>Ending sentiment — positive</td><td class="num">${fmtPct(100*fb.sentiment.positive/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.positive)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Per unique conversation.</td></tr>
+    <tr><td>Ending sentiment — neutral</td><td class="num">${fmtPct(100*fb.sentiment.neutral/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.neutral)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Most conversations end without an emotional signal.</td></tr>
+    <tr><td>Ending sentiment — negative</td><td class="num">${fmtPct(100*fb.sentiment.negative/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.negative)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Roughly one in five conversations ends negative — compare against QA fail + partial.</td></tr>
+    <tr><td>CSAT average</td><td class="num">${fb.csatAvg} / 5</td><td class="num">${fmtNum(fb.csatCount)}</td><td style="color:var(--muted); font-size:12px;">Too sparse to be representative — do not headline this.</td></tr>
+    <tr><td>Quick feedback responses</td><td class="num">—</td><td class="num">${fmtNum(fb.quickFeedbackCount)}</td><td style="color:var(--muted); font-size:12px;">Also too sparse; consider making the feedback prompt more prominent.</td></tr>
+  `;
+
+  // ---- Conversation duration (computed from the conversation log) ----
+  const du = w.durations || [];
+  document.getElementById('tblDurations').innerHTML = `
+    <tr><th>Outcome</th><th class="num">Median time in widget</th><th class="num">Conversations</th></tr>
+    ${du.length ? du.map(r=>`<tr><td>${r.group}</td><td class="num">${fmtDur(r.median)}</td><td class="num">${fmtNum(r.n)}</td></tr>`).join('') : syncPendingRow(3)}
+  `;
+
+  // ---- Handed-off topics & sample questions ----
+  document.getElementById('tblTopicsHandoff').innerHTML = `
+    <tr><th>Topic</th><th class="num">Handoffs</th><th class="num">Total mentions</th></tr>
+    ${w.topicsHandoff.map(t=>`<tr><td>${t.topic}</td><td class="num">${fmtNum(t.handoffs)}</td><td class="num">${fmtNum(t.mentions)}</td></tr>`).join('')}
+  `;
+  document.getElementById('tblHandoffQueries').innerHTML = `
+    <tr><th>Customer question (verbatim, truncated)</th></tr>
+    ${w.sampleHandoffQueries.map(q=>`<tr><td style="color:var(--muted); font-size:12px;">“${q}”</td></tr>`).join('')}
+  `;
+
+  // ---- Handoff rate by workflow ----
+  document.getElementById('tblWorkflows').innerHTML = `
+    <tr><th>Workflow</th><th class="num">Conversations</th><th class="num">Handoffs</th><th class="num">Handoff rate</th></tr>
+    ${w.workflows.map(x=>`<tr><td>${x.name}${x.byDesign?' <span style="color:var(--muted-dim); font-size:10.5px;">(by design)</span>':''}</td><td class="num">${fmtNum(x.convs)}</td><td class="num">${fmtNum(x.handoffs)}</td><td class="num">${fmtPct(x.rate)}</td></tr>`).join('')}
+  `;
+
+  // "QA → KB backlog" section was removed from the Widget tab (Aug 2026).
+  // state.widget.kbBacklog / kbPipeline still hold the numbers — just not
+  // rendered here.
+
+  // ---- Autoresponder funnel ----
+  document.getElementById('tblFunnel').innerHTML = `
+    <tr><th>Stage</th><th class="num">Emails</th><th class="num">% of previous stage</th><th>Note</th></tr>
+    ${e.funnel.map(f=>`<tr><td>${f.stage}</td><td class="num">${fmtNum(f.count)}</td><td class="num">${f.pctOfPrev===null?'—':fmtPct(f.pctOfPrev)}</td><td style="color:var(--muted); font-size:12px;">${f.note}</td></tr>`).join('')}
+  `;
+
+  // ---- Support autoresponder disposition: solved by bot vs. handed to L1 ----
+  // (Support only — Billing has its own tag chain and review process, out of scope here.)
+  const sf = e.supportFunnel;
+  const hr = e.handoffReasons;
+  renderMonthChips('emailMonthFilter', ['All', ...sf.months], emailMonth,
+    m=>{ emailMonth=m; renderWidgetView(); }, 'Filters the KPI header and Where this stands; MoM trend and handoff-reason tables stay full-period.');
+  const sfIdx = emailMonth==='All'
+    ? sf.sent.map((v,i)=>v>0?i:-1).filter(i=>i>=0).pop()
+    : sf.months.indexOf(emailMonth);
+  const sfMonth = sf.months[sfIdx];
+  document.getElementById('supportFunnelTakeaway').textContent =
+    `${sfMonth}: ${fmtPct(sf.solveRate[sfIdx],1)} solve rate (the only outcome the bot causes) on ${fmtNum(sf.sent[sfIdx])} sent tickets. Handoff (${fmtPct(sf.handoffRate[sfIdx],1)}) is the default outcome for anything the bot doesn't solve, not a regression it caused.`;
+  renderKpis('kpi-support-funnel', [
+    {label:'Sent', value:String(sf.sent[sfIdx]), unit:'', sub:`${sf.automated[sfIdx]} auto-classified — ${sfMonth}`, status:'neutral'},
+    {label:'Solved by Bot', value:fmtPct(sf.solveRate[sfIdx],1).replace('%',''), unit:'%', sub:`${sf.solved[sfIdx]} of ${sf.sent[sfIdx]} sent — the one outcome attributable to the bot`, status:sf.solveRate[sfIdx]==null?'neutral':(sf.solveRate[sfIdx]<5?'bad':(sf.solveRate[sfIdx]<15?'watch':'good'))},
+    {label:'Still Pending', value:fmtPct(sf.pendingRate[sfIdx],1).replace('%',''), unit:'%', sub:`${sf.pending[sfIdx]} of ${sf.sent[sfIdx]} — neither solved nor handed off yet`, status:'watch'},
+  ]);
+  document.getElementById('tblSupportFunnel').innerHTML = `
+    <tr><th>Month</th><th class="num">Sent</th><th class="num">Solved</th><th class="num">Handoff</th><th class="num">Pending</th><th class="num">Solve %</th><th>Notes</th></tr>
+    ${sf.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(sf.sent[i])}</td><td class="num">${fmtNum(sf.solved[i])}</td><td class="num">${fmtNum(sf.handoff[i])}</td><td class="num">${fmtNum(sf.pending[i])}</td><td class="num">${sf.solveRate[i]===null?'—':fmtPct(sf.solveRate[i],1)}</td><td style="color:var(--muted); font-size:12px;">${sf.notes[i]}</td></tr>`).join('')}
+  `;
+  document.getElementById('tblHandoffReasons').innerHTML = `
+    <tr><th>Month</th><th class="num">Negative feedback</th><th class="num">Customer replied again</th><th class="num">No-response timeout</th><th class="num">Total handed off</th></tr>
+    ${hr.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(hr.negFeedback[i])} (${fmtPct(100*hr.negFeedback[i]/hr.total[i],1)})</td><td class="num">${fmtNum(hr.customerReplied[i])} (${fmtPct(100*hr.customerReplied[i]/hr.total[i],1)})</td><td class="num">${fmtNum(hr.timeout[i])} (${fmtPct(100*hr.timeout[i]/hr.total[i],1)})</td><td class="num">${fmtNum(hr.total[i])}</td></tr>`).join('')}
+  `;
+
+  // ---- Support impact: FT-tagged vs. non-FT L1-touch rate & nudges (belongs to the email/autoresponder program, not widget) ----
+  const tr = w.automationTracker;
+  document.getElementById('tblAutomation').innerHTML = `
+    <tr><th>Metric</th>${tr.months.map(m=>`<th class="num">${m}</th>`).join('')}<th>Guardrail / note</th></tr>
+    ${tr.rows.map(r=>`<tr><td>${r.metric}</td>${r.vals.map(v=>`<td class="num">${v}</td>`).join('')}<td style="color:var(--muted); font-size:12px;">${r.note}</td></tr>`).join('')}
+    <tr><td colspan="4" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">*June FT volume was confirmed test/pilot tickets — use the non-FT June row as the real before baseline. Auto-close counts are simulated against the proposed 4h+72h rule; no live automation exists yet.</td></tr>
+  `;
+
+  document.getElementById('readoutEmail').innerHTML = e.readout.map(t=>`<li>${t}</li>`).join('') + `<li class="caveat">${e.readoutCaveat}</li>`;
+}
+
+const seriesColors = {
+  'Article Views': COLORS.blue, 'Confirmed Deflections': COLORS.red, 'Assumed Deflections': COLORS.amber,
+  'End-user Sessions': COLORS.muted, 'Total Deflection Rate %': COLORS.green, 'Search Deflection Proxy %': '#9B5DE5',
+};
+
+/* ---- range-filter helpers (quick win #3) ---- */
+function clampRange(range, maxIdx){
+  let from = Math.max(0, Math.min(range.from ?? 0, maxIdx));
+  let to = range.to===null||range.to===undefined ? maxIdx : Math.max(from, Math.min(range.to, maxIdx));
+  return {from, to};
+}
+function renderRangeFilter(containerId, months, range, onChange){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const {from, to} = clampRange(range, months.length-1);
+  el.innerHTML = `
+    <span>Show</span>
+    <select data-role="from">${months.map((m,i)=>`<option value="${i}" ${i===from?'selected':''}>${m}</option>`).join('')}</select>
+    <span>to</span>
+    <select data-role="to">${months.map((m,i)=>`<option value="${i}" ${i===to?'selected':''}>${m}</option>`).join('')}</select>
+    <button class="rf-reset" type="button">Reset to full range</button>
+  `;
+  el.querySelector('[data-role="from"]').addEventListener('change', (ev)=>{
+    range.from = Number(ev.target.value);
+    if(range.to !== null && range.to < range.from) range.to = range.from;
+    onChange();
+  });
+  el.querySelector('[data-role="to"]').addEventListener('change', (ev)=>{
+    range.to = Number(ev.target.value);
+    if(range.to < range.from) range.from = range.to;
+    onChange();
+  });
+  el.querySelector('.rf-reset').addEventListener('click', ()=>{
+    range.from = 0; range.to = null;
+    onChange();
+    renderRangeFilter(containerId, months, range, onChange);
+  });
+}
+
+function buildMomDatasets(){
+  const k = state.kb;
+  const {from, to} = clampRange(momRange, k.momMonths.length-1);
+  return activeMomSeries.map(key=>({
+    label:key, data:k.momSeries[key].slice(from, to+1), borderColor:seriesColors[key], backgroundColor:seriesColors[key],
+    tension:0.35, pointRadius:3, borderWidth:2, fill:false,
+  }));
+}
+function renderMomLegend(){
+  const el = document.getElementById('momLegend');
+  el.innerHTML = Object.keys(state.kb.momSeries).map(key=>{
+    const on = activeMomSeries.includes(key);
+    return `<span data-key="${key}" style="cursor:pointer; opacity:${on?1:0.35};"><span class="sw" style="background:${seriesColors[key]}"></span>${key}</span>`;
+  }).join('');
+  el.querySelectorAll('span[data-key]').forEach(s=>{
+    s.addEventListener('click', ()=>{
+      const key = s.dataset.key;
+      if(activeMomSeries.includes(key)) activeMomSeries = activeMomSeries.filter(k=>k!==key);
+      else activeMomSeries.push(key);
+      if(charts.mom){ charts.mom.data.datasets = buildMomDatasets(); charts.mom.update(); }
+      renderMomLegend();
+    });
+  });
+}
+
+function renderKbView(){
+  const k = state.kb;
+  const SV = storyValues();
+  renderStory('story-kb','kb',SV); setText('storyKbMonth', SV.kb.month||'');
+
+  // ---- All month labels derive from reportingMonth / the month arrays, so a
+  //      synced sheet roll-forward re-labels the whole tab automatically. ----
+  const rm = k.reportingMonth || {};
+  const yr = rm.year ? ' ' + rm.year : '';
+  const momSpan = k.momMonths.length ? `${k.momMonths[0]} \u2013 ${k.momMonths[k.momMonths.length-1]}` : '';
+  const tgSpan = k.ticketGroupMonths.length ? `${k.ticketGroupMonths[0]} \u2013 ${k.ticketGroupMonths[k.ticketGroupMonths.length-1]}` : '';
+  setText('kbPageDesc', `Self-service deflection, search behavior, and content health. Reporting month: ${rm.current}${yr} vs. ${rm.prior}${yr}. Workbook last refreshed for the ${rm.current} reporting period.`);
+  setText('kbHeadMonths', `${rm.current} vs. ${rm.prior}`);
+  setText('kbTrendRange', `${momSpan}${yr}`);
+  setText('kbTrendNote', `${rm.current} is the current reporting month and ${rm.prior} is the comparison month.`);
+  setText('kbSupportMonth', rm.current);
+  setText('kbTicketRange', `${tgSpan}${yr}`);
+  setText('kbTabPeriod', momSpan);
+  setText('kbFooterRange', `${momSpan}${yr}`);
+
+  renderMonthChips('kbMonthFilter', ['All', ...k.momMonths], kbMonth,
+    m=>{ kbMonth=m; renderKbView(); }, 'Filters Headline metrics only; every other section (trend chart, segments, support impact, content health) stays full-period.');
+
+  // 'All' shows the workbook's current reporting month (the existing
+  // current/prior pairs below, each with its own num/den). A specific month
+  // is derived from the MoM trend series (momSeries/momMonths) \u2014 the only
+  // KB data with full month-by-month history \u2014 so headline cards can be
+  // viewed for any month without inventing figures the source sheet doesn't have.
+  let hl5;
+  if(kbMonth==='All'){
+    hl5 = k.headline;
+    setText('kbHeadMonths', `${rm.current} vs. ${rm.prior}`);
+  } else {
+    const mi = k.momMonths.indexOf(kbMonth);
+    const priorMi = mi>0 ? mi-1 : null;
+    const sessions = k.momSeries['End-user Sessions']||[];
+    const confirmed = k.momSeries['Confirmed Deflections']||[];
+    const assumed = k.momSeries['Assumed Deflections']||[];
+    const searchProxy = k.momSeries['Search Deflection Proxy %']||[];
+    const articleViews = k.momSeries['Article Views']||[];
+    const rateOf = (num,den) => (num==null||den==null||!den) ? null : +(100*num/den).toFixed(1);
+    const momPct = (cur,pri) => (cur==null||pri==null||!pri) ? null : +(100*(cur-pri)/pri).toFixed(1);
+    const confRate = rateOf(confirmed[mi], sessions[mi]);
+    const confRateP = priorMi!=null ? rateOf(confirmed[priorMi], sessions[priorMi]) : null;
+    const assumedRate = rateOf(assumed[mi], sessions[mi]);
+    const assumedRateP = priorMi!=null ? rateOf(assumed[priorMi], sessions[priorMi]) : null;
+    const totalNum = (confirmed[mi]||0)+(assumed[mi]||0);
+    const totalRate = rateOf(totalNum, sessions[mi]);
+    const totalNumP = priorMi!=null ? (confirmed[priorMi]||0)+(assumed[priorMi]||0) : null;
+    const totalRateP = priorMi!=null ? rateOf(totalNumP, sessions[priorMi]) : null;
+    const sProxy = searchProxy[mi]!=null ? searchProxy[mi] : null;
+    const sProxyP = priorMi!=null && searchProxy[priorMi]!=null ? searchProxy[priorMi] : null;
+    const aViews = articleViews[mi]!=null ? articleViews[mi] : null;
+    const aViewsP = priorMi!=null && articleViews[priorMi]!=null ? articleViews[priorMi] : null;
+    hl5 = [
+      {label:'Confirmed Deflection Rate', current:confRate, prior:confRateP, mom:momPct(confRate,confRateP), isPct:true, num:confirmed[mi], den:sessions[mi], denLabel:'sessions'},
+      {label:'Assumed Deflection Rate', current:assumedRate, prior:assumedRateP, mom:momPct(assumedRate,assumedRateP), isPct:true, num:assumed[mi], den:sessions[mi], denLabel:'sessions'},
+      {label:'Total Deflection Rate', current:totalRate, prior:totalRateP, mom:momPct(totalRate,totalRateP), isPct:true, num:totalNum, den:sessions[mi], denLabel:'sessions'},
+      {label:'Search Deflection Proxy', current:sProxy, prior:sProxyP, mom:momPct(sProxy,sProxyP), isPct:true},
+      {label:'Article Views', current:aViews, prior:aViewsP, mom:momPct(aViews,aViewsP), isPct:false},
+    ];
+    setText('kbHeadMonths', `${kbMonth} vs. ${priorMi!=null?k.momMonths[priorMi]:'\u2014'}`);
+  }
+  const hl = {}; hl5.forEach(h=>hl[h.label]=h);
+
+  // Each headline rate carries its own numerator/denominator in state, so the
+  // count+% pairing can never drift out of sync with the rate itself.
+  const kbSub = h => (h.num!==undefined && h.den!==undefined && h.num!=null && h.den!=null)
+    ? `${fmtNum(h.num)} of ${fmtNum(h.den)} ${h.denLabel||''} \u00b7 MoM ${h.mom==null?'\u2014':(h.mom>0?'+':'')+h.mom+'%'}`
+    : `Prior ${h.prior==null?'\u2014':(h.isPct?fmtPct(h.prior):fmtNum(h.prior))} \u00b7 MoM ${h.mom==null?'\u2014':(h.mom>0?'+':'')+h.mom+'%'}`;
+
+  renderKpis('kpi-kb-headline', [
+    {label:'Confirmed Deflection Rate', value:hl['Confirmed Deflection Rate'].current, unit:'%', sub:kbSub(hl['Confirmed Deflection Rate']), status:'good'},
+    {label:'Assumed Deflection Rate', value:hl['Assumed Deflection Rate'].current, unit:'%', sub:kbSub(hl['Assumed Deflection Rate']), status:'good'},
+    {label:'Total Deflection Rate', value:hl['Total Deflection Rate'].current, unit:'%', sub:kbSub(hl['Total Deflection Rate']), status:'good'},
+    {label:'Search Deflection Proxy', value:hl['Search Deflection Proxy'].current, unit:'%', sub:kbSub(hl['Search Deflection Proxy']), status:'watch'},
+    {label:'Article Views', value:hl['Article Views'].current, unit:'', sub:kbSub(hl['Article Views']), status:'watch'},
+  ]);
+
+  renderRangeFilter('momRangeFilter', k.momMonths, momRange, ()=>{
+    if(charts.mom){ charts.mom.data.labels = k.momMonths.slice(clampRange(momRange,k.momMonths.length-1).from, clampRange(momRange,k.momMonths.length-1).to+1); charts.mom.data.datasets = buildMomDatasets(); charts.mom.update(); }
+  });
+  destroyChart('mom');
+  const momClamped = clampRange(momRange, k.momMonths.length-1);
+  charts.mom = safeChart('chartMomTrend', {
+    type:'line', data:{ labels:k.momMonths.slice(momClamped.from, momClamped.to+1), datasets:buildMomDatasets() },
+    options:{ plugins:{legend:{display:false}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:COLORS.grid}} }, interaction:{mode:'index', intersect:false} }
+  });
+  renderMomLegend();
+
+  document.getElementById('tblSegments').innerHTML = `
+    <tr><th>Segment</th><th class="num">${rm.current} Confirmed</th><th class="num">${rm.prior} Confirmed</th><th class="num">MoM</th><th class="num">${rm.current} Assumed</th><th class="num">${rm.prior} Assumed</th><th class="num">MoM</th></tr>
+    ${k.segments.map(s=>`<tr><td>${s.seg}</td><td class="num">${fmtNum(s.mayConf)}</td><td class="num">${fmtNum(s.aprConf)}</td><td class="num">${momTag(s.confMom)}</td><td class="num">${fmtNum(s.mayAssumed)}</td><td class="num">${fmtNum(s.aprAssumed)}</td><td class="num">${momTag(s.assumedMom)}</td></tr>`).join('')}
+  `;
+  destroyChart('segments');
+  const segNoTotal = k.segments.filter(s=>s.seg!=='Total');
+  // If any non-End-user segment lacks a current-month value, the role export
+  // hasn't fully landed: chart the prior (complete) month and say so; once
+  // the export is complete the chart flips to the current month automatically.
+  const roleGapped = segNoTotal.some(s=>s.seg!=='End user' && (s.mayAssumed===null || s.mayAssumed===undefined));
+  const segNote = document.getElementById('kbSegNote');
+  if(segNote) segNote.style.display = roleGapped ? '' : 'none';
+  setText('kbSegNote', `${rm.current}'s Deflections-by-Role export currently includes End user only; other segments show \u2014 until it's refreshed.`);
+  setText('kbSegChartSub', roleGapped
+    ? `Assumed deflections by segment, ${rm.prior} (last complete role export)`
+    : `Assumed deflections by segment, ${rm.current}`);
+  charts.segments = safeChart('chartSegments', {
+    type:'bar',
+    data:{ labels:segNoTotal.map(s=>s.seg), datasets:[{ data:segNoTotal.map(s=>roleGapped ? s.aprAssumed : s.mayAssumed), backgroundColor:palette, borderRadius:4, maxBarThickness:44 }] },
+    options:{ plugins:{legend:{display:false}}, scales:{ y:{grid:{color:COLORS.grid}}, x:{grid:{display:false}} } }
+  });
+
+  document.getElementById('tblSupportImpact').innerHTML = `
+    <tr><th>Metric</th><th class="num">Current</th><th class="num">Prior</th><th class="num">MoM</th></tr>
+    ${k.supportImpact.map(m=>`<tr><td>${m.metric}</td><td class="num">${m.isPct? fmtPct(m.current): fmtNum(m.current)}</td><td class="num">${m.isPct? fmtPct(m.prior): fmtNum(m.prior)}</td><td class="num">${momTag(m.mom)}</td></tr>`).join('')}
+  `;
+  document.getElementById('tblContentHealth').innerHTML = `
+    <tr><th>Metric</th><th class="num">Current</th><th class="num">Prior</th><th class="num">MoM</th></tr>
+    ${k.contentHealth.map(m=>`<tr><td>${m.metric}</td><td class="num">${m.current}</td><td class="num">${m.prior}</td><td class="num">${momTag(m.mom)}</td></tr>`).join('')}
+  `;
+  document.getElementById('tblSearch').innerHTML = `
+    <tr><th>Metric</th><th class="num">Current</th><th class="num">Prior</th><th class="num">MoM</th></tr>
+    ${k.searchFind.map(m=>`<tr><td>${m.metric}</td><td class="num">${m.isPct? fmtPct(m.current): fmtNum(m.current)}</td><td class="num">${m.isPct? fmtPct(m.prior): fmtNum(m.prior)}</td><td class="num">${momTag(m.mom)}</td></tr>`).join('')}
+  `;
+
+  // ---- Search journey funnel (true subsets) + self-service context tiles ----
+  setText('kbFunnelMonth', rm.current);
+  const fSessions = hl['Total Deflection Rate'].den;
+  const fSearches = k.searchFind.find(m=>m.metric==='Total Searches')?.current;
+  const fCtr = k.searchFind.find(m=>m.metric==='Search CTR')?.current;
+  const fClicks = (fSearches!==null && fSearches!==undefined && fCtr!==null && fCtr!==undefined) ? Math.round(fSearches*fCtr/100) : null;
+  const fViews = k.supportImpact.find(m=>m.metric==='Article Views')?.current;
+  const fDefl = hl['Total Deflection Rate'].num;
+  const fDeflRate = hl['Total Deflection Rate'].current;
+  const fTix = k.searchFind.find(m=>m.metric==='Tickets Created After Search')?.current;
+  const fContained = (fSearches!==null && fSearches!==undefined && fTix!==null && fTix!==undefined) ? fSearches - fTix : null;
+  const stages = [
+    {name:'Searches run', v:fSearches},
+    {name:'Search results clicked (derived)', v:fClicks},
+    {name:'Tickets created after search', v:fTix},
+  ];
+  document.getElementById('kbFunnel').innerHTML = stages.map(s=>{
+    const pct = (s.v!==null && s.v!==undefined && fSearches) ? Math.min(100, s.v/fSearches*100) : 0;
+    const share = (s.v!==null && s.v!==undefined && fSearches) ? ` (${(s.v/fSearches*100).toFixed(0)}%)` : '';
+    return `<div class="row">
+      <div class="name">${s.name}</div>
+      <div class="track"><div class="fill" style="width:${pct.toFixed(1)}%"></div></div>
+      <div class="pct">${fmtNum(s.v)}${share}</div>
+    </div>`;
+  }).join('');
+  renderKpis('kbFlowContext', [
+    {label:'Search containment', value:fmtNum(fContained), unit:'', sub:`${fmtNum(fContained)} of ${fmtNum(fSearches)} searches ended without a ticket`, status:'watch'},
+    {label:'End-user sessions', value:fmtNum(fSessions), unit:'', sub:'All-sessions denominator \u2014 separate tracker, not a funnel stage', status:'good'},
+    {label:'Article views', value:fmtNum(fViews), unit:'', sub:'Guide reach metric; includes non-search traffic', status:'watch'},
+    {label:'Deflected (conf + assumed)', value:fmtNum(fDefl), unit:'', sub:`${fmtPct(fDeflRate)} of ${fmtNum(fSessions)} end-user sessions`, status:'good'},
+  ]);
+
+  // ---- KB success vs ticket volume ----
+  const ks = k.kbSuccess;
+  destroyChart('kbSuccess');
+  charts.kbSuccess = safeChart('chartKbSuccess', {
+    type:'bar',
+    data:{ labels:ks.months, datasets:[
+      { type:'bar', label:'Tickets created', data:ks.tickets, backgroundColor:COLORS.muted, borderRadius:4, maxBarThickness:38, yAxisID:'y' },
+      { type:'bar', label:'Total deflections', data:ks.deflections, backgroundColor:COLORS.blue, borderRadius:4, maxBarThickness:38, yAxisID:'y' },
+      { type:'line', label:'KB success rate %', data:ks.rate, borderColor:COLORS.red, backgroundColor:COLORS.red, tension:0.35, pointRadius:3, borderWidth:2, yAxisID:'y1' },
+    ]},
+    options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
+      scales:{ y:{grid:{color:COLORS.grid}}, y1:{position:'right', grid:{display:false}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} },
+      interaction:{mode:'index', intersect:false} }
+  });
+  document.getElementById('tblKbSuccess').innerHTML = `
+    <tr><th>Month</th><th class="num">Tickets created</th><th class="num">Total deflections</th><th class="num">KB success rate</th></tr>
+    ${ks.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(ks.tickets[i])}</td><td class="num">${fmtNum(ks.deflections[i])}</td><td class="num">${fmtPct(ks.rate[i])}</td></tr>`).join('')}
+  `;
+
+  renderRangeFilter('ticketRangeFilter', k.ticketGroupMonths, ticketRange, renderTicketGroupsChart);
+  renderTicketGroupChips();
+  renderTicketGroupsChart();
+}
+
+function renderTicketGroupChips(){
+  const k = state.kb;
+  const el = document.getElementById('ticketGroupFilter');
+  if(!el) return;
+  const groups = Object.keys(k.ticketGroups);
+  const allActive = activeTicketGroups===null;
+  el.innerHTML = `<span>Groups</span><button class="mf-chip ${allActive?'active':''}" data-g="__all__">All</button>` +
+    groups.map(g=>`<button class="mf-chip ${!allActive && activeTicketGroups.has(g)?'active':''}" data-g="${g}">${g}</button>`).join('');
+  el.querySelectorAll('.mf-chip').forEach(b=>b.addEventListener('click', ()=>{
+    const g = b.dataset.g;
+    if(g==='__all__'){ activeTicketGroups = null; }
+    else if(activeTicketGroups===null){ activeTicketGroups = new Set([g]); }
+    else if(activeTicketGroups.has(g)){ activeTicketGroups.delete(g); if(!activeTicketGroups.size) activeTicketGroups = null; }
+    else { activeTicketGroups.add(g); }
+    renderTicketGroupChips();
+    renderTicketGroupsChart();
+  }));
+}
+
+function renderTicketGroupsChart(){
+  const k = state.kb;
+  const clamped = clampRange(ticketRange, k.ticketGroupMonths.length-1);
+  destroyChart('ticketGroups');
+  charts.ticketGroups = safeChart('chartTicketGroups', {
+    type:'line',
+    data:{ labels:k.ticketGroupMonths.slice(clamped.from, clamped.to+1), datasets:Object.keys(k.ticketGroups).filter(g=>activeTicketGroups===null||activeTicketGroups.has(g)).map((g,i)=>({
+      label:g, data:k.ticketGroups[g].slice(clamped.from, clamped.to+1), borderColor:palette[i%palette.length], backgroundColor:palette[i%palette.length],
+      tension:0.3, pointRadius:2, borderWidth:2, fill:false })) },
+    options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}}, scales:{ x:{grid:{display:false}}, y:{grid:{color:COLORS.grid}} } }
+  });
+}
+
+function deflStoryData(){
+  const w=state.widget, e=state.email, k=state.kb;
+  const months=k.ticketGroupMonths||[];
+  const tSum=i=>{let s=0,ok=false; for(const g in k.ticketGroups){ if(EXCLUDED_TICKET_GROUPS.has(g)) continue; const v=k.ticketGroups[g][i]; if(v!=null){s+=v; ok=true;}} return ok?s:null;};
+  const rc={}; const rcm=(w.repeatContact&&w.repeatContact.monthly)||{};
+  (rcm.months||[]).forEach((m,i)=>rc[m]=(rcm.confirmed||[])[i]||0);
+  const wKey=m=>(w.byMonth&&(w.byMonth[m]||w.byMonth[m+'*']))||{};
+  return months.map((m,i)=>{
+    const tickets=tSum(i)||0;
+    const kbD=((k.kbSuccess&&k.kbSuccess.deflections)||[])[i]||0;
+    const wRaw=wKey(m).deflected;
+    const contained=wRaw!=null?Math.max(wRaw-(rc[m]||0),0):0;
+    const ar=(m==='Jul'&&e.funnelJul)?(e.funnelJul.deflected||0):0;
+    const demand=tickets+kbD+contained;
+    const self=kbD+contained+ar;
+    return {m, tickets, human:tickets-ar, kbD, contained, ar, demand, self, share:demand?+(100*self/demand).toFixed(1):null};
+  });
+}
+function renderDeflStory(){
+  const el=document.getElementById('deflPhases'); if(!el) return;
+  const D=deflStoryData(); if(!D.length) return;
+  const rm=state.kb.reportingMonth||{};
+  const first=D[0], last=D[D.length-1];
+  setText('deflStoryRange', `${first.m} \u2013 ${last.m} ${rm.year||''}`.trim());
+  setText('waterfallMonthLabel', (rm.current&&rm.year) ? `${rm.current} ${rm.year}` : last.m);
+  const growth=((last.demand-first.demand)/first.demand*100).toFixed(0);
+  const tk=document.getElementById('deflStoryTakeaway');
+  if(tk) tk.textContent = `Total demand grew ${growth}% since ${first.m}, but the share deflected without a human went from ${fmtPct(first.share)} to ${fmtPct(last.share)} \u2014 each program layer added on top of the last.`;
+  const wtk=document.getElementById('waterfallTakeaway');
+  if(wtk) wtk.textContent = `${last.m}'s ${fmtNum(last.self)} deflected contacts would otherwise have landed on top of the ${fmtNum(last.tickets)} tickets created.`;
+  const idx=m=>{const i=D.findIndex(d=>d.m===m); return i<0?0:i;};
+  const phases=[
+    {name:'KB only \u2014 baseline', from:0, to:idx('Apr'), note:'The help center carries all deflection on its own.'},
+    {name:'+ Widget (live Apr 27)', from:idx('May'), to:idx('Jun'), note:'Contained widget conversations add a second layer on top of KB.'},
+    {name:'+ Autoresponder (rollout Jul 23)', from:idx('Jul'), to:D.length-1, note:'Auto-answered tickets that needed no human reply add the third layer.'},
+  ];
+  el.innerHTML=phases.map(p=>{
+    const seg=D.slice(p.from,p.to+1).map(d=>d.share).filter(v=>v!=null);
+    const rng=!seg.length?'\u2014':(seg.length>1?`${fmtPct(seg[0])} \u2192 ${fmtPct(seg[seg.length-1])}`:fmtPct(seg[0]));
+    const span=D[p.from]?(p.to>p.from?`${D[p.from].m} \u2013 ${D[p.to].m}`:D[p.from].m):'';
+    return `<div class="s-row"><span class="s-pill na">${p.name}</span><span class="s-label">${span}</span><span class="s-val">${rng}</span><span class="s-summary">deflection share</span><span class="s-why">${p.note}</span></div>`;
+  }).join('');
+  // Single trend line \u2014 the one number the waterfall snapshot can't show:
+  // is the deflection share holding up as demand grows month to month.
+  destroyChart('shareTrend');
+  charts.shareTrend = safeChart('chartShareTrend', {
+    type:'line',
+    data:{ labels:D.map(d=>d.m), datasets:[
+      {label:'Deflection share %', data:D.map(d=>d.share), borderColor:COLORS.red, backgroundColor:COLORS.red, tension:0.3, pointRadius:3, borderWidth:2},
+    ]},
+    options:{ plugins:{legend:{display:false}},
+      scales:{ x:{grid:{display:false}}, y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} } }
+  });
+}
+
+/* Support impact — ticket volume split by actual Zendesk group (routing
+   data), not an AI/QA classification. Deliberately not claiming precision
+   Widget/KB subject tagging can't yet support (see readout caveats on
+   those tabs) — this view only uses group assignment, which is reliable.
+   Support-related demand adds CS + TAM to Support/technical, matching
+   Jay's broader "Support" framing (Technical Support + CS/advisory);
+   CSE ICP is intentionally excluded from that combined figure. */
+function renderSupportImpact(){
+  const k = state.kb;
+  // Pinned to July for the same reason as renderDemand — see note there.
+  const rm = {current:'July', currentAbbr:'Jul', year:'2026'};
+  const curAbbr = rm.currentAbbr || null;
+  let mIdx = curAbbr ? k.ticketGroupMonths.indexOf(curAbbr) : -1;
+  if(mIdx<0) mIdx = k.ticketGroupMonths.length-1;
+  const monthLabel = k.ticketGroupMonths[mIdx];
+  const g = k.ticketGroups || {};
+  const val = name => (g[name] && g[name][mIdx]!=null) ? g[name][mIdx] : 0;
+  // "Other" is a remainder (total minus the named buckets), not an allowlist
+  // of specific group names, so a renamed/new group can't silently drop out.
+  // As of Sep 1, 2026 the ticket source itself excludes Proactive tickets
+  // (CSE ICP, Unassigned, Other (14 groups), Finance Licensing and
+  // Provisioning were part of the old proactive-inclusive export and are
+  // simply not present here) — EXCLUDED_TICKET_GROUPS is now a no-op safety
+  // net rather than an active filter.
+  const allDemand = Object.keys(g).reduce((s,name)=>EXCLUDED_TICKET_GROUPS.has(name)?s:s+val(name), 0);
+  const supportTech = val('Support - L1') + val('Support - L2') + val('Support - L3');
+  const billingFinance = val('Finance Billing') + val('Finance Accounts Receivable');
+  const cs = val('CS'), tamAll = val('TAM') + val('TAM AMR West');
+  const supportRelated = supportTech + cs + tamAll;
+  const pct = n => allDemand ? +(100*n/allDemand).toFixed(1) : null;
+  setText('supportImpactMonth', (rm.current && rm.year) ? `${rm.current} ${rm.year}` : monthLabel);
+  renderKpis('kpi-support-impact', [
+    {label:'All Demand', value:fmtNum(allDemand), unit:'', sub:`Total ticket volume, ${monthLabel} — Proactive tickets already excluded at the source`, status:'neutral'},
+    {label:'Support / Technical', value:pct(supportTech), unit:'%', sub:`${fmtNum(supportTech)} tickets — Support L1+L2+L3`, status:'neutral'},
+    {label:'Billing / Finance', value:pct(billingFinance), unit:'%', sub:`${fmtNum(billingFinance)} tickets — Finance Billing + Accounts Receivable`, status:'neutral'},
+    {label:'Support-related Demand', value:pct(supportRelated), unit:'%', sub:`${fmtNum(supportRelated)} tickets — Support L1-L3 + CS + TAM`, status:'neutral'},
+  ]);
+  const tk = document.getElementById('supportImpactTakeaway');
+  if(tk) tk.textContent = `Support/technical tickets alone are ${pct(supportTech)===null?'—':pct(supportTech)+'%'} of ${monthLabel}'s demand; adding CS and TAM brings Support-related demand to ${pct(supportRelated)===null?'—':pct(supportRelated)+'%'}. This split comes from Zendesk group assignment, not a content classification — treat it as directional until demand categorization improves.`;
+}
+
+/* Expansion / what's next — forward-looking roadmap content, not live
+   metrics. */
+function renderExpansionNext(){
+  const el = document.getElementById('expansionNext'); if(!el) return;
+  const el5 = (state.email && state.email.eligibilityJul) || null;
+  const eligRows = el5 ? `
+        <div class="s-row"><span class="s-pill na">Pilot (original scope)</span><span class="s-label">Basic only, &lt;$50k ARR, Low/Normal priority</span><span class="s-val">${fmtNum(el5.pilot.tickets)} tickets/mo</span><span class="s-why">${fmtPct(el5.pilot.pct,1)} of July's ${fmtNum(el5.totalTickets)} tickets</span></div>
+        <div class="s-row"><span class="s-pill on">Current</span><span class="s-label">All Basic + all Developer, any ARR, any priority</span><span class="s-val">${fmtNum(el5.current.tickets)} tickets/mo</span><span class="s-why">${fmtPct(el5.current.pct,1)} of July's tickets</span></div>
+        <div class="s-row"><span class="s-pill mid">Next: + Business</span><span class="s-label">All Business, any ARR, any priority</span><span class="s-val">+${fmtNum(el5.proposedBusiness.tickets)} tickets/mo</span><span class="s-why">would reach ${fmtNum(el5.proposedTotal.tickets)} tickets/mo — ${fmtPct(el5.proposedTotal.pct,1)} of July's volume</span></div>` : '';
+  el.innerHTML = `
+    <div class="exp-block">
+      <div class="subhead">Autoresponder eligibility roadmap</div>
+      <div class="story">${eligRows}</div>
+      <div class="note" style="margin-top:8px;">${el5 ? `Business alone (${fmtNum(el5.proposedBusiness.tickets)} tickets) is nearly as large as the current Basic + Developer scope combined (${fmtNum(el5.current.tickets)}) — it's the biggest single lever left to expand eligibility.` : ''}</div>
+    </div>
+    <div class="exp-block">
+      <div class="subhead">What expands next</div>
+      <ul class="exp-list">
+        <li>Expand autoresponder eligibility</li>
+        <li>Build targeted Autoflows for repeatable L1 use cases</li>
+        <li>Add additional trusted knowledge sources</li>
+        <li>Improve Support content discoverability through the redis.io domain migration</li>
+        <li>Improve demand categorization to measure Support vs. Billing impact</li>
+      </ul>
+    </div>
+    <div class="exp-block">
+      <div class="subhead">Building toward: fewer human touches, not just deflection %</div>
+      <div class="note">${(()=>{
+        const tr=(state.widget&&state.widget.automationTracker&&state.widget.automationTracker.rows)||[];
+        const baseRow=tr.find(r=>r.metric.indexOf('Baseline L1 touches expected')===0);
+        const removedRow=tr.find(r=>r.metric.indexOf('L1 touches removed')===0);
+        const mo=(state.widget.automationTracker.months||[]).slice(-1)[0]||'this month';
+        if(!baseRow||!removedRow) return '';
+        const baseline=+baseRow.vals.slice(-1)[0], removed=+removedRow.vals.slice(-1)[0];
+        const actual=(+(baseline-removed).toFixed(1));
+        return `Only proof point so far: FT-covered tickets got <strong>${fmtNum(removed)} fewer L1 touches</strong> than expected in ${mo} (${fmtNum(actual)} actual vs. ${fmtNum(baseline)} baseline). That's a small slice of all tickets, though. `;
+      })()}Next: pull in total tickets, tickets per person, L1 vs. L2/L3 split, and CSE/TAM volume by product line to see if it holds org-wide.</div>
+    </div>
+  `;
+}
+
+/* Hero banner — TLDR strip shown at the very top of the page, above the nav.
+   Reuses the same numbers as the "Where support demand goes" waterfall so
+   the two can never drift apart. White text, red numbers per brand ask. */
+function renderHero(monthLabel, total, kbDefl, contained, arDefl, self, selfPct, caveats){
+  const el = document.getElementById('heroBanner');
+  if(!el) return;
+  const caveatHtml = (caveats && caveats.length) ? `<div class="hb-caveat">Data lag: ${caveats.join('; ')}.</div>` : '';
+  el.innerHTML = `<div class="hb-inner">
+    <span class="hb-eyebrow">${monthLabel} snapshot</span>
+    <div class="hb-text">In ${monthLabel}, total demand reached <b>${fmtNum(total)}</b> cases. We deflected <b>${fmtNum(kbDefl)}</b> through our knowledge base, another <b>${fmtNum(contained)}</b> through chat conversations, and <b>${fmtNum(arDefl)}</b> more through AI-driven ticket responses. Together, that's <b>${fmtNum(self)}</b> cases deflected — a <b>${fmtPct(selfPct,0)}</b> deflection rate.</div>
+    ${caveatHtml}
+  </div>`;
+}
+/* Potential-tickets waterfall — same four deflection layers as the table
+   below, ordered start (potential tickets) to end (final tickets created)
+   per leadership's request, instead of a flat biggest-to-smallest bar list. */
+function renderWaterfall(total, kbDefl, contained, arDefl, human){
+  const afterKb = total - kbDefl;
+  const afterWidget = afterKb - contained;
+  const labels = ['Potential tickets','KB deflection','Widget deflection','Autoresponder deflection','Final tickets created'];
+  const data = [ [0,total], [afterKb,total], [afterWidget,afterKb], [human,afterWidget], [0,human] ];
+  const bg = [COLORS.muted, COLORS.amber, COLORS.green, COLORS.blue, COLORS.red];
+  destroyChart('waterfall');
+  charts.waterfall = safeChart('chartWaterfall', {
+    type:'bar',
+    data:{ labels, datasets:[{ data, backgroundColor:bg, borderRadius:4, maxBarThickness:34 }] },
+    options:{
+      indexAxis:'y',
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label:(ctx)=>{
+          const [s,e2] = ctx.raw; const amt = Math.abs(e2-s);
+          return ctx.label==='Potential tickets'||ctx.label==='Final tickets created' ? fmtNum(amt) : `−${fmtNum(amt)} deflected`;
+        } } } },
+      scales:{ x:{grid:{color:COLORS.grid}, ticks:{callback:v=>fmtNum(v)}}, y:{grid:{display:false}} },
+    }
+  });
+}
+/* Computes the current month's demand split once, renders the waterfall +
+   hero banner from it, and returns the numbers so renderOverview() can reuse
+   the exact same figures in the KPI row (single source of truth). Monthly
+   detail tables were dropped from this tab \u2014 that granularity lives on the
+   Widget/KB tabs; this tab shows the one-month snapshot only. */
+function renderDemand(){
+  const w=state.widget, e=state.email, k=state.kb;
+  // NOTE (Sep 1, 2026): this used to anchor to k.reportingMonth.currentAbbr
+  // directly. KB's reportingMonth is now August, but Widget and Autoresponder
+  // are still on July — anchoring here would silently zero out Widget's
+  // contribution and pair August ticket volume with July's autoresponder
+  // figure. Pinned to July until all three programs share a common month;
+  // revert to k.reportingMonth once Widget/Autoresponder are refreshed.
+  const rm = {current:'July', currentAbbr:'Jul'};
+  const curAbbr = rm.currentAbbr || null;
+  const caveats = [];
+
+  const tSum=i=>{let s=0,ok=false; for(const g in k.ticketGroups){ if(EXCLUDED_TICKET_GROUPS.has(g)) continue; const v=k.ticketGroups[g][i]; if(v!=null){s+=v; ok=true;}} return ok?s:null;};
+  let mIdx = curAbbr ? k.ticketGroupMonths.indexOf(curAbbr) : -1;
+  if(mIdx<0){ mIdx = k.ticketGroupMonths.length-1; caveats.push(`ticket volume has no "${curAbbr||'current'}" column yet — showing ${k.ticketGroupMonths[mIdx]||'—'}`); }
+  const mName=k.ticketGroupMonths[mIdx];
+  const tickets=tSum(mIdx);
+
+  const cd=k.momSeries['Confirmed Deflections']||[], ad=k.momSeries['Assumed Deflections']||[];
+  let momIdx = curAbbr ? k.momMonths.indexOf(curAbbr) : -1;
+  if(momIdx<0){ momIdx = k.momMonths.length-1; caveats.push(`KB deflection export only runs through ${k.momMonths[momIdx]||'—'}`); }
+  const cdN=cd[momIdx]||0, adN=ad[momIdx]||0, kbDefl=cdN+adN;
+
+  const wKey = [curAbbr, curAbbr+'*'].find(key=>key && w.byMonth && w.byMonth[key]);
+  if(curAbbr && !wKey) caveats.push(`widget has no "${curAbbr}" data yet`);
+  const wbm = wKey ? w.byMonth[wKey] : {};
+  const rcNet=(w.repeatContact&&w.repeatContact.latest&&w.repeatContact.latest.month===curAbbr)?(w.repeatContact.latest.confirmed||0):0;
+  const contained=(wbm.deflected!=null)?Math.max(wbm.deflected-rcNet,0):0;
+
+  const arDefl=(e.funnelJul&&e.funnelJul.deflected)||0;
+  const human=tickets!=null?tickets-arDefl:0;
+  const total=human+arDefl+contained+kbDefl;
+  const self=total-human;
+  const selfPct=total?100*self/total:0;
+  renderWaterfall(total, kbDefl, contained, arDefl, human);
+  // Hero copy spells the month out in full (e.g. "July") — reportingMonth
+  // carries the full name; curAbbr stays abbreviated for the lookups above.
+  renderHero(rm.current || mName, total, kbDefl, contained, arDefl, self, selfPct, caveats);
+  return {mName, total, kbDefl, contained, arDefl, human, self, selfPct};
+}
+
+function renderOverview(){
+  const w = state.widget, e = state.email, k = state.kb;
+  const SV = storyValues();
+  const rm = k.reportingMonth || {};
+  renderOverviewStory(SV); setText('storyOverviewMonth', rm.current ? `${rm.current} ${rm.year||''}`.trim() : ((SV.kb.month||'') + ' 2026'));
+  const demand = renderDemand();
+  renderDeflStory();
+  renderSupportImpact();
+  renderExpansionNext();
+  const hl = {}; k.headline.forEach(h=>hl[h.label]=h);
+  const jw = w.monthly.months.indexOf('Jul');
+  const julDefl = jw>=0 ? w.monthly.deflectionRate[jw] : null;
+  const julPassW = jw>=0 ? w.monthly.passRate[jw] : null;
+  const ef = e.funnelJul || {};
+  const ejb = e.byMonth['Jul'] || {};
+  // Share of ALL inbound resolved with no human — same basis as Widget
+  // Deflection and KB Success Rate below, not the sent-only rate (66.4% of
+  // the 110 emails it attempted), which double-counts the coverage gap as
+  // if it were a quality problem.
+  const arOfInbound = (ef.deflected!=null && ejb.inbound) ? 100*ef.deflected/ejb.inbound : null;
+  renderKpis('kpi-overview', [
+    {label:'Deflection Share', value:fmtPct(demand.selfPct,1).replace('%',''), unit:'%', sub:`${fmtNum(demand.self)} of ${fmtNum(demand.total)} ${demand.mName} demand events deflected — KB, Widget, and Autoresponder combined`, status:'good'},
+    {label:'Widget Deflection', value:julDefl, unit:'%', sub:'July, log flag basis (Widget tab has the all-period view)', status:'good'},
+    {label:'KB Success Rate', value:k.kbSuccess.rate[k.kbSuccess.rate.length-1], unit:'%', sub:`Deflections ÷ (tickets + deflections), ${k.reportingMonth.currentAbbr} ${k.reportingMonth.year}`, status:'good'},
+    {label:'Autoresponder Deflection', value:arOfInbound!==null?fmtPct(arOfInbound,1).replace('%',''):null, unit:'%', sub:`${ef.deflected} of ${ejb.inbound} July inbound emails resolved with no human — only ${ef.sent} even got an autoresponse`, status:'good'},
+  ]);
+  // All-period repeat-contact rate (Jun+Jul combined) — the receipt behind
+  // the widget's ~90% containment number: how many contained conversations
+  // later came back as a same-issue ticket within 7 days.
+  const rcm = (w.repeatContact && w.repeatContact.monthly) || {};
+  const rcEligAll = (rcm.eligible||[]).reduce((a,b)=>a+b,0);
+  const rcConfAll = (rcm.confirmed||[]).reduce((a,b)=>a+b,0);
+  const rcAllRate = rcEligAll ? 100*rcConfAll/rcEligAll : null;
+  const cards = [
+    {title:'Widget', big:fmtPct(julDefl,1)+' deflection (flag basis)', goto:'widget', points:[
+      `${fmtNum(w.headline.conversations.value)} widget conversations in the source period; technical QA pass rate was ${julPassW===null?'—':fmtPct(julPassW,1)} in July.`,
+      `~90% contained. Follow-up validation found ${rcAllRate===null?'~10%':'~'+fmtPct(rcAllRate,0)} of contained conversations later opened a same-issue ticket within 7 days — so the reported containment isn't simply abandoned conversations.`,
+    ]},
+    {title:'Ticket Autoresponder', big:fmtPct(ef.deflRate,1)+' deflection', goto:'ticket', points:[
+      `${fmtNum(ef.deflected)} of ${fmtNum(ef.sent)} AI-responded tickets resolved without Support in July (of ${fmtNum(ejb.inbound)} total inbound — coverage, not quality, is the constraint).`,
+      (()=>{ const el5=(e.eligibilityJul||null); return el5
+        ? `Eligibility now covers all Basic + Developer (${fmtNum(el5.current.tickets)} tickets/mo, ${fmtPct(el5.current.pct,1)} of July's volume) — up from a Basic-only, &lt;$50k, Low/Normal-priority pilot (${fmtNum(el5.pilot.tickets)}). Next: all Business, any priority — potential eligible volume +${fmtNum(el5.proposedBusiness.tickets)} tickets/mo (${fmtPct(el5.proposedTotal.pct,1)} of July's volume combined).`
+        : `Next expansion: Developer + broader Basic eligibility. Potential eligible volume: TBD.`; })(),
+    ]},
+    {title:'KB Program', big:fmtPct(hl['Total Deflection Rate'].current,1)+' total deflection', goto:'kb', points:(()=>{
+      const rm = k.reportingMonth;
+      return [
+        `${fmtNum(hl['Article Views'].current)} article views and ${fmtNum(hl['Total Deflection Rate'].num)} deflections in ${rm.current}.`,
+      ];
+    })()},
+  ];
+  document.getElementById('overviewCards').innerHTML = cards.map(c=>`
+    <div class="card ov-card">
+      <div class="subhead">${c.title}</div>
+      <div class="big">${c.big}</div>
+      <ul>${c.points.map(p=>`<li>${p}</li>`).join('')}</ul>
+      <button class="goto-btn" data-goto="${c.goto}">Open ${c.title} →</button>
+    </div>`).join('');
+  document.querySelectorAll('#overviewCards [data-goto]').forEach(b=>b.addEventListener('click', ()=>{
+    const t = document.querySelector('.tab-btn[data-view="'+b.dataset.goto+'"]');
+    if(t) t.click();
+  }));
+}
+
+function checkNarrativeStaleness(){
+  const nb = document.getElementById('narrativeBanner');
+  if(!nb) return;
+  const rm = state.kb.reportingMonth, nm = state.kb.narrativeMonth;
+  if(rm && rm.current && nm && rm.current !== nm){
+    nb.innerHTML = `<strong>Narrative review needed:</strong> data is for ${rm.current}, but the written takeaways, readouts, and overview text were last reviewed for ${nm}. Review the narrative before presenting, then update narrativeMonth in the page source.`;
+    nb.style.display = 'block';
+  } else {
+    nb.style.display = 'none';
+  }
+}
+
+function renderAll(){ renderOverview(); renderWidgetView(); renderKbView(); checkNarrativeStaleness(); }
+renderAll();
+
+/* =========================================================================
+   LIVE SYNC — pulls fresh numbers from the two source Google Sheets via
+   the Google Drive MCP connector, through the Anthropic API. Text/rationale
+   columns stay static; every number in a KPI, table, or chart is refreshed.
+   ========================================================================= */
+const LIVE_FEED_URL = 'https://script.google.com/macros/s/AKfycby7Ph3R0AMD6u22qykFaIpeQ08AC2p5r3p4ru9Qgo3Vd-ND3WpszwPhS3zzg_fgKoOnSw/exec';
+
+function setSyncUI(mode, extra){
+  const dot = document.getElementById('syncDot');
+  const label = document.getElementById('syncLabel');
+  const meta = document.getElementById('syncMeta');
+  const btn = document.getElementById('syncBtn');
+  dot.className = 'sync-dot';
+  if(mode==='loading'){
+    dot.classList.add('loading'); label.textContent = 'Syncing\u2026'; btn.disabled = true;
+  } else if(mode==='ok'){
+    dot.classList.add('ok'); label.textContent = 'Sync live data'; btn.disabled = false;
+    meta.classList.remove('err');
+    meta.innerHTML = `live as of <span>${extra}</span>`;
+  } else if(mode==='error'){
+    dot.classList.add('err'); label.textContent = 'Retry sync'; btn.disabled = false;
+    meta.classList.add('err');
+    meta.innerHTML = `sync failed \u2014 showing last good data<br>${extra||''}`;
+  } else {
+    label.textContent = 'Sync live data'; btn.disabled = false;
+    meta.innerHTML = `snapshot compiled <span id="snapDate">${new Date().toISOString().slice(0,10)}</span>`;
+  }
+}
+
+function mergeDeep(defaults, incoming){
+  if(incoming===null || incoming===undefined) return defaults;
+  if(Array.isArray(defaults)){
+    if(!Array.isArray(incoming)) return defaults;
+    // Incoming array length is authoritative: a fed list that shrinks (e.g.
+    // fewer failed queries next month) fully replaces the defaults, so stale
+    // ghost rows can't linger. Extractors return null (not []) when a section
+    // can't be read, which keeps the defaults via the !Array check above.
+    return incoming.map((inc,i)=> defaults[i]!==undefined ? mergeDeep(defaults[i], inc) : inc);
+  }
+  if(typeof defaults==='object' && defaults!==null){
+    const out = {...defaults};
+    Object.keys(defaults).forEach(k=>{
+      if(incoming[k]!==undefined) out[k] = mergeDeep(defaults[k], incoming[k]);
+    });
+    return out;
+  }
+  // primitive leaf: take incoming if present, else keep default
+  return (incoming===null) ? defaults : incoming;
+}
+
+/**
+ * Google Apps Script Web Apps don't reliably send Access-Control-Allow-Origin
+ * on doGet responses, so a plain fetch() gets blocked by the browser's CORS
+ * check even when the deployment's "who has access" is set to Anyone. JSONP
+ * (loading the URL via a <script> tag, which isn't subject to CORS) sidesteps
+ * that. DataFeed.gs supports this via a ?callback= query param.
+ */
+function fetchViaJsonp(url, timeoutMs){
+  return new Promise((resolve, reject) => {
+    const cbName = 'ssrFeed_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+    const script = document.createElement('script');
+    let done = false;
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      cleanup();
+      reject(new Error('Feed request timed out (no response after '+(timeoutMs/1000)+'s)'));
+    }, timeoutMs || 20000);
+    function cleanup(){
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[cbName] = function(data){
+      if (done) return;
+      done = true;
+      cleanup();
+      resolve(data);
+    };
+    script.onerror = function(){
+      if (done) return;
+      done = true;
+      cleanup();
+      reject(new Error('Could not load the feed script (check the URL and deployment access)'));
+    };
+    const sep = url.indexOf('?') >= 0 ? '&' : '?';
+    script.src = url + sep + 'callback=' + cbName + '&_ts=' + Date.now();
+    document.body.appendChild(script);
+  });
+}
+
+/**
+ * Pulls fresh numbers straight from the two source Google Sheets via a
+ * Google Apps Script Web App (see DataFeed.gs) — no LLM call, no third-party
+ * API, just a JSONP-loaded JSON payload. Works from any host, not just
+ * claude.ai. Text/rationale columns stay static; every number in a KPI,
+ * table, or chart gets overwritten by whatever the feed returns.
+ */
+async function syncLiveData(){
+  if(!LIVE_FEED_URL || LIVE_FEED_URL.indexOf('PASTE_YOUR') === 0){
+    setSyncUI('error', 'No feed URL configured yet — set LIVE_FEED_URL to your deployed Apps Script /exec URL.');
+    return;
+  }
+  setSyncUI('loading');
+  try{
+    const parsed = await fetchViaJsonp(LIVE_FEED_URL, 75000);
+    if(parsed.fatalError) throw new Error(parsed.fatalError);
+
+    const fresh = defaultState();
+    state = mergeDeep(fresh, parsed);
+    renderAll();
+    const when = parsed.generatedAt ? new Date(parsed.generatedAt).toLocaleString() : new Date().toLocaleString();
+    setSyncUI('ok', when);
+  }catch(err){
+    console.error('Live sync failed:', err);
+    setSyncUI('error', err.message);
+  }
+}
+
+document.getElementById('syncBtn').addEventListener('click', syncLiveData);
+
+/* =========================================================================
+   THEME TOGGLE — Redis light/dark. Chart.js colors are plain constants, so
+   the toggle mutates them and re-renders every chart.
+   ========================================================================= */
+const THEME_CHART = {
+  dark:{grid:'#2D4754', tick:'#8A99A0', text:'#F3F3F3', ring:'#0D2733', good:'#DCFF1E', goodAlt:'#A8C814', muted:'#5C707A'},
+  light:{grid:'#DCE4E7', tick:'#5C707A', text:'#091A23', ring:'#FFFFFF', good:'#7FA800', goodAlt:'#5C8A00', muted:'#8A99A0'},
+};
+let currentTheme = 'dark';
+function applyTheme(t){
+  currentTheme = t;
+  document.documentElement.setAttribute('data-theme', t);
+  const c = THEME_CHART[t];
+  COLORS.grid=c.grid; COLORS.text=c.text; COLORS.green=c.good; COLORS.muted=c.muted; COLORS.ring=c.ring;
+  palette[3]=c.good; palette[7]=c.goodAlt;
+  seriesColors['Total Deflection Rate %']=c.good;
+  seriesColors['End-user Sessions']=c.muted;
+  if(CHARTS_AVAILABLE) Chart.defaults.color = c.tick;
+  document.getElementById('themeBtn').textContent = t==='dark' ? '☀' : '☾';
+  renderAll();
+  try{ localStorage.setItem('ssr-theme', t); }catch(err){ /* storage unavailable in some embeds; theme just won't persist */ }
+}
+document.getElementById('themeBtn').addEventListener('click', ()=>applyTheme(currentTheme==='dark'?'light':'dark'));
+(function(){
+  let saved = null;
+  try{ saved = localStorage.getItem('ssr-theme'); }catch(err){}
+  if(saved==='light') applyTheme('light');
+})();
+
+</script>
+</body>
+</html>
