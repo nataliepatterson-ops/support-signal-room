@@ -535,7 +535,7 @@
     </section>
 
     <section class="block" id="sec-o-01a">
-      <div class="block-head"><h3>Monthly deflection trend — <span id="deflStoryRange"></span></h3><div class="note">Is the share of demand deflected without a human increasing? KB has run since January, Widget went live Apr 27, and Autoresponder rolled out Jul 23 — each joined the line at a different point, so the upward trend is partly new programs coming online, not only existing programs improving. The phase breakdown below marks where each layer was added.<span class="info-dot">i<span class="tip">Total demand = tickets created + widget-contained conversations + KB deflections. Autoresponder deflections are already inside the ticket count, not added on top. Ticket volume excludes CSE ICP, Unassigned, Other (14 groups), and Finance Licensing/Provisioning — see Support impact below for the full group breakdown. Caveats: KB deflections are mostly assumed; widget-contained is net of confirmed 7-day repeat tickets; June's autoresponder traffic was test/pilot and is excluded.</span></span></div></div>
+      <div class="block-head"><h3>Monthly deflection trend — <span id="deflStoryRange"></span></h3><div class="note">Is the share of demand deflected without a human increasing? KB has run since January, Widget went live Apr 27, and Autoresponder rolled out Jul 23 — each joined the line at a different point, so the upward trend is partly new programs coming online, not only existing programs improving. The phase breakdown below marks where each layer was added.<span class="info-dot">i<span class="tip">Total demand = tickets created + widget-contained conversations + KB deflections. Autoresponder deflections are already inside the ticket count, not added on top. Ticket volume excludes Proactive tickets (filtered at the source) — see Support impact below for the full group breakdown. Caveats: KB deflections are mostly assumed; widget-contained is net of confirmed 7-day repeat tickets; June's autoresponder traffic was test/pilot and is excluded.</span></span></div></div>
       <div class="takeaway" id="deflStoryTakeaway"></div>
       <div class="card">
         <div class="chart-wrap"><canvas id="chartShareTrend"></canvas></div>
@@ -557,7 +557,7 @@
     </section>
 
     <section class="block" id="sec-o-02b">
-      <div class="block-head"><h3>Support impact — <span id="supportImpactMonth"></span></h3><div class="note">Ticket volume split by Zendesk group, not AI classification — this is the routing data, not a modeled estimate.<span class="info-dot">i<span class="tip">Support/technical = Support L1+L2+L3. Billing/finance = Finance Billing + Accounts Receivable. Support-related demand adds CS and TAM (incl. TAM AMR West) to Support/technical, since Jay's "Support" story includes CS/advisory demand — that's also the rest of the total not otherwise shown here (Support/technical % + Billing/finance % + CS/TAM's share ≈ 100%). Excluded from the total everywhere on this Overview (Hero, waterfall, monthly trend, and here): CSE ICP, Unassigned, Other (14 groups), and Finance Licensing/Provisioning.</span></span></div></div>
+      <div class="block-head"><h3>Support impact — <span id="supportImpactMonth"></span></h3><div class="note">Ticket volume split by Zendesk group, not AI classification — this is the routing data, not a modeled estimate.<span class="info-dot">i<span class="tip">Support/technical = Support L1+L2+L3. Billing/finance = Finance Billing + Accounts Receivable. Support-related demand adds CS and TAM (incl. TAM AMR West) to Support/technical, since Jay's "Support" story includes CS/advisory demand — that's also the rest of the total not otherwise shown here (Support/technical % + Billing/finance % + CS/TAM's share ≈ 100%). Proactive tickets are excluded at the source (CSE ICP, Unassigned, Other (14 groups), and Finance Licensing/Provisioning were part of the old proactive-inclusive export and no longer appear here).</span></span></div></div>
       <div class="takeaway" id="supportImpactTakeaway"></div>
       <div class="kpi-row autofit" id="kpi-support-impact"></div>
     </section>
@@ -773,7 +773,7 @@
 
     <section class="block" id="sec-k-01">
       <div class="block-head"><h3>Headline metrics, <span id="kbHeadMonths">July vs. June</span></h3></div>
-      <div class="takeaway">July's deflection mix shifted: confirmed fell 29% while assumed rose 39%, lifting total deflection to 19.8% — validate the mix before reading it as a win. Search proxies fell again.</div>
+      <div class="takeaway">August's deflection mix held steady: confirmed fell 17.6% while assumed rose 1.0%, keeping total deflection flat at 19.8%. Search proxies weakened again — deflection proxy fell 8.4% to 83.8%.</div>
       <div class="kpi-row" id="kpi-kb-headline"></div>
     </section>
 
@@ -782,7 +782,7 @@
         <h3>Search journey, <span id="kbFunnelMonth">July</span></h3>
         <div class="note">True-subset funnel from the search tracker: each stage is a subset of the one above; result clicks are derived (searches × CTR, rounded). Sessions, article views, and deflections come from separate trackers with different denominators — shown as context tiles below, not funnel stages.</div>
       </div>
-      <div class="takeaway">Search is the leaky step — only 48 of 131 searches (37%) get a click, though just 15 end in a ticket; 116 close without one. Deflection and article reach are separate-tracker context, not funnel stages.</div>
+      <div class="takeaway">Search conversion tightened — click-through improved to 53% (74 of 139 searches), but tickets created after search doubled to 22, pulling the search deflection proxy down to 83.8%. Deflection and article reach are separate-tracker context, not funnel stages.</div>
       <div class="card"><div class="bar-list" id="kbFunnel"></div></div>
       <div class="kpi-row autofit" id="kbFlowContext" style="margin-top:12px;"></div>
     </section>
@@ -792,7 +792,7 @@
         <h3>Month-over-month trend, <span id="kbTrendRange">Jan – Jul 2026</span></h3>
         <div class="note" id="kbTrendNote">July is the current reporting month and June is the comparison month.</div>
       </div>
-      <div class="takeaway">Sessions recovered 9% in July while searches kept falling — deflection held up, findability didn't.</div>
+      <div class="takeaway">Sessions held roughly flat in August (-0.4%) while searches rebounded 6.1% — but conversion into tickets rose too, so total deflection stayed flat rather than improving.</div>
       <div class="card">
         <div class="range-filter" id="momRangeFilter" style="margin-bottom:14px;"></div>
         <div class="chart-wrap tall"><canvas id="chartMomTrend"></canvas></div>
@@ -805,7 +805,7 @@
         <h3>KB success vs. ticket volume</h3>
         <div class="note">Total deflections as a share of (tickets created + deflections). Survives volume swings in a way raw deflection counts don't.</div>
       </div>
-      <div class="takeaway">Ticket volume rebounded to 1,300 and deflections recovered to 227 — July's 14.9% success rate is a modest bounce off June's low. Note: tickets re-based to core support queues only.</div>
+      <div class="takeaway">August's success rate held at 19.6% (226 deflections of 927 non-proactive tickets) — steady with July's revised 18.4%. Note: as of Sep 1, 2026 ticket volume excludes Proactive tickets at the source, which revises the full history (e.g. July was previously shown as 14.9% on a 1,300-ticket base that included Proactive tickets).</div>
       <div class="card">
         <div class="chart-wrap tall"><canvas id="chartKbSuccess"></canvas></div>
       </div>
@@ -814,7 +814,7 @@
 
     <section class="block" id="sec-k-03">
       <div class="block-head"><h3>Deflections by user segment</h3><div class="note" id="kbSegNote">June's Deflections-by-Role export currently includes End user only; other segments show — until it's refreshed.</div></div>
-      <div class="takeaway">July's role export is complete: anonymous users drive most assumed deflections (765 of 1,032); end users account for all confirmed deflections.</div>
+      <div class="takeaway">August's role export is complete: anonymous users drive most assumed deflections (582 of 834); end users account for all confirmed deflections.</div>
       <div class="grid-2">
         <div class="card"><table id="tblSegments"></table></div>
         <div class="card">
@@ -826,13 +826,13 @@
 
     <section class="block" id="sec-k-04">
       <div class="block-head"><h3>Support impact, <span id="kbSupportMonth">July</span> view</h3></div>
-      <div class="takeaway">Linked-article tickets fell back (51 → 41) and KB influence dropped to 1.9% — confirm whether tagging behavior changed before reading it as reduced KB value.</div>
+      <div class="takeaway">KB Influence on Tickets and Linked-Article Tickets can't be refreshed this month — the underlying Raw Ticket Article Links source is missing. Deflection rates and search proxies above are current through August.</div>
       <div class="card"><table id="tblSupportImpact"></table></div>
     </section>
 
     <section class="block" id="sec-k-05">
       <div class="block-head"><h3>Content health &amp; search / findability</h3></div>
-      <div class="takeaway">Searches fell another 22% in July and tickets-after-search rose to 15 — every containment proxy declined; findability is the pressure point.</div>
+      <div class="takeaway">Searches rebounded 6.1% in August, but tickets created after search doubled — every containment proxy (search deflection proxy, result-click containment) declined even as CTR and the no-result rate both improved.</div>
       <div class="two-col-cards">
         <div class="card">
           <div class="subhead">Content health</div>
@@ -852,7 +852,7 @@
         <div class="range-filter" id="ticketRangeFilter"></div>
       </div>
       <div class="month-filter" id="ticketGroupFilter" style="margin:10px 0 12px;"></div>
-      <div class="takeaway">CSE ICP has collapsed by design and L2 has plateaued near 150. The new signal is Unassigned: zero in Q1, then 33 → 236 by July — 11% of the month's volume is sitting without a group.</div>
+      <div class="takeaway">Support - L3 remains the largest queue (375 in August) even as it eases back from July's 402. Support - L2 has plateaued in the 125–130 range since April, and TAM has climbed steadily from 75 in January to 104 in August — the clearest upward trend in the group breakdown. Figures now exclude Proactive tickets at the source.</div>
       <div class="card">
         <div class="chart-wrap tall"><canvas id="chartTicketGroups"></canvas></div>
       </div>
@@ -861,7 +861,7 @@
     <section class="block" id="sec-k-07">
       <div class="block-head"><h3>Deflection by subject — not yet measurable</h3></div>
       <div class="card story">
-        <div class="s-row"><span class="s-pill na">data gap</span><span class="s-why">Zendesk's deflection export carries no topic or category, so KB deflections cannot be split into CS / Support / Billing the way the widget and autoresponder tabs now are. Two additions would close it: (1) include the deflecting article's Guide section/category in the deflection export, or (2) log the article ID on each deflection event and map it to the KB's category tree. Until then, the nearest context is the ticket-driver table above (which articles sit next to tickets) and ticket volume by group (where demand lives).</span></div>
+        <div class="s-row"><span class="s-pill na">data gap</span><span class="s-why">Zendesk's deflection export carries no topic or category, so KB deflections cannot be split into CS / Support / Billing the way the widget and autoresponder tabs now are. Two additions would close it: (1) include the deflecting article's Guide section/category in the deflection export, or (2) log the article ID on each deflection event and map it to the KB's category tree. Until then, the nearest context is ticket volume by group (where demand lives).</span></div>
       </div>
     </section>
   </div>
@@ -1338,80 +1338,78 @@ function defaultState(){
          it by hand after you've reviewed the takeaway lines, readouts, and
          overview text for a new month. If it lags reportingMonth, a warning
          banner appears. */
-      reportingMonth: {current:'July', prior:'June', currentAbbr:'Jul', priorAbbr:'Jun', year:'2026'},
-      narrativeMonth: 'July',
+      reportingMonth: {current:'August', prior:'July', currentAbbr:'Aug', priorAbbr:'Jul', year:'2026'},
+      narrativeMonth: 'August',
       headline: [
-        /* July 2026 current vs June 2026 prior — matches KB Scorecard reporting month. num/den are explicit so the count+% pairing never drifts from the rate. */
-        {label:'Confirmed Deflection Rate', current:1.5, prior:2.3, mom:-35.1, isPct:true, num:17, den:1145, denLabel:'sessions'},
-        {label:'Assumed Deflection Rate', current:18.3, prior:14.4, mom:27.4, isPct:true, num:210, den:1145, denLabel:'sessions'},
-        {label:'Total Deflection Rate', current:19.8, prior:16.7, mom:18.8, isPct:true, num:227, den:1145, denLabel:'sessions'},
-        {label:'Search Deflection Proxy', current:88.5, prior:94.1, mom:-5.9, isPct:true, num:116, den:131, denLabel:'searches'},
-        {label:'Article Views', current:188, prior:197, mom:-4.6, isPct:false},
+        /* August 2026 current vs July 2026 prior — matches KB Scorecard reporting month. num/den are explicit so the count+% pairing never drifts from the rate. */
+        {label:'Confirmed Deflection Rate', current:1.2, prior:1.5, mom:-17.3, isPct:true, num:14, den:1140, denLabel:'sessions'},
+        {label:'Assumed Deflection Rate', current:18.6, prior:18.3, mom:1.4, isPct:true, num:212, den:1140, denLabel:'sessions'},
+        {label:'Total Deflection Rate', current:19.8, prior:19.8, mom:0.0, isPct:true, num:226, den:1140, denLabel:'sessions'},
+        {label:'Search Deflection Proxy', current:83.8, prior:91.5, mom:-8.4, isPct:true, num:117, den:139, denLabel:'searches'},
+        {label:'Article Views', current:217, prior:188, mom:15.4, isPct:false},
       ],
-      momMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+      momMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
       momSeries: {
-        'Article Views': [393,329,286,278,254,197,188],
-        'Confirmed Deflections': [31,18,29,21,11,24,17],
-        'Assumed Deflections': [191,254,228,208,214,151,210],
-        'End-user Sessions': [1187,1251,1227,1243,1131,1049,1145],
-        'Total Deflection Rate %': [18.7,21.7,20.9,18.4,19.9,16.7,19.8],
-        'Search Deflection Proxy %': [97.5,96.6,97.1,96.8,95.8,94.1,88.5],
+        'Article Views': [393,329,286,278,254,197,188,217],
+        'Confirmed Deflections': [31,18,29,21,11,24,17,14],
+        'Assumed Deflections': [191,254,228,208,214,151,210,212],
+        'End-user Sessions': [1187,1251,1227,1243,1131,1049,1145,1140],
+        'Total Deflection Rate %': [18.7,21.7,20.9,18.4,19.9,16.7,19.8,19.8],
+        /* Jul revised from 88.5 to 91.5 in the August KPI tracker export — using the source's updated figure. */
+        'Search Deflection Proxy %': [97.5,96.6,97.1,96.8,95.8,94.1,91.5,83.8],
       },
       /* Field names read may/apr but mean current/prior (kept for feed compatibility).
-         Current = July 2026, prior = June 2026. July's Deflections-by-Role export
+         Current = August 2026, prior = July 2026. August's Deflections-by-Role export
          is complete across all roles. */
       segments: [
-        {seg:'End user', mayConf:17, aprConf:24, confMom:-29.2, mayAssumed:210, aprAssumed:151, assumedMom:39.1},
-        {seg:'Anonymous', mayConf:0, aprConf:0, confMom:null, mayAssumed:765, aprAssumed:544, assumedMom:40.6},
-        {seg:'Agent', mayConf:0, aprConf:0, confMom:null, mayAssumed:31, aprAssumed:22, assumedMom:40.9},
-        {seg:'Admin', mayConf:0, aprConf:0, confMom:null, mayAssumed:26, aprAssumed:21, assumedMom:23.8},
-        {seg:'Total', mayConf:17, aprConf:24, confMom:-29.2, mayAssumed:1032, aprAssumed:738, assumedMom:39.8},
+        {seg:'End user', mayConf:14, aprConf:17, confMom:-17.6, mayAssumed:212, aprAssumed:210, assumedMom:1.0},
+        {seg:'Anonymous', mayConf:0, aprConf:0, confMom:null, mayAssumed:582, aprAssumed:765, assumedMom:-23.9},
+        {seg:'Agent', mayConf:0, aprConf:0, confMom:null, mayAssumed:19, aprAssumed:31, assumedMom:-38.7},
+        {seg:'Admin', mayConf:0, aprConf:0, confMom:null, mayAssumed:21, aprAssumed:26, assumedMom:-19.2},
+        {seg:'Total', mayConf:14, aprConf:17, confMom:-17.6, mayAssumed:834, aprAssumed:1032, assumedMom:-19.2},
       ],
       supportImpact: [
-        {metric:'End-user Sessions', current:1145, prior:1049, mom:9.2, isPct:false},
-        {metric:'Confirmed Deflection Rate', current:1.5, prior:2.3, mom:-35.1, isPct:true},
-        {metric:'Assumed Deflection Rate', current:18.3, prior:14.4, mom:27.4, isPct:true},
-        {metric:'Total Deflection Rate', current:19.8, prior:16.7, mom:18.8, isPct:true},
-        {metric:'Search Deflection Proxy', current:88.5, prior:94.1, mom:-5.9, isPct:true},
-        {metric:'Search Containment Count', current:116, prior:159, mom:-27.0, isPct:false},
-        {metric:'Result-Click Containment Proxy', current:68.8, prior:84.1, mom:-18.3, isPct:true},
-        {metric:'Article Views', current:188, prior:197, mom:-4.6, isPct:false},
-        {metric:'Linked-Article Tickets', current:41, prior:51, mom:-19.6, isPct:false},
-        {metric:'KB Influence on Tickets', current:1.9, prior:3.0, mom:-36.5, isPct:true},
+        {metric:'End-user Sessions', current:1140, prior:1145, mom:-0.4, isPct:false},
+        {metric:'Confirmed Deflection Rate', current:1.2, prior:1.5, mom:-17.3, isPct:true},
+        {metric:'Assumed Deflection Rate', current:18.6, prior:18.3, mom:1.4, isPct:true},
+        {metric:'Total Deflection Rate', current:19.8, prior:19.8, mom:0.0, isPct:true},
+        {metric:'Search Deflection Proxy', current:83.8, prior:91.5, mom:-8.4, isPct:true},
+        {metric:'Search Containment Count', current:117, prior:120, mom:-2.5, isPct:false},
+        {metric:'Result-Click Containment Proxy', current:61.3, prior:76.8, mom:-20.2, isPct:true},
+        {metric:'Article Views', current:217, prior:188, mom:15.4, isPct:false},
       ],
       contentHealth: [
-        {metric:'Live Articles Total', current:'220', prior:'—', mom:null},
-        {metric:'New Articles Published', current:'0', prior:'0', mom:null},
         {metric:'Monthly Article Review Backlog', current:'8', prior:'—', mom:null},
       ],
       /* No-Result Search % intentionally omitted: the workbook flags its definition
          as unverified (user-run Zendesk report disagrees) and says not to present it.
          The raw no-result count stays. */
       searchFind: [
-        {metric:'Search Exit Rate', current:63.4, prior:62.7, mom:1.0, isPct:true},
-        {metric:'Total Searches', current:131, prior:169, mom:-22.5, isPct:false},
-        {metric:'Search CTR', current:36.6, prior:37.3, mom:-1.7, isPct:true},
-        {metric:'Tickets Created After Search', current:15, prior:10, mom:50.0, isPct:false},
-        {metric:'Searches with No Results', current:26, prior:24, mom:8.3, isPct:false},
+        {metric:'Total Searches', current:139, prior:131, mom:6.1, isPct:false},
+        {metric:'Search CTR', current:53.3, prior:42.0, mom:27.0, isPct:true},
+        {metric:'Tickets Created After Search', current:22, prior:11, mom:100.0, isPct:false},
+        {metric:'Searches with No Results', current:18, prior:26, mom:-30.8, isPct:false},
       ],
-      ticketGroupMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
-      /* Refreshed Aug 11, 2026 from the rebuilt Zendesk Ticket Raw tab
-         (Year | Group | Month, Jan–Jul 2026, 25 groups). Prior Jun figures
-         were revised slightly in the new export. Groups under 100 tickets
-         total are rolled into Other. */
+      ticketGroupMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+      /* Replaced Sep 1, 2026 with the "Support: Tickets [default]" dataset,
+         Proactive Vs Non-Proactive filter set to exclude Proactive tickets.
+         This is the authoritative ticket-volume-by-group source going
+         forward — it does not carry CSE ICP / Unassigned / Finance
+         Licensing and Provisioning / Other (14 groups), which were part of
+         the prior (proactive-inclusive) export and are not reconcilable
+         against this table. September is month-to-date and excluded. */
       ticketGroups: {
-        'Support - L3':[487,506,524,488,438,410,459],
-        'Support - L1':[268,253,331,334,335,281,318],
-        'Finance Billing':[357,220,179,225,186,122,217],
-        'CS':[191,218,167,168,190,146,187],
-        'Finance Accounts Receivable':[141,162,154,163,137,179,177],
-        'TAM':[131,106,165,118,118,120,153],
-        'CSE ICP':[302,199,57,38,33,27,17],
-        'Support - L2':[2,0,7,112,142,154,152],
-        'Unassigned':[0,0,0,33,106,145,236],
-        'Finance Licensing and Provisioning':[33,19,39,49,21,39,59],
-        'TAM AMR West':[21,10,16,23,21,10,24],
-        'Other (14 groups)':[16,23,21,36,12,50,134],
+        'Support - L3':[421,432,446,417,372,366,402,375],
+        'Support - L1':[209,212,252,260,253,186,227,194],
+        'Support - L2':[2,null,5,91,115,129,126,128],
+        'CS':[119,127,112,103,108,95,108,84],
+        'TAM':[75,57,50,57,60,68,88,104],
+        'Finance Accounts Receivable':[41,43,29,34,24,27,27,19],
+        'Finance Billing':[7,6,7,6,6,8,6,6],
+        'TAM AMR West':[11,7,11,9,10,4,10,10],
+        'Finance Operations':[2,4,1,2,1,1,3,2],
+        'Decodable':[null,null,5,3,4,2,5,1],
+        'TAM AMR East':[null,1,null,2,3,1,3,4],
       },
       priorities: [
         {n:1, what:'Investigate search containment decline', why:'July search deflection fell to 88.5%, containment volume fell 27.0%, and result-click containment fell to 68.8%.', kpi:'Search Deflection Proxy; Search Containment Count; Result-Click Containment Proxy', owner:'KB Owner / Support Ops', status:'Watch'},
@@ -1424,27 +1422,16 @@ function defaultState(){
          total deflections / (tickets created + deflections). Tickets Created
          re-based Aug 13, 2026 to core support queues only. */
       kbSuccess: {
-        months:['Jan','Feb','Mar','Apr','May','Jun','Jul'],
-        tickets:[1102,1094,1215,1253,1247,1124,1300],
-        deflections:[222,272,257,229,225,175,227],
-        rate:[16.8,19.9,17.5,15.5,15.3,13.5,14.9],
+        /* Revised Sep 1, 2026: tickets now sourced from the "Support: Tickets
+           [default]" dataset with Proactive tickets excluded (same source as
+           ticketGroups above). This changes the whole history, not just
+           August — the old tickets series (1102...1300) included Proactive
+           tickets in its denominator. */
+        months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+        tickets:[887,889,918,984,956,887,1005,927],
+        deflections:[222,272,257,229,225,175,227,226],
+        rate:[20.0,23.4,21.9,18.9,19.1,16.5,18.4,19.6],
       },
-      topFailedQueries: [
-        {query:'163914', count:1},
-        {query:'faas', count:1},
-      ],
-      ticketDrivers: [
-        {origin:'', article:'Enable Clustering on a Redis Cloud Database', tickets:2},
-        {origin:'', article:'Cancel a Redis Cloud Subscription', tickets:1},
-        {origin:'', article:'Cluster and Database Recovery', tickets:1},
-        {origin:'', article:'Delete a Database in Redis Cloud', tickets:1},
-        {origin:'', article:'Delete a Redis Cloud Account', tickets:1},
-        {origin:'', article:'Free Redis Cloud Database Deleted Due to Inactivity', tickets:1},
-        {origin:'', article:'Introduction to Redis Software', tickets:1},
-        {origin:'', article:'Node Maintenance & OS Patching', tickets:1},
-        {origin:'', article:'Redis Cloud Essentials vs Pro: When to Upgrade and What Changes', tickets:1},
-        {origin:'', article:'Safely Take a Node Offline for Upgrade or Patching', tickets:1},
-      ],
       dataNeeded: [
         {area:'Deflection by Subject', missing:'Topic/category (or the deflecting article\'s Guide section) on each Zendesk deflection event.', why:'Lets KB deflection split into CS / Support / Billing like the widget and autoresponder tabs.'},
         {area:'True Self-Service Success Rate', missing:'Session/article journey outcome: article viewed or search clicked, then no ticket within attribution window.', why:'Turns directional proxies into a defensible customer-success metric.'},
@@ -2228,7 +2215,8 @@ function renderDeflStory(){
    CSE ICP is intentionally excluded from that combined figure. */
 function renderSupportImpact(){
   const k = state.kb;
-  const rm = k.reportingMonth || {};
+  // Pinned to July for the same reason as renderDemand — see note there.
+  const rm = {current:'July', currentAbbr:'Jul', year:'2026'};
   const curAbbr = rm.currentAbbr || null;
   let mIdx = curAbbr ? k.ticketGroupMonths.indexOf(curAbbr) : -1;
   if(mIdx<0) mIdx = k.ticketGroupMonths.length-1;
@@ -2237,26 +2225,26 @@ function renderSupportImpact(){
   const val = name => (g[name] && g[name][mIdx]!=null) ? g[name][mIdx] : 0;
   // "Other" is a remainder (total minus the named buckets), not an allowlist
   // of specific group names, so a renamed/new group can't silently drop out.
-  // EXCLUDED_TICKET_GROUPS (CSE ICP, Unassigned, Other (14 groups), Finance
-  // Licensing and Provisioning) are left out of the total entirely, matching
-  // the Hero/waterfall/trend total above — all four use the same exclusion
-  // list, so this section's All Demand always reconciles with theirs.
+  // As of Sep 1, 2026 the ticket source itself excludes Proactive tickets
+  // (CSE ICP, Unassigned, Other (14 groups), Finance Licensing and
+  // Provisioning were part of the old proactive-inclusive export and are
+  // simply not present here) — EXCLUDED_TICKET_GROUPS is now a no-op safety
+  // net rather than an active filter.
   const allDemand = Object.keys(g).reduce((s,name)=>EXCLUDED_TICKET_GROUPS.has(name)?s:s+val(name), 0);
-  const excludedTotal = Object.keys(g).reduce((s,name)=>EXCLUDED_TICKET_GROUPS.has(name)?s+val(name):s, 0);
   const supportTech = val('Support - L1') + val('Support - L2') + val('Support - L3');
   const billingFinance = val('Finance Billing') + val('Finance Accounts Receivable');
   const cs = val('CS'), tamAll = val('TAM') + val('TAM AMR West');
-  const supportRelated = supportTech + cs + tamAll; // CSE ICP intentionally excluded (and already out of the total)
+  const supportRelated = supportTech + cs + tamAll;
   const pct = n => allDemand ? +(100*n/allDemand).toFixed(1) : null;
   setText('supportImpactMonth', (rm.current && rm.year) ? `${rm.current} ${rm.year}` : monthLabel);
   renderKpis('kpi-support-impact', [
-    {label:'All Demand', value:fmtNum(allDemand), unit:'', sub:`Total ticket volume, ${monthLabel} — excludes CSE ICP, Unassigned, Other (14 groups), and Finance Licensing/Provisioning (${fmtNum(excludedTotal)} tickets)`, status:'neutral'},
+    {label:'All Demand', value:fmtNum(allDemand), unit:'', sub:`Total ticket volume, ${monthLabel} — Proactive tickets already excluded at the source`, status:'neutral'},
     {label:'Support / Technical', value:pct(supportTech), unit:'%', sub:`${fmtNum(supportTech)} tickets — Support L1+L2+L3`, status:'neutral'},
     {label:'Billing / Finance', value:pct(billingFinance), unit:'%', sub:`${fmtNum(billingFinance)} tickets — Finance Billing + Accounts Receivable`, status:'neutral'},
     {label:'Support-related Demand', value:pct(supportRelated), unit:'%', sub:`${fmtNum(supportRelated)} tickets — Support L1-L3 + CS + TAM`, status:'neutral'},
   ]);
   const tk = document.getElementById('supportImpactTakeaway');
-  if(tk) tk.textContent = `Support/technical tickets alone are ${pct(supportTech)===null?'—':pct(supportTech)+'%'} of ${monthLabel}'s demand; adding CS and TAM brings Support-related demand to ${pct(supportRelated)===null?'—':pct(supportRelated)+'%'}. ${fmtNum(excludedTotal)} tickets (CSE ICP, Unassigned, Other (14 groups), Finance Licensing/Provisioning) are excluded from this total. This split comes from Zendesk group assignment, not a content classification — treat it as directional until demand categorization improves.`;
+  if(tk) tk.textContent = `Support/technical tickets alone are ${pct(supportTech)===null?'—':pct(supportTech)+'%'} of ${monthLabel}'s demand; adding CS and TAM brings Support-related demand to ${pct(supportRelated)===null?'—':pct(supportRelated)+'%'}. This split comes from Zendesk group assignment, not a content classification — treat it as directional until demand categorization improves.`;
 }
 
 /* Expansion / what's next — forward-looking roadmap content, not live
@@ -2344,13 +2332,13 @@ function renderWaterfall(total, kbDefl, contained, arDefl, human){
    Widget/KB tabs; this tab shows the one-month snapshot only. */
 function renderDemand(){
   const w=state.widget, e=state.email, k=state.kb;
-  // Anchor every lookup below to the KB tab's declared reporting month
-  // (reportingMonth.currentAbbr) instead of "whichever column is last in
-  // this particular array." A sheet edit that appends a new in-progress
-  // month to the ticket-volume tracker, or that trims the KB export a
-  // couple of months behind, must not silently get treated as "the" month
-  // this whole cross-channel snapshot reports on.
-  const rm = k.reportingMonth || {};
+  // NOTE (Sep 1, 2026): this used to anchor to k.reportingMonth.currentAbbr
+  // directly. KB's reportingMonth is now August, but Widget and Autoresponder
+  // are still on July — anchoring here would silently zero out Widget's
+  // contribution and pair August ticket volume with July's autoresponder
+  // figure. Pinned to July until all three programs share a common month;
+  // revert to k.reportingMonth once Widget/Autoresponder are refreshed.
+  const rm = {current:'July', currentAbbr:'Jul'};
   const curAbbr = rm.currentAbbr || null;
   const caveats = [];
 
