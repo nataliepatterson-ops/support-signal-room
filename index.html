@@ -1585,6 +1585,12 @@ function storyValues(widgetMonthOverride){
   // actually attributable to the bot. Sourced from the Zendesk tag funnel.
   out.email.solveRate = seriesPair(e.supportFunnel.months, e.supportFunnel.solveRate);
   out.email.month = out.email.solveRate.month;
+  // August is the first month with real, post-pilot volume for the Support
+  // autoresponder — June/July ran at pilot scale, so a MoM delta against
+  // July would imply a comparison that isn't fair yet. Show it as a new
+  // baseline instead (matches how "FT response coverage" renders on first
+  // measurement) until September gives us a real month-over-month pair.
+  if(out.email.month==='Aug'){ out.email.solveRate.prior=null; out.email.solveRate.priorMonth=null; }
   STORY_METRICS.kb.forEach(t=>{ const s=k.momSeries[t.key]; out.kb[t.key]= s?seriesPair(k.momMonths,s):{month:null,value:null,prior:null,priorMonth:null}; });
   out.kb.month = k.momMonths[k.momMonths.length-1];
   return out;
