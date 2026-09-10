@@ -694,7 +694,7 @@
     <div class="month-filter" id="emailMonthFilter"></div>
 
     <section class="block" id="sec-e-00">
-      <div class="block-head"><h3>Where this stands — <span id="storyEmailMonth"></span></h3><div class="note">Each metric shows the latest complete month and movement vs the prior month (Jun* is a tiny partial sample — read its comparison loosely).</div></div>
+      <div class="block-head"><h3>Where this stands — <span id="storyEmailMonth"></span></h3><div class="note">August is the first month with real, post-pilot volume for the Support autoresponder, so it's shown as a baseline rather than compared against June/July. September vs. August will be the first fair month-over-month comparison.</div></div>
       <div class="card story" id="story-email"></div>
     </section>
 
@@ -1623,10 +1623,14 @@ function renderStory(containerId, tab, vals){
   const rows=storyRows(tab, vals);
   const imp=rows.filter(r=>r.delta&&r.delta.good===true).length;
   const dec=rows.filter(r=>r.delta&&r.delta.good===false).length;
+  const anyDelta = rows.some(r=>r.delta);
   const headCls = dec===0?'on':(imp>=dec?'mid':'off');
+  const summaryTxt = anyDelta
+    ? 'new programs — verdicts show direction of travel vs the prior month'
+    : 'first month reported — no prior-month comparison yet';
   el.innerHTML = `
     <div class="s-head"><span class="s-pill ${headCls}">${imp} improving · ${dec} declining</span>
-      <span class="s-summary">new programs — verdicts show direction of travel vs the prior month</span></div>
+      <span class="s-summary">${summaryTxt}</span></div>
     ${rows.map(r=>{
       const val = r.v.value===null ? '—' : (r.isCount?fmtNum(r.v.value):fmtPct(r.v.value));
       let baseTxt='';
