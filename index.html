@@ -383,6 +383,13 @@
   .story .s-label{font-weight:600; font-size:13.5px; min-width:220px;}
   .story .s-val{font-family:var(--rds-font-mono); font-weight:700; font-size:15px;}
   .story .s-delta{font-family:var(--rds-font-mono); font-size:12px; white-space:nowrap;}
+  .exp-math{padding:4px 0;}
+  .exp-math-row{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 14px; padding:10px 0; border-top:1px solid var(--border-soft);}
+  .exp-math-row:first-child{border-top:none;}
+  .exp-math-row.exp-math-total{border-top:2px solid var(--border); font-weight:700;}
+  .exp-math-label{font-weight:600; font-size:13.5px; min-width:180px;}
+  .exp-math-val{font-family:var(--rds-font-mono); font-weight:700; font-size:16px; min-width:120px;}
+  .exp-math-sub{font-size:12.5px; color:var(--muted);}
   .story .s-delta.good{color:var(--green);} .story .s-delta.bad{color:var(--red);} .story .s-delta.flat{color:var(--muted-dim);}
   .story .s-base{font-size:12px; color:var(--muted); white-space:nowrap;}
   .story .s-why{flex-basis:100%; font-size:12px; color:var(--muted-dim); line-height:1.45; margin-top:-2px;}
@@ -495,6 +502,7 @@
     <a class="jn-pill" href="#sec-w-09e">Solved vs. handoff</a>
     <a class="jn-pill" href="#sec-w-09g">Support impact</a>
     <a class="jn-pill" href="#sec-w-12">Readout</a>
+    <a class="jn-pill" href="#sec-w-13">Billing (reference)</a>
   </div>
   <div class="jumpnav" id="jumpnav-kb" style="display:none;">
     <span class="jn-label">Jump to</span>
@@ -574,7 +582,7 @@
     <div class="page-head" id="head-widget">
       <div class="eyebrow">Executive overview</div>
       <h2>Forethought widget performance</h2>
-      <p>How the widget is affecting Support: conversation volume, containment, and how often deflected conversations actually stay resolved. Source period Apr 27 – Aug 10, 2026. Last refreshed Aug 19, 2026.</p>
+      <p>How the widget is affecting Support: conversation volume, containment, and how often conversations without a handoff actually stay resolved. Source period Apr 1 – Aug 31, 2026. Last refreshed 9/11/2026.</p>
     </div>
 
     <div class="month-filter" id="widgetMonthFilter"></div>
@@ -586,16 +594,16 @@
 
     <section class="block" id="sec-w-01">
       <div class="block-head"><h3>Headline performance</h3></div>
-      <div class="takeaway">Deflection is strong — most widget conversations resolve without ever reaching a human.</div>
+      <div class="takeaway">No-handoff containment is strong — most widget conversations resolve without ever reaching a human.</div>
       <div class="kpi-row autofit" id="kpi-widget-headline"></div>
     </section>
 
     <section class="block" id="sec-w-01f">
       <div class="block-head">
-        <h3>Repeat contact after deflection</h3>
-        <div class="note">Same customer, same issue, own support ticket within 7 days of a fully-contained widget conversation. Lower is better — a containment-quality signal, not a deflection-failure rate. Widget Repeat Contact tab, refreshed Aug 20, 2026.</div>
+        <h3>Repeat contact after containment</h3>
+        <div class="note">Same customer, same issue, own support ticket within 7 days of a fully-contained widget conversation. Lower is better — a containment-quality signal, not a failure rate for No-Handoff Containment. Widget Repeat Contact tab, refreshed 9/4/2026.</div>
       </div>
-      <div class="takeaway">12.6% of July's contained conversations came back as same-issue tickets within 7 days, up from 6.2% in June — each one is counted as a win by the headline deflection rate.</div>
+      <div class="takeaway">2.8% of August's contained conversations came back as same-issue tickets within 7 days — down sharply from 8.5% in July — each one is counted as a win by the headline No-Handoff Containment metric.</div>
       <div class="kpi-row autofit" id="kpi-widget-repeat"></div>
       <div class="grid-2">
         <div class="card">
@@ -612,9 +620,9 @@
     <section class="block" id="sec-w-04">
       <div class="block-head">
         <h3>Drop-off signal (automated Forethought)</h3>
-        <div class="note">Forethought's automated drop-off signal — the conversation log's dropoff_rating and dropoff_reasoning, bucketed into patterns across 155 flagged conversations. This is a bot-detected engagement signal, not measured recontact: for whether contained conversations actually turn into tickets, see Repeat contact after deflection.</div>
+        <div class="note">Forethought's automated drop-off signal — the conversation log's dropoff_rating and dropoff_reasoning, bucketed into patterns across 80 August-flagged conversations. This is a bot-detected engagement signal, not measured recontact: for whether contained conversations actually turn into tickets, see Repeat contact after containment.</div>
       </div>
-      <div class="takeaway">Most flagged drop-offs show no follow-up at all — consistent with self-resolution — and July's 10.0% repeat-contact rate says flagged drop-offs are mostly not turning into tickets. Treat as an engagement signal, not a validated risk.</div>
+      <div class="takeaway">Most flagged drop-offs show no follow-up at all — consistent with self-resolution — and August's 2.8% repeat-contact rate says flagged drop-offs are mostly not turning into tickets. Treat as an engagement signal, not a validated risk.</div>
       <div class="grid-2b">
         <div class="card">
           <div class="subhead">Drop-off signal breakdown</div>
@@ -630,9 +638,9 @@
     <section class="block" id="sec-w-05">
       <div class="block-head">
         <h3>Handed-off topics &amp; unanswered questions</h3>
-        <div class="note">Detected topics and first customer question for conversations that were not deflected — computed from the conversation log, Aug 11, 2026.</div>
+        <div class="note">Detected topic keywords applied to August's 35 handoffs (not the old free-text topic labels). No separate "mentions across all conversations" figure exists in this source — that column now reads \u2014. Pulled 9/10/2026.</div>
       </div>
-      <div class="takeaway">Refunds/credits and payment issues lead the handoff list — billing process, not technical content, drives most escapes.</div>
+      <div class="takeaway">Most August handoffs (26 of 35) don't match any of the five tracked keyword buckets — "Other / uncategorized" dominates. Of the ones that do, security/TLS/cert questions lead (4), not billing or account issues.</div>
       <div class="grid-2">
         <div class="card">
           <div class="subhead">Topics on handed-off conversations</div>
@@ -648,27 +656,27 @@
     <section class="block" id="sec-w-05b">
       <div class="block-head">
         <h3>Handoff rate by workflow</h3>
-        <div class="note">Unique conversations per detected workflow and how often each handed off. Standard Handoff and Contact Support hand off by design.</div>
+        <div class="note">Narrower than before: the August-only source (pulled 9/10/2026) only reports which workflow triggered each of the 35 handoffs — it doesn't give a per-workflow conversation count, so there's no true "handoff rate" to compute this month. "Rate" below means share of August's 35 handoffs, not handoffs ÷ that workflow's own conversations.</div>
       </div>
-      <div class="takeaway">The two billing clarification workflows hand off at 36–39% — the clearest fix-first candidates. Knowledge retrieval holds ~7%.</div>
+      <div class="takeaway">All 35 August handoffs went through the Standard Handoff workflow — no other workflow triggered a handoff this month.</div>
       <div class="card"><table id="tblWorkflows"></table></div>
     </section>
 
     <section class="block" id="sec-w-04c">
       <div class="block-head">
         <h3>Conversation duration</h3>
-        <div class="note">Median time spent in the widget, split by whether the conversation deflected or handed off.</div>
+        <div class="note">Median time spent in the widget, split by whether the conversation had a handoff or not. Updated 9/11/2026: time_spent_in_widget filtered on detected_workflows contains Handoff. Overall median across all 250 August conversations (not split): 66 seconds.</div>
       </div>
-      <div class="takeaway">Deflected conversations end in a median 48 seconds; handed-off ones run 7 minutes — when self-service works, it is roughly 9x faster for the customer.</div>
+      <div class="takeaway">Conversations with no handoff end in a median 46 seconds; handed-off ones run nearly 7 minutes (410s) — when self-service works, it is roughly 9x faster for the customer.</div>
       <div class="card"><table id="tblDurations"></table></div>
     </section>
 
     <section class="block" id="sec-w-04d">
       <div class="block-head">
         <h3>Customer feedback</h3>
-        <div class="note">CSAT and relevance ratings from the widget conversation log — the customer's own opinion of quality.</div>
+        <div class="note">CSAT and relevance ratings from the widget conversation log. All rows are now August-only (pulled 9/11/2026, "Widget Monthly KPI — Raw Fields"). Quick feedback is event-level, not per conversation — a single conversation can trigger multiple feedback prompts.</div>
       </div>
-      <div class="takeaway">19.4% of conversations end with negative sentiment, alongside the drop-off signal above. CSAT and quick feedback are too sparse to headline yet.</div>
+      <div class="takeaway">22.1% of August conversations end with negative sentiment. CSAT is real but far too thin to trust (n=2). Correction from last pull: quick feedback was reported as 0/0/0 ("confirmed zero") — that was wrong. The real August numbers are 0 positive, 6 negative, 425 unanswered out of 431 total prompts — 98.6% go unanswered.</div>
       <div class="card"><table id="tblCsat"></table></div>
     </section>
 
@@ -688,7 +696,7 @@
     <div class="page-head" id="head-email">
       <div class="eyebrow">Executive overview</div>
       <h2>Ticket Autoresponder</h2>
-      <p>How the ticket autoresponder is affecting Support: how many tickets it touches, how many it resolves outright vs. hands to L1, and whether it's actually reducing L1 touches. Jun–Jul are pilot months.</p>
+      <p>How the ticket autoresponder is affecting Support: how many tickets it touches, how many it resolves outright vs. hands to L1, and whether it's actually reducing L1 touches. Shows August only — June was negligible volume and July's autoresponder didn't start until July 22, so neither is a comparable full month.</p>
     </div>
 
     <div class="month-filter" id="emailMonthFilter"></div>
@@ -701,22 +709,22 @@
     <section class="block" id="sec-w-09c">
       <div class="block-head">
         <h3>Autoresponder funnel</h3>
-        <div class="note">From the autoresponder raw logs (current + archive, deduplicated by conversation), verified Aug 16, 2026. Deflected uses the log's flag.</div>
+        <div class="note">August Email Autoresponder Outcomes (Support only). Billing is tracked separately \u2014 see the reference table at the bottom of the page.</div>
       </div>
-      <div class="takeaway">Coverage is the constraint, not execution: only 25.4% of inbound email is eligible, but 98% of eligible emails get a response and 73% of those deflect.</div>
+      <div class="takeaway">Only 14.0% (8 of 57) close with no human touch \u2014 7 no-reply auto-closures plus an estimated 1 confirmed resolution. The rest go to a human.</div>
       <div class="card"><table id="tblFunnel"></table></div>
     </section>
 
     <section class="block" id="sec-w-09e">
       <div class="block-head">
         <h3>Solved by bot vs. handed to L1 — Support</h3>
-        <div class="note">Scope: Support only (CS-owned; Billing runs its own review and is tracked separately). Sent = <span class="mono">forethought_support_sent</span>, Solved = <span class="mono">forethought_support_solved</span>, Handed to L1 = <span class="mono">forethought_support_handoff</span>. Jun–Jul are pilot months — read loosely.<span class="info-dot">i<span class="tip">Solve rate is the only outcome directly attributable to the bot: an unsolved ticket would have gone to L1 whether or not the bot touched it, so handoff is shown as supporting detail, not a headline metric. The 4-hour no-response timeout is a narrow fallback, not the main driver of handoffs.</span></span></div>
+        <div class="note">Support only (Billing tracked separately). Solved = customer gave positive feedback or completed the Interactive Email flow to resolution, not just a click. August only — June was negligible and July's autoresponder didn't start until July 22.<span class="info-dot">i<span class="tip">Solve rate is the only outcome directly attributable to the bot: an unsolved ticket would have gone to L1 whether or not the bot touched it, so handoff is shown as supporting detail, not a headline metric. The 4-hour no-response timeout is a narrow fallback, not the main driver of handoffs.</span></span></div>
       </div>
       <div class="takeaway" id="supportFunnelTakeaway"></div>
       <div class="kpi-row autofit" id="kpi-support-funnel"></div>
       <div class="grid-2" style="margin-top:12px;">
         <div class="card">
-          <div class="subhead">MoM trend</div>
+          <div class="subhead">August detail</div>
           <table id="tblSupportFunnel"></table>
         </div>
         <div class="card">
@@ -729,9 +737,9 @@
     <section class="block" id="sec-w-09g">
       <div class="block-head">
         <h3>Support impact — L1 touches &amp; nudges</h3>
-        <div class="note">Does the autoresponder actually reduce work for Support, independent of whether it fully solves the ticket? Compares FT-tagged (<span class="mono">ft-email-automated</span>) tickets against non-FT tickets on how often each reaches L1 and how often L1 has to send a follow-up nudge. From the Automation Monthly Staging tab (ticket-level Zendesk report, deduplicated by Ticket ID).<span class="info-dot">i<span class="tip">Auto-close counts are simulated against a proposed 4h+72h rule — no live Zendesk automation implements it yet.</span></span></div>
+        <div class="note">Does the autoresponder reduce L1 work, not just solve tickets? August only — FT-tagged tickets vs. Support's own non-FT tickets. Not a Support-vs-Billing comparison — see the Billing reference table at the bottom of the page.<span class="info-dot">i<span class="tip">Auto-close counts are simulated against a proposed 4h+72h rule — no live Zendesk automation implements it yet.</span></span></div>
       </div>
-      <div class="takeaway">The data doesn't support a touches-reduction story yet: FT-tagged tickets reached L1 <strong>more</strong> often than non-FT tickets in July (10.3% vs. 8.2%) and August (22.7% vs. 13.5%) — the opposite of the intended effect. June ran the other way (9.1% vs. 11.3%), but at pilot-scale volume. Hours returned is still blocked on agreeing a minutes-per-touch value with Support leadership.</div>
+      <div class="takeaway">FT-tagged tickets reached L1 more than 2.5x as often as non-FT tickets in August (35.1% vs. 13.5%) — the experiments haven't reduced L1 touches yet. Hours returned is still blocked on a minutes-per-touch agreement with Support leadership.</div>
       <div class="card"><table id="tblAutomation"></table></div>
     </section>
 
@@ -741,6 +749,14 @@
         <div class="head">Executive summary</div>
         <ul id="readoutEmail"></ul>
       </div>
+    </section>
+
+    <section class="block" id="sec-w-13">
+      <div class="block-head">
+        <h3>Billing — FT volume (reference only)</h3>
+        <div class="note">Not a comparison for Support. Billing's FT autoresponder runs with no routing rules or exclusions — it's a different, unmodified system on a different queue with different volume and ticket mix. Kept here purely as ticket-volume context, separated from the Support-only analysis above. Same source (Automation Monthly Staging), pulled 9/15/2026.</div>
+      </div>
+      <div class="card"><table id="tblBillingReference"></table></div>
     </section>
 
   </div>
@@ -860,7 +876,7 @@
 
 <footer>
   <span>Static snapshot, figures reflect the source sheets at time of export.</span>
-  <span>Widget period: Apr 27 – Aug 10, 2026 · KB period: <span id="kbFooterRange">Jan – Jul 2026</span></span>
+  <span>Widget period: Apr 1 – Aug 31, 2026 · KB period: <span id="kbFooterRange">Jan – Aug 2026</span></span>
 </footer>
 
 <script>
@@ -992,47 +1008,64 @@ function defaultState(){
         deflection:    {value:86.0,  sub:'215 conversations without handoff'},
         handoff:       {value:14.0,  sub:'35 conversations handed off'},
       },
-      /* Drop-off conversations / Relevant-answer drop-offs: August-specific
-         figures confirmed from the Metrics tab's Customer Journey Risks
-         table (pulled 9/3/2026). No follow-up / Incomplete handoff / Likely
-         true drop-offs report 0 in that same table for BOTH the cumulative
-         and August-only view — a persistent gap in the source, not a real
-         zero (the dashboard's old nonzero figures for these three predate
-         that gap and can't be refreshed honestly right now). Set to null
-         rather than showing a stale or fabricated number. */
+      /* Drop-off conversations / Relevant-answer drop-offs / No follow-up /
+         Incomplete handoff / Likely true drop-offs — all now confirmed
+         August-specific figures from the sheet's "Drop-off QA" section
+         (Widget Ticket Intake QA), pulled 9/10/2026. Rate = count ÷ the 80
+         total drop-off conversations (not ÷ 250 total conversations) for
+         the four sub-signals — matches the pre-existing convention. */
       journey: [
         {signal:'Drop-off conversations', count:80, rate:32.0, interp:'Flagged by Forethought\'s automated dropoff_rating.'},
-        {signal:'No follow-up', count:null, rate:null, interp:'Source currently reports 0 for this signal in both the cumulative and August-only view \u2014 flagged as a data gap, not a confirmed zero.'},
-        {signal:'Incomplete handoff', count:null, rate:null, interp:'Same source gap as No follow-up \u2014 not currently refreshable.'},
+        {signal:'No follow-up', count:63, rate:78.8, interp:'Largest drop-off type; review answer closure and CTA.'},
+        {signal:'Incomplete handoff', count:11, rate:13.8, interp:'Tighten required ticket-intake prompts and fields.'},
         {signal:'Relevant-answer drop-offs', count:21, rate:26.3, interp:'May indicate CTA or resolution-confirmation ambiguity.'},
-        {signal:'Likely true drop-offs', count:null, rate:null, interp:'Same source gap as No follow-up \u2014 not currently refreshable.'},
+        {signal:'Likely true drop-offs', count:68, rate:85.0, interp:'QA validation indicates the drop-off signal is mostly valid.'},
       ],
       /* Feed-computed sections: these start empty and populate on the first
          successful live sync (the feed tallies them from the conversation
          log and other raw tabs, which are too large to snapshot here). */
       topics: [],
-      /* Computed Aug 11, 2026 from the conversation log (per unique conversation). */
+      /* Duration is permanently blocked, not just stale: the sheet's
+         "August-Only Widget Support Tables" section explicitly reports
+         "Conversation duration metric: N/A — Blocked — Raw export lacks
+         duration/elapsed-time field" (confirmed 9/10/2026). There's no
+         source to refresh this from until that field gets added upstream. */
+      /* Duration, updated 9/11/2026 to a true median split by outcome:
+         time_spent_in_widget, filtered on whether detected_workflows
+         contains Handoff. n derived from the August headline (250 total,
+         35 handoffs). Overall median across all 250 (not split) is 66s. */
       durations: [
-        {group:'Deflected (no handoff)', median:48, n:537},
-        {group:'Handed off to support', median:420, n:57},
+        {group:'Deflected (no handoff)', median:46, n:215},
+        {group:'Handed off to support', median:410, n:35},
       ],
-      /* Customer signals from the conversation log, Aug 11, 2026. Sentiment is
-         per unique conversation; CSAT and quick feedback are too sparse to
-         treat as representative — shown with sample sizes for honesty. */
+      /* All three rows now August-only, pulled 9/11/2026 from the new
+         "Widget Monthly KPI — Raw Fields" table (quick_feedback, csat,
+         ending_sentiment_score columns, filtered to August).
+         CORRECTION vs. the prior pull: quick_feedback for August was
+         reported as 0/0/0 ("confirmed zero") on 9/10 — that was wrong. The
+         corrected pull shows 0 positive / 6 negative / 425 unanswered.
+         These are feedback-prompt EVENTS, not unique conversations — a
+         single conversation can trigger multiple quick_feedback prompts
+         (431 total events across 250 conversations), which is why
+         "unanswered" (425) can exceed the conversation count.
+         CSAT is very sparse in August (n=2) — do not headline. */
       feedback: {
-        sentiment: {positive:42, neutral:423, negative:112, rated:577},
-        csatAvg:3.6, csatCount:7, quickFeedbackCount:12,
+        sentiment: {positive:13, neutral:181, negative:55, rated:249},
+        csatAvg:2.5, csatCount:2,
+        quickFeedback: {positive:0, negative:6, unanswered:425},
       },
-      /* Handed-off topics and unanswered questions — detected_topics and first
-         user_query of non-deflected conversations, Aug 11, 2026. */
+      /* Handed-off topics — REPLACED with August-only data (pulled
+         9/10/2026): detected_topics keyword buckets applied to the 35
+         actual handoffs, not the old free-text topic labels + broader
+         "mentions across all conversations" view. "mentions" no longer
+         has a source and is dropped (renders as \u2014). */
       topicsHandoff: [
-        {topic:'Refunds and Credits', handoffs:8, mentions:9},
-        {topic:'Payment Issues', handoffs:5, mentions:11},
-        {topic:'Technical Support — Others', handoffs:5, mentions:29},
-        {topic:'Account Access and Security', handoffs:3, mentions:11},
-        {topic:'General Connectivity Issues', handoffs:3, mentions:10},
-        {topic:'Failover and Recovery Support', handoffs:3, mentions:11},
-        {topic:'Billing Inquiries', handoffs:3, mentions:8},
+        {topic:'Other / uncategorized', handoffs:26, mentions:null},
+        {topic:'Security / TLS / cert', handoffs:4, mentions:null},
+        {topic:'Technical issue', handoffs:2, mentions:null},
+        {topic:'Cloud / database', handoffs:2, mentions:null},
+        {topic:'Billing / account', handoffs:1, mentions:null},
+        {topic:'License / entitlement', handoffs:0, mentions:null},
       ],
       sampleHandoffQueries: [
         'Our prod db is down, what\u2019s happening?',
@@ -1042,35 +1075,52 @@ function defaultState(){
         'ECONNREFUSED when connecting since last night (sandbox database)',
         'Trying to replace the credit card on my subscription but the add button fails',
       ],
-      /* Handoff rate by detected workflow (unique conversations), Aug 11, 2026.
-         Standard Handoff and Contact Support hand off by design. */
+      /* Handoff rate by detected workflow — REPLACED with August-only data
+         (pulled 9/10/2026): this is now a narrower breakdown of the 35
+         handoffs themselves by which workflow triggered them, not the old
+         full view (conversations-per-workflow \u00f7 that workflow's own
+         handoff rate). convs/rate are left null/na where the new source
+         doesn't give a per-workflow conversation count. */
       workflows: [
-        {name:'Standard Handoff', convs:98, handoffs:47, rate:48.0, byDesign:true},
-        {name:'Billing Invoice Clarification', convs:18, handoffs:7, rate:38.9, byDesign:false},
-        {name:'Billing Marketplace CSP', convs:11, handoffs:4, rate:36.4, byDesign:false},
-        {name:'Contact Support', convs:115, handoffs:33, rate:28.7, byDesign:true},
-        {name:'Billing Payment Failure Retry', convs:11, handoffs:1, rate:9.1, byDesign:false},
-        {name:'KR Autoflow', convs:526, handoffs:38, rate:7.2, byDesign:false},
-        {name:'Knowledge Retrieval', convs:496, handoffs:34, rate:6.9, byDesign:false},
+        {name:'Standard Handoff', convs:null, handoffs:35, rate:100.0, byDesign:true},
+        {name:'Other handoff workflow', convs:null, handoffs:0, rate:0.0, byDesign:false},
       ],
       /* FT L1 Touches Removed tracker — from the Automation Monthly Staging
          tab (ticket-level Zendesk report, deduplicated by Ticket ID).
-         Pulled 9/3/2026. September excluded — it's month-to-date, not a
-         complete month, and doesn't belong in this report. */
+         Pulled 9/3/2026, corrected 9/14 (June data gap), split 9/15
+         (Billing vs. Support scope fix).
+         Restricted to August only 9/16/2026: per direction, August is the
+         first real month for the Support autoresponder — June and July
+         aren't part of this story. Billing's Jun/Jul/Aug volume is kept,
+         just moved to its own reference section at the bottom of the page
+         (see billingReference below), since it's a different, unmodified
+         system and was never meant to be compared against Support anyway. */
       automationTracker: {
+        months:['Aug 2026'],
+        rows:[
+          {metric:'Autoresponder tickets \u2014 Support', vals:['57'], note:'ft-email-automated, Support queue.'},
+          {metric:'Non-FT eligible tickets (Support)', vals:['725'], note:'Support tickets never touched by the autoresponder.'},
+          {metric:'FT-tagged: Support L1-touch rate', vals:['35.1%'], note:'FT L1-touched \u00f7 Support FT volume \u2014 both sides Support-only.'},
+          {metric:'Non-FT-tagged: Support L1-touch rate', vals:['13.5%'], note:'The comparison baseline.'},
+          {metric:'FT-tagged: nudge rate', vals:['0.0%'], note:'L1-touched + no_response, as a share of FT L1-touched.'},
+          {metric:'Non-FT: nudge rate', vals:['0.0%'], note:''},
+          {metric:'Auto-closeable under proposed 4h+72h rule', vals:['0'], note:'Simulated against the proposed rule — no live automation yet.'},
+          {metric:'Baseline L1 touches expected', vals:['7.7'], note:'Non-FT Support touch rate \u00d7 Support FT volume.'},
+          {metric:'Support L1 touches removed (baseline \u2212 actual)', vals:['\u221212.3'], note:'Negative = FT-tagged tickets touched L1 more than the baseline predicts.'},
+          {metric:'Hours returned', vals:['\u2014'], note:'Blocked on the minutes-per-L1-touch decision with Support leadership.'},
+        ],
+      },
+      /* Billing reference — unmodified FT system (no routing rules or
+         exclusions), kept purely as ticket-volume context. Not a baseline
+         Support should be compared against; shown at the bottom of the
+         page, separate from the Support-only analysis above. Same source
+         (Automation Monthly Staging), pulled 9/15/2026. */
+      billingReference: {
         months:['Jun 2026','Jul 2026','Aug 2026'],
         rows:[
-          {metric:'Eligible tickets (non-proactive)', vals:['250','889','813'], note:'Total\u2014Billing + Technical + non-FT, ticket-ID deduped.'},
-          {metric:'Autoresponder tickets \u2014 Billing', vals:['10','41','31'], note:'ft-email-automated, Billing queue.'},
-          {metric:'Autoresponder tickets \u2014 Technical (Support)', vals:['1','75','57'], note:'ft-email-automated, Support queue.'},
-          {metric:'FT-tagged: L1-touch rate', vals:['9.1%','10.3%','22.7%'], note:'FT-tagged tickets that reached L1, \u00f7 total autoresponder volume (Billing + Technical).'},
-          {metric:'Non-FT: L1-touch rate', vals:['11.3%','8.2%','13.5%'], note:'The comparison baseline.'},
-          {metric:'FT-tagged: nudge rate', vals:['0.0%','0.0%','0.0%'], note:'L1-touched + no_response, as a share of FT L1-touched.'},
-          {metric:'Non-FT: nudge rate', vals:['0.0%','0.0%','0.0%'], note:''},
-          {metric:'Auto-closeable under proposed 4h+72h rule', vals:['0','0','0'], note:'Simulated against the proposed rule — no live automation yet.'},
-          {metric:'Baseline L1 touches expected', vals:['1.2','9.5','11.9'], note:'Non-FT touch rate \u00d7 total autoresponder volume.'},
-          {metric:'L1 touches removed (baseline \u2212 actual)', vals:['0.2','\u22122.5','\u22128.1'], note:'Negative = FT-tagged tickets touched L1 more than the baseline predicts.'},
-          {metric:'Hours returned', vals:['\u2014','\u2014','\u2014'], note:'Blocked on the minutes-per-L1-touch decision with Support leadership.'},
+          {metric:'Total eligible tickets (all categories)', vals:['774','889','813'], note:'Control total\u2014Billing + Support + non-FT, ticket-ID deduped.'},
+          {metric:'Autoresponder tickets \u2014 Billing', vals:['10','41','31'], note:'ft-email-automated, Billing queue \u2014 runs with no routing rules or exclusions.'},
+          {metric:'Billing share of eligible tickets', vals:['1.3%','4.6%','3.8%'], note:'Billing / total eligible.'},
         ],
       },
       /* Check-in Reply Volume tab — 90-day directional floor estimate,
@@ -1089,21 +1139,15 @@ function defaultState(){
           {group:'Other / unassigned', flagged:10, human:20, auto:30, total:50, autoShare:60},
         ],
       },
-      /* KB Feedback Backlog tab, Aug 11, 2026. Closure rate excludes the
-         Optional item. */
-      /* Program impact — populated ONLY from the widget sheet. Add these
-         labels to the sheet (label cell, value one row below, sub-text two
+      /* Program impact — populated ONLY from the widget sheet. Add a label
+         cell called "FT Coverage Rate" (value one row below, sub-text two
          rows below, same pattern as the headline KPIs) and the feed picks
-         them up: "FT Coverage Rate", "Support Nudges per Month",
-         "L1 Touches Removed". Until then the
-         section shows em-dashes. */
+         it up. Until then this shows as a hardcoded placeholder — not
+         currently sourced from anything real. Not rendered anywhere in the
+         UI except the "FT response coverage" row on the Widget tab's
+         "Where this stands" story block. */
       impact: {
         coverageNowPct:5.6,
-        nudgesPerMonth:82,
-        /* Now measured by the Widget Repeat Contact tab (strict rate, July). */
-        recontactRatePct:12.6,
-        touchesRemovedActual:null,
-        measurement:'Count L1 public replies on Forethought-covered tickets before vs. after the automation go-live; report monthly next to coverage.',
       },
       /* Automation program — populates from an "Automation" tab in the widget
          sheet (Metric | Value columns; labels listed in MAINTENANCE.md). Every
@@ -1118,7 +1162,12 @@ function defaultState(){
       csat: {csatAvg:null, csatCount:null, relevanceAvg:null, relevanceCount:null},
       /* Monthly deflection trend (flag basis), same figure as byMonth's
          .deflection for each month. */
-      monthly: {months:['Apr*','May','Jun','Jul','Aug'], deflectionRate:[85.0,90.6,90.7,90.4,86.0]},
+      /* April excluded from this series on purpose (per direction 9/13/2026):
+         April was the pilot/initial rollout month, not a fair MoM comparison
+         point. May becomes the new baseline for "since X" comparisons in
+         the story block. April's own snapshot is still viewable via the
+         month chip (see byMonth below) — it's just not part of this trend. */
+      monthly: {months:['May','Jun','Jul','Aug'], deflectionRate:[90.6,90.7,90.7,86.0]},
       /* Widget Repeat Contact tab, refreshed 9/4/2026 — post-widget same-issue
          ticket rate. Confirmed = same customer opened their own support
          ticket within 7 days of a widget conversation that was never
@@ -1182,15 +1231,26 @@ function defaultState(){
       },
       /* Per-month KPI slices on a unique-conversation basis. handoffN/handoffRate
          count unique conversations whose detected_workflows includes the
-         Handoff intent — the same basis as the headline (reconciles to 98 /
-         16.5%). deflectionNH is the no-handoff complement (headline basis)
+         Handoff intent — the same basis as the headline. deflectionNH is the
+         no-handoff complement (headline basis, "No-Handoff Containment")
          and also feeds the monthly trend chart; the 'deflection' field keeps
-         the log's deflected-flag basis for reference only. */
+         the log's deflected-flag basis for reference only.
+         April corrected 9/12/2026 per a row-level audit: the old entry only
+         covered 20 of April's 74 real conversations (a leftover assumption
+         that Support hadn't launched yet — it had, company-wide, since
+         April 1). Audit found 25 of 74 April rows are BOTH deflected=TRUE
+         and Handoff-tagged.
+         July corrected 9/13/2026 per a second row-level audit (June/July
+         Raw Data QA block): 259 rows, 259 unique conversations, 0
+         duplicates, full Jul 1–31 coverage confirmed clean. 28 of 259 rows
+         are both deflected=TRUE and Handoff-tagged — smaller overlap than
+         April's 25/74, but still real. June's audit confirmed the existing
+         161/83.2% entry was already correct (13 of 161 rows overlap). */
       byMonth: {
-        'Apr*': {conversations:20,  deflected:17,  deflection:85.0, handoffN:7, handoffRate:35.0, deflectionNH:65.0},
+        'Apr': {conversations:74,  deflected:63,  deflection:85.1, handoffN:36, handoffRate:48.6, deflectionNH:51.4},
         'May':  {conversations:117, deflected:106, deflection:90.6, handoffN:17, handoffRate:14.5, deflectionNH:85.5},
         'Jun':  {conversations:161, deflected:146, deflection:90.7, handoffN:27, handoffRate:16.8, deflectionNH:83.2},
-        'Jul':  {conversations:220, deflected:202, deflection:91.8, handoffN:40, handoffRate:18.2, deflectionNH:81.8},
+        'Jul':  {conversations:259, deflected:235, deflection:90.7, handoffN:48, handoffRate:18.5, deflectionNH:81.5},
         'Aug':  {conversations:250, deflected:215, deflection:86.0, handoffN:35, handoffRate:14.0, deflectionNH:86.0},
       },
       /* Populates once the handoff-reply sample lives in the widget sheet
@@ -1204,9 +1264,9 @@ function defaultState(){
       readout: [
         'Performance: <strong>86.0% deflection in August</strong> — most widget conversations resolve without ever reaching a human.',
         'Recontact: 2.8% of August\'s contained conversations came back as a same-issue ticket within 7 days — down sharply from 8.5% in July (which itself was revised down from an earlier 12.6% once July\'s eligible-conversation count was recalculated). A real improvement in containment quality, not just a denominator effect.',
-        'Automated drop-off signal: Forethought flagged 80 August conversations (32.0%) as drop-offs — but August recontact tracking (2.8%) says most contained conversations are not turning into tickets. Three of the five drop-off sub-signals (No follow-up, Incomplete handoff, Likely true drop-offs) are reporting 0 in the source right now, which looks like a data gap rather than a real zero.',
+        'Automated drop-off signal: Forethought flagged 80 August conversations (32.0%) as drop-offs — but August recontact tracking (2.8%) says most contained conversations are not turning into tickets. Of those 80: 63 (78.8%) had no follow-up, 11 (13.8%) ended during an incomplete handoff, and QA validation confirms 68 (85.0%) as likely true drop-offs rather than false positives.',
       ],
-      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026. Duration, feedback, handoff-topic, and workflow breakdowns below are still the cumulative Apr 27 – Aug 10, 2026 snapshot, not August-only — refreshing those to August-specific figures requires reprocessing the raw per-conversation export, which wasn\'t feasible to do reliably in this pass.',
+      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026. As of 9/11/2026, every table on this tab is August-only — handoff-topic and workflow breakdowns, conversation duration (median split by outcome), and Customer feedback (sentiment, CSAT, and quick feedback, corrected from an earlier bad quick-feedback pull). The Widget Monthly KPI table\'s April/July conversation counts (74 / 259) do not match this tab\'s established headline figures for those months — flagged, not resolved; August\'s own count (250) matches, so this month\'s numbers are trustworthy.',
     },
     email: {
       headline: {
@@ -1223,68 +1283,78 @@ function defaultState(){
       readoutCaveat: 'Note: June and July are Support pilot months, not a stable MoM baseline — August is the first real-volume month, so it\'s reported standalone rather than against July. Sent/solved/handoff counts were revised 9/3/2026 when the source switched from an aggregated tag-count table to a deduplicated ticket-level export (e.g. August\'s sent count moved from 61 to 57) — small future revisions are possible as that export matures. Hours returned from reduced L1 touches is still blocked on agreeing a minutes-per-touch value with Support leadership.',
       /* July slice of the autoresponder raw logs (computed Aug 17, 2026) — feeds the overview's single-month headline. */
       funnelJul: {inbound:576, sent:110, deflected:73, deflRate:66.4},
-      /* Autoresponder eligibility story — computed once from the July Zendesk
-         "Tickets created by month/year" export, grouped by SLA Package × ARR
-         Spend Bucket × Priority (uploaded Aug 27, 2026). Not part of the live
-         feed — re-derive by hand if a fresher ticket export comes in.
-         Pilot = the original rollout scope (Basic only, <$50k ARR, Low/Normal
-         priority only — Urgent/High excluded). Current = where eligibility
-         actually stands now (all Basic + all Developer, any ARR, any
-         priority). proposedBusiness = adding all Business next, per Jay's
-         "prove it out with Business first". */
-      eligibilityJul: {
-        totalTickets: 1770,
-        pilot: {tickets:179, pct:10.1, note:'Basic only, under $50k ARR, Low/Normal priority only'},
-        current: {tickets:228, pct:12.9, note:'All Basic + all Developer, any ARR, any priority'},
-        proposedBusiness: {tickets:215, pct:12.1, note:'All Business, any ARR, any priority — next expansion candidate'},
-        proposedTotal: {tickets:443, pct:25.0, note:'Current scope (Basic + Developer) plus all Business'},
+      /* Autoresponder eligibility roadmap, rebuilt 9/18/2026 from the
+         Program Extension tab's new comparator columns — Current
+         Eligibility (Basic + Developer, any ARR/priority), Business tier
+         (Business, any ARR/priority), and their combined total, all
+         computed the same way for both July and August so nothing mixes
+         months. Current + Business = Combined exactly, both months
+         (82+100=182 Jul; 76+128=204 Aug). Percentages use this table's own
+         monthly total (810 Jul / 815 Aug), which runs a bit lower than the
+         Automation Monthly Staging control totals used elsewhere on this
+         dashboard (889 Jul / 813 Aug) — unreconciled, possibly a different
+         scope. Supersedes the old July-only eligibilityJul snapshot
+         (Pilot 179 / Current 228 / +Business 215 / Total 443) — that
+         Current figure wasn't computed the same way as this one and
+         shouldn't be mixed with it. */
+      eligibilityByMonth: {
+        months: ['Jul', 'Aug'],
+        totalTickets: [810, 815],
+        current: {tickets:[82, 76], pct:[10.1, 9.3]},
+        business: {tickets:[100, 128], pct:[12.3, 15.7]},
+        combined: {tickets:[182, 204], pct:[22.5, 25.0]},
+        lowNormal: [74, 99],
+        highUrgent: [26, 29],
       },
-      /* August Email Autoresponder Outcomes \u2014 the source workbook replaced
-         the old Inbound\u2192Eligible\u2192Sent\u2192Deflected funnel entirely with this
-         closure/resolution view (cross-queue: Support + Billing). Pulled
-         9/2/2026. "% of previous stage" here reads as "% of responses sent"
-         since there's no longer a strict narrowing funnel to walk down. */
+      /* Support-only autoresponder outcomes. Rebuilt 9/16/2026 from the
+         cross-queue "August Email Autoresponder Outcomes" table, stripping
+         out Billing's contribution using the tag breakdown from the
+         Support Funnel Rebuild block below:
+         Sent 57 (was 92, which included Billing's 31\u201335\u2014note there's a
+         small unexplained gap even after removing Billing's known 31, worth
+         a follow-up check on the sheet). Total FT-Closed = solved (1) +
+         no-reply-closed (7) = 8, since Billing's 1 solved ticket is no
+         longer counted. Customer-Confirmed Resolutions is back-calculated
+         (2 total \u2212 1 known Billing = 1 Support) since there's no direct
+         Support-only tag count for ft-email-positive-feedback \u2014 treat
+         this one row as an estimate, not a confirmed tag pull. */
       funnel: [
-        {stage:'Autoresponder Responses Sent', count:92, pctOfPrev:null, note:'ft-email-automated across Billing + Support \u2014 authoritative August volume.'},
-        {stage:'Total FT-Closed Tickets', count:9, pctOfPrev:9.8, note:'Resolved without a human touch: bot-solved + no-reply auto-closures, both queues.'},
-        {stage:'No-Reply Closures', count:7, pctOfPrev:7.6, note:'forethought_basic_no_reply_closed \u2014 closed after no customer reply (Support).'},
-        {stage:'Customer-Confirmed Resolutions', count:2, pctOfPrev:2.2, note:'ft-email-positive-feedback \u2014 customer confirmed the issue was resolved.'},
+        {stage:'Autoresponder Responses Sent', count:57, pctOfPrev:null, note:'ft-email-automated, Support queue only \u2014 authoritative August volume.'},
+        {stage:'Total FT-Closed Tickets', count:8, pctOfPrev:14.0, note:'Resolved without a human touch: bot-solved (1) + no-reply auto-closures (7), Support only.'},
+        {stage:'No-Reply Closures', count:7, pctOfPrev:12.3, note:'forethought_basic_no_reply_closed \u2014 closed after no customer reply (Support).'},
+        {stage:'Customer-Confirmed Resolutions', count:1, pctOfPrev:1.8, note:'ft-email-positive-feedback \u2014 estimated Support share, not a direct tag count (see comment above).'},
       ],
-      /* Support-only ticket disposition after the FT automated email reply \u2014
+      /* Support-only ticket disposition after the FT automated email reply —
          from the sheet's "Support Funnel / Handoff Reasons Rebuild" block,
          which counts unique Ticket IDs by tag directly off the raw
          per-ticket Autoresponder Billing v Technical export. Pulled
          9/3/2026. Billing runs its own separate tag chain
-         (forethought_billing_*) and is out of scope for this tab \u2014 Billing is
+         (forethought_billing_*) and is out of scope for this tab — Billing is
          not CS-owned and is manually reviewed by that team.
          automated/sent use the Automation Monthly Staging ticket-level count
          for the Support queue (replaces the older raw tag-aggregate count,
-         which ran slightly higher \u2014 e.g. Aug was 61, now 57).
-         Jun is a tiny/pilot sample \u2014 rates are left null where the sample makes a
-         percentage meaningless (Jun's handoff count already exceeds its
-         sent count, since tags aren't mutually exclusive at that volume).
+         which ran slightly higher — e.g. Aug was 61, now 57).
          'pending' is the forethought_support_timeout tag count directly
-         (not a residual) \u2014 tags can overlap, so sent \u2260 solved + handoff +
-         pending + noReplyClosed in general. */
+         (not a residual) — tags can overlap, so sent ≠ solved + handoff +
+         pending + noReplyClosed in general.
+         Restricted to August only 9/17/2026: July's Support autoresponder
+         didn't actually start until July 22, so a Jun/Jul/Aug trend table
+         was comparing a nearly-empty June, a half-month July, and a full
+         August as if they were equivalent periods — confusing, not
+         informative. Removed rather than kept as pilot context. */
       supportFunnel: {
-        months: ['Jun*','Jul*','Aug'],
-        automated: [1, 75, 57],
-        sent:      [1, 75, 57],
-        solved:    [0, 8,  1],
-        handoff:   [2, 64, 42],
-        /* forethought_basic_no_reply_closed \u2014 held from the last Support
-           tag-count pull per the sheet's own instruction ("keep August
-           closure counts as manual Support tag-count inputs, not zeros")
-           since that tag isn't yet in the ticket-level export. */
-        noReplyClosed: [null, null, 7],
-        pending:   [1, 33, 9],
-        solveRate:   [null, 10.7, 1.8],
-        handoffRate: [null, 85.3, 73.7],
-        pendingRate: [null, 44.0, 15.8],
+        months: ['Aug'],
+        automated: [57],
+        sent:      [57],
+        solved:    [1],
+        handoff:   [42],
+        noReplyClosed: [7],
+        pending:   [9],
+        solveRate:   [1.8],
+        handoffRate: [73.7],
+        pendingRate: [15.8],
         notes: [
-          'Pilot \u2014 negligible volume; handoff count already exceeds sent, so rates aren\u2019t meaningful here.',
-          'Pilot \u2014 first real volume; read loosely. Ticket-ID deduped.',
-          'First post-pilot month. Ticket-ID deduped; sent revised down from 61 (old tag-aggregate) to 57.',
+          'First real month — Support\'s autoresponder ran the full 31 days. Ticket-ID deduped; sent revised down from 61 (old tag-aggregate) to 57.',
         ],
       },
       /* Handoff reason breakdown, from the same rebuild block. Only the
@@ -1292,14 +1362,13 @@ function defaultState(){
          confirmed present in the export; no_response and
          waiting_for_customer_3 are flagged "missing required tag" on the
          sheet, so "Unclassified" absorbs whatever they'd otherwise explain.
-         This replaces the old negative-feedback / customer-replied
-         breakdown, which isn't sourced by the new rebuild and may no longer
-         reflect what's actually tagged. */
+         Restricted to August only 9/17/2026, same reason as supportFunnel
+         above — June/July aren't comparable full months. */
       handoffReasons: {
-        months: ['Jun*','Jul*','Aug'],
-        timeout: [1, 33, 9],
-        unclassified: [1, 31, 33],
-        total: [2, 64, 42],
+        months: ['Aug'],
+        timeout: [9],
+        unclassified: [33],
+        total: [42],
       },
     },
     kb: {
@@ -1479,14 +1548,14 @@ function kpiStatus(group, key, value){
 const KPI_DEFS = {
   'Deflection Share':'Deflection = any activity that prevents a human from needing to get involved. Numerator is KB deflections + widget-contained conversations + autoresponder deflections; denominator is total demand (that sum plus tickets created).',
   'Total Conversations':'Unique widget conversations in the source period.',
-  'Deflection Rate':'Share of widget conversations that ended without a handoff to a human.',
+  'No-Handoff Containment':'Conversations contained without a detected Handoff workflow. Raw Forethought deflected=TRUE can overlap with Handoff (confirmed in an April audit: 25 of 74 rows were both) — this metric excludes those overlapping rows, so it runs lower than the raw deflected-flag count on purpose.',
   'Handoff Rate':'Share of widget conversations passed to L1 or another human queue.',
   'Confirmed Deflection Rate':'Sessions where the user explicitly confirmed the article answered their question.',
   'Assumed Deflection Rate':'Sessions with article views or search clicks and no ticket — a directional proxy, not a confirmed outcome.',
   'Total Deflection Rate':'Confirmed plus assumed deflections per end-user session.',
   'Search Deflection Proxy':'Searches that did not lead to a ticket — a directional proxy.',
   'Article Views':'Total knowledge-base article views in the reporting month.',
-  'Widget Deflection':'Share of widget conversations that ended without a handoff to a human.',
+  'Widget No-Handoff Containment':'Share of widget conversations that ended without a handoff to a human. Excludes rows where Forethought\u2019s raw deflected flag overlaps with a Handoff workflow (see No-Handoff Containment for the April audit that found this).',
   'KB Success Rate':'Total deflections as a share of tickets created plus deflections, from the workbook monthly table.',
   'KB Total Deflection':'Confirmed plus assumed deflections per end-user session.',
   'Recontact After Deflection':'Share of deflected conversations where the same customer opened a ticket within 7 days. From the Widget Repeat Contact tab.',
@@ -1507,8 +1576,8 @@ const KPI_DEFS = {
    state, so a sheet sync refreshes every verdict. */
 const STORY_METRICS = {
   widget: [
-    {key:'deflection', label:'Deflection (flag basis)', dir:'>=',
-     why:'Share of conversations the widget contains. The volume shield \u2014 if this slips, ticket load comes back.'},
+    {key:'deflection', label:'Deflected Flag (diagnostic only)', dir:'>=',
+     why:'Forethought\u2019s raw deflected flag \u2014 kept only as a diagnostic comparison, not the reported metric. Runs higher than the KPI headline\u2019s No-Handoff Containment on purpose: an April audit found 25 of 74 conversations were both deflected=TRUE and Handoff-tagged, so this flag overlaps with escalation more than you\u2019d expect. No-Handoff Containment excludes those rows and is the number to report.'},
     {key:'repeatContact', label:'Repeat-contact rate (7-day)', dir:'<=',
      why:'Contained conversations that came back as tickets \u2014 deflection that did not stick.'},
     {key:'coverage', label:'FT response coverage', dir:'>=',
@@ -1516,9 +1585,9 @@ const STORY_METRICS = {
   ],
   email: [
     {key:'solveRate', label:'Solved by bot (Support)', dir:'>=',
-     why:'The only ticket outcome the bot causes \u2014 sent tickets it doesn\u2019t solve default to L1 whether or not the bot exists.'},
-    {key:'deflRate', label:'Autoresponder deflection', dir:'>=',
-     why:'Sent autoresponses that needed no human follow-up.'},
+     why:'Fires when the customer gives positive feedback or completes the Interactive Email flow to resolution \u2014 not just a click. Customer-indicated, not self-graded. Unsolved tickets default to L1 regardless.'},
+    {key:'deflRate', label:'Autoresponder deflection (Support)', dir:'>=',
+     why:'Sent autoresponses that needed no human follow-up. Support-only, matching the solve-rate row above.'},
   ],
   kb: [
     {key:'Total Deflection Rate %', label:'Total deflection rate', dir:'>=',
@@ -1575,11 +1644,18 @@ function storyValues(widgetMonthOverride){
     out.widget.coverage = {month:out.widget.deflection.month, value:w.impact.coverageNowPct, prior:null, priorMonth:null};
     out.widget.month = out.widget.deflection.month;
   }
-  // Autoresponder coverage isn't currently reflected: the source sheet
-  // dropped the inbound-email denominator it used to be computed from (see
-  // email.headline.emailCoverage). deflRate is July's autoresponder funnel
-  // figure (email.funnelJul) — the only month that funnel currently covers.
-  out.email.deflRate = {month:'Jul', value:(e.funnelJul&&e.funnelJul.deflRate!==undefined)?e.funnelJul.deflRate:null, prior:null, priorMonth:null};
+  // Autoresponder deflection: previously hardcoded to July's funnelJul
+  // figure (66.4%) regardless of which month "Where this stands" was
+  // showing — meaning it silently displayed under an "Aug" header while
+  // actually being July data. Now sourced from August's own Outcomes table
+  // (Total FT-Closed Tickets ÷ Sent) when August is the reporting month,
+  // falling back to the July figure — clearly labeled as July — otherwise.
+  const closedRow = (e.funnel||[]).find(r=>r.stage==='Total FT-Closed Tickets');
+  if(k.reportingMonth && k.reportingMonth.currentAbbr==='Aug' && closedRow){
+    out.email.deflRate = {month:'Aug', value:closedRow.pctOfPrev, prior:null, priorMonth:null};
+  } else {
+    out.email.deflRate = {month:'Jul', value:(e.funnelJul&&e.funnelJul.deflRate!==undefined)?e.funnelJul.deflRate:null, prior:null, priorMonth:null};
+  }
   // Support-only solve rate (sent -> solved by the bot, no human) is the
   // headline "where this stands" metric for email — it's the one outcome
   // actually attributable to the bot. Sourced from the Zendesk tag funnel.
@@ -1668,12 +1744,27 @@ function renderOverviewStory(vals){
   // Ticket autoresponder — deflection level, not a grading score.
   // Coverage and deflection are both single-month snapshots in the source
   // data (no monthly history yet), so this is framed as a level, not a trend.
-  const ef = state.email.funnelJul || {};
-  const eVal = (ef.deflRate!=null) ? fmtPct(ef.deflRate,1) : '—';
-  const eDetail = (ef.deflected!=null && ef.sent!=null)
-    ? `${fmtNum(ef.deflected)} of ${fmtNum(ef.sent)} sent responses needed no human follow-up`
-    : 'not enough sent responses yet to size the rate';
-  const eTxt = `Autoresponder deflection is at ${eVal} this month — ${eDetail}. Too new for a month-over-month read yet.`;
+  // Previously this always showed July's funnelJul figure (66.4%) labeled
+  // "this month" even once August became current — now uses August's own
+  // Outcomes-table numbers (Total FT-Closed ÷ Sent) when August is the
+  // reporting month.
+  const isAugRO = state.kb.reportingMonth && state.kb.reportingMonth.currentAbbr==='Aug';
+  const efClosedRow = (state.email.funnel||[]).find(r=>r.stage==='Total FT-Closed Tickets');
+  const efSentRow = (state.email.funnel||[]).find(r=>r.stage==='Autoresponder Responses Sent');
+  let eVal, eDetail, eMonthLabel;
+  if(isAugRO && efClosedRow && efSentRow){
+    eVal = fmtPct(efClosedRow.pctOfPrev,1);
+    eDetail = `${fmtNum(efClosedRow.count)} of ${fmtNum(efSentRow.count)} sent responses needed no human follow-up at all`;
+    eMonthLabel = 'in August';
+  } else {
+    const ef = state.email.funnelJul || {};
+    eVal = (ef.deflRate!=null) ? fmtPct(ef.deflRate,1) : '—';
+    eDetail = (ef.deflected!=null && ef.sent!=null)
+      ? `${fmtNum(ef.deflected)} of ${fmtNum(ef.sent)} sent responses needed no human follow-up`
+      : 'not enough sent responses yet to size the rate';
+    eMonthLabel = 'in July (pilot)';
+  }
+  const eTxt = `Autoresponder deflection is at ${eVal} ${eMonthLabel} — ${eDetail}. Too new for a month-over-month read yet.`;
 
   // KB — total deflection rate (confirmed + assumed, against the full
   // session base), not the confirmed-only count: 17 confirmed deflections on
@@ -1725,17 +1816,17 @@ function renderWidgetView(){
   renderStory('story-widget','widget',SV); setText('storyWidgetMonth', SV.widget.month||'');
   renderStory('story-email','email',SV); setText('storyEmailMonth', SV.email.month||'');
   const w = state.widget, e = state.email;
-  renderMonthChips('widgetMonthFilter', ['All','Apr*','May','Jun','Jul','Aug'], widgetMonth,
+  renderMonthChips('widgetMonthFilter', ['All','Apr','May','Jun','Jul','Aug'], widgetMonth,
     m=>{ widgetMonth=m; renderWidgetView(); }, 'Filters the KPI headers and Where this stands; tables and charts stay full-period.');
   const wm = widgetMonth==='All' ? null : w.byMonth[widgetMonth];
 
   renderKpis('kpi-widget-headline', wm ? [
     {label:'Total Conversations', value:String(wm.conversations), unit:'', sub:`Unique widget conversations — ${widgetMonth}`, status:'neutral'},
-    {label:'Deflection Rate', value:fmtPct(wm.deflectionNH,1).replace('%',''), unit:'%', sub:`${wm.conversations-wm.handoffN} of ${wm.conversations} conversations without handoff`, status:kpiStatus('w','deflection',wm.deflectionNH)},
+    {label:'No-Handoff Containment', value:fmtPct(wm.deflectionNH,1).replace('%',''), unit:'%', sub:`${wm.conversations-wm.handoffN} of ${wm.conversations} conversations without handoff`, status:kpiStatus('w','deflection',wm.deflectionNH)},
     {label:'Handoff Rate', value:wm.handoffRate, unit:'%', sub:`${wm.handoffN} of ${wm.conversations} conversations handed off`, status:kpiStatus('w','handoff',wm.handoffRate)},
   ] : [
     {label:'Total Conversations', value:w.headline.conversations.value, unit:'', sub:w.headline.conversations.sub, status:'neutral'},
-    {label:'Deflection Rate', value:fmtPct(w.headline.deflection.value,1).replace('%',''), unit:'%', sub:w.headline.deflection.sub, status:kpiStatus('w','deflection',w.headline.deflection.value)},
+    {label:'No-Handoff Containment', value:fmtPct(w.headline.deflection.value,1).replace('%',''), unit:'%', sub:w.headline.deflection.sub, status:kpiStatus('w','deflection',w.headline.deflection.value)},
     {label:'Handoff Rate', value:w.headline.handoff.value, unit:'%', sub:w.headline.handoff.sub, status:kpiStatus('w','handoff',w.headline.handoff.value)},
   ]);
 
@@ -1777,20 +1868,23 @@ function renderWidgetView(){
   // ---- Customer feedback (computed from the conversation log) ----
   const fb = w.feedback;
   const sTot = fb.sentiment.rated;
+  const qfTotal = fb.quickFeedback.positive + fb.quickFeedback.negative + fb.quickFeedback.unanswered;
   document.getElementById('tblCsat').innerHTML = `
     <tr><th>Signal</th><th class="num">Value</th><th class="num">Sample</th><th>Read</th></tr>
-    <tr><td>Ending sentiment — positive</td><td class="num">${fmtPct(100*fb.sentiment.positive/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.positive)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Per unique conversation.</td></tr>
+    <tr><td>Ending sentiment — positive</td><td class="num">${fmtPct(100*fb.sentiment.positive/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.positive)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Per unique conversation, August only.</td></tr>
     <tr><td>Ending sentiment — neutral</td><td class="num">${fmtPct(100*fb.sentiment.neutral/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.neutral)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Most conversations end without an emotional signal.</td></tr>
-    <tr><td>Ending sentiment — negative</td><td class="num">${fmtPct(100*fb.sentiment.negative/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.negative)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Roughly one in five conversations ends negative.</td></tr>
-    <tr><td>CSAT average</td><td class="num">${fb.csatAvg} / 5</td><td class="num">${fmtNum(fb.csatCount)}</td><td style="color:var(--muted); font-size:12px;">Too sparse to be representative — do not headline this.</td></tr>
-    <tr><td>Quick feedback responses</td><td class="num">—</td><td class="num">${fmtNum(fb.quickFeedbackCount)}</td><td style="color:var(--muted); font-size:12px;">Also too sparse; consider making the feedback prompt more prominent.</td></tr>
+    <tr><td>Ending sentiment — negative</td><td class="num">${fmtPct(100*fb.sentiment.negative/sTot,1)}</td><td class="num">${fmtNum(fb.sentiment.negative)} / ${fmtNum(sTot)}</td><td style="color:var(--muted); font-size:12px;">Roughly one in five August conversations ends negative.</td></tr>
+    <tr><td>CSAT average</td><td class="num">${fb.csatAvg} / 5</td><td class="num">${fmtNum(fb.csatCount)}</td><td style="color:var(--muted); font-size:12px;">August-only, but n=2 — far too sparse to be representative. Do not headline this.</td></tr>
+    <tr><td>Quick feedback — positive (Aug)</td><td class="num">${fmtNum(fb.quickFeedback.positive)}</td><td class="num">${fmtNum(fb.quickFeedback.positive)} / ${fmtNum(qfTotal)}</td><td style="color:var(--muted); font-size:12px;">Event-level, not per conversation — see note above.</td></tr>
+    <tr><td>Quick feedback — negative (Aug)</td><td class="num">${fmtNum(fb.quickFeedback.negative)}</td><td class="num">${fmtNum(fb.quickFeedback.negative)} / ${fmtNum(qfTotal)}</td><td style="color:var(--muted); font-size:12px;">Event-level, not per conversation — see note above.</td></tr>
+    <tr><td>Quick feedback — unanswered (Aug)</td><td class="num">${fmtNum(fb.quickFeedback.unanswered)}</td><td class="num">${fmtNum(fb.quickFeedback.unanswered)} / ${fmtNum(qfTotal)}</td><td style="color:var(--muted); font-size:12px;">98.6% of prompts go unanswered — event-level, not per conversation.</td></tr>
   `;
 
   // ---- Conversation duration (computed from the conversation log) ----
   const du = w.durations || [];
   document.getElementById('tblDurations').innerHTML = `
     <tr><th>Outcome</th><th class="num">Median time in widget</th><th class="num">Conversations</th></tr>
-    ${du.length ? du.map(r=>`<tr><td>${r.group}</td><td class="num">${fmtDur(r.median)}</td><td class="num">${fmtNum(r.n)}</td></tr>`).join('') : syncPendingRow(3)}
+    ${du.length ? du.map(r=>`<tr><td>${r.group}</td><td class="num">${fmtDur(r.median)}</td><td class="num">${fmtNum(r.n)}</td></tr>`).join('') : `<tr><td colspan="3" style="color:var(--muted-dim); font-style:italic;">Not available \u2014 the raw widget export has no duration field. Confirmed blocked, not pending.</td></tr>`}
   `;
 
   // ---- Handed-off topics & sample questions ----
@@ -1805,7 +1899,7 @@ function renderWidgetView(){
 
   // ---- Handoff rate by workflow ----
   document.getElementById('tblWorkflows').innerHTML = `
-    <tr><th>Workflow</th><th class="num">Conversations</th><th class="num">Handoffs</th><th class="num">Handoff rate</th></tr>
+    <tr><th>Workflow</th><th class="num">Conversations</th><th class="num">Handoffs</th><th class="num">Share of Aug handoffs</th></tr>
     ${w.workflows.map(x=>`<tr><td>${x.name}${x.byDesign?' <span style="color:var(--muted-dim); font-size:10.5px;">(by design)</span>':''}</td><td class="num">${fmtNum(x.convs)}</td><td class="num">${fmtNum(x.handoffs)}</td><td class="num">${fmtPct(x.rate)}</td></tr>`).join('')}
   `;
 
@@ -1822,8 +1916,8 @@ function renderWidgetView(){
   // (Support only — Billing has its own tag chain and review process, out of scope here.)
   const sf = e.supportFunnel;
   const hr = e.handoffReasons;
-  renderMonthChips('emailMonthFilter', ['All', ...sf.months], emailMonth,
-    m=>{ emailMonth=m; renderWidgetView(); }, 'Filters the KPI header and Where this stands; MoM trend and handoff-reason tables stay full-period.');
+  renderMonthChips('emailMonthFilter', ['Aug'], emailMonth,
+    m=>{ emailMonth=m; renderWidgetView(); }, 'August only — the tables below always show August.');
   const sfIdx = emailMonth==='All'
     // Auto-pick the latest fully-qualified month (no trailing '*'), not just
     // "latest with sent > 0" — every month now has nonzero sent, including
@@ -1833,7 +1927,7 @@ function renderWidgetView(){
     : sf.months.indexOf(emailMonth);
   const sfMonth = sf.months[sfIdx];
   document.getElementById('supportFunnelTakeaway').textContent =
-    `${sfMonth}: ${fmtPct(sf.solveRate[sfIdx],1)} solve rate (the only outcome the bot causes) on ${fmtNum(sf.sent[sfIdx])} sent tickets. Handoff (${fmtPct(sf.handoffRate[sfIdx],1)}) is the default outcome for anything the bot doesn't solve, not a regression it caused.`;
+    `${sfMonth}: ${fmtPct(sf.solveRate[sfIdx],1)} solve rate on ${fmtNum(sf.sent[sfIdx])} sent tickets — the only outcome the bot causes. Handoff (${fmtPct(sf.handoffRate[sfIdx],1)}) is the default for anything it doesn't solve, not a regression.`;
   renderKpis('kpi-support-funnel', [
     {label:'Sent', value:String(sf.sent[sfIdx]), unit:'', sub:`${sf.automated[sfIdx]} auto-classified — ${sfMonth}`, status:'neutral'},
     {label:'Solved by Bot', value:fmtPct(sf.solveRate[sfIdx],1).replace('%',''), unit:'%', sub:`${sf.solved[sfIdx]} of ${sf.sent[sfIdx]} sent — the one outcome attributable to the bot`, status:sf.solveRate[sfIdx]==null?'neutral':(sf.solveRate[sfIdx]<5?'bad':(sf.solveRate[sfIdx]<15?'watch':'good'))},
@@ -1853,8 +1947,17 @@ function renderWidgetView(){
   document.getElementById('tblAutomation').innerHTML = `
     <tr><th>Metric</th>${tr.months.map(m=>`<th class="num">${m}</th>`).join('')}<th>Guardrail / note</th></tr>
     ${tr.rows.map(r=>`<tr><td>${r.metric}</td>${r.vals.map(v=>`<td class="num">${v}</td>`).join('')}<td style="color:var(--muted); font-size:12px;">${r.note}</td></tr>`).join('')}
-    <tr><td colspan="5" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">June ran at pilot-scale volume (250 eligible tickets vs. 813\u2013889 in Jul/Aug) — read it loosely. Auto-close counts are simulated against the proposed 4h+72h rule; no live automation exists yet.</td></tr>
+    <tr><td colspan="3" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">Auto-close counts are simulated against the proposed 4h+72h rule; no live automation exists yet.</td></tr>
   `;
+
+  // ---- Billing reference (unmodified FT system, ticket-volume context only — see billingReference tab notes) ----
+  const br = w.billingReference;
+  const tblBilling = document.getElementById('tblBillingReference');
+  if(tblBilling && br) tblBilling.innerHTML = `
+    <tr><th>Metric</th>${br.months.map(m=>`<th class="num">${m}</th>`).join('')}<th>Note</th></tr>
+    ${br.rows.map(r=>`<tr><td>${r.metric}</td>${r.vals.map(v=>`<td class="num">${v}</td>`).join('')}<td style="color:var(--muted); font-size:12px;">${r.note}</td></tr>`).join('')}
+  `;
+
 
   document.getElementById('readoutEmail').innerHTML = e.readout.map(t=>`<li>${t}</li>`).join('') + `<li class="caveat">${e.readoutCaveat}</li>`;
 }
@@ -2148,7 +2251,10 @@ function deflStoryData(){
     const kbD=((k.kbSuccess&&k.kbSuccess.deflections)||[])[i]||0;
     const wRaw=wKey(m).deflected;
     const contained=wRaw!=null?Math.max(wRaw-(rc[m]||0),0):0;
-    const ar=(m==='Jul'&&e.funnelJul)?(e.funnelJul.deflected||0):0;
+    const arClosed = (e.funnel||[]).find(r=>r.stage==='Total FT-Closed Tickets');
+    const ar = m==='Jul' ? ((e.funnelJul&&e.funnelJul.deflected)||0)
+             : m==='Aug' ? ((arClosed&&arClosed.count)||0)
+             : 0;
     const demand=tickets+kbD+contained;
     const self=kbD+contained+ar;
     return {m, tickets, human:tickets-ar, kbD, contained, ar, demand, self, share:demand?+(100*self/demand).toFixed(1):null};
@@ -2235,25 +2341,28 @@ function renderSupportImpact(){
    metrics. */
 function renderExpansionNext(){
   const el = document.getElementById('expansionNext'); if(!el) return;
-  const el5 = (state.email && state.email.eligibilityJul) || null;
-  const eligRows = el5 ? `
-        <div class="s-row"><span class="s-pill na">Pilot (original scope)</span><span class="s-label">Basic only, &lt;$50k ARR, Low/Normal priority</span><span class="s-val">${fmtNum(el5.pilot.tickets)} tickets/mo</span><span class="s-why">${fmtPct(el5.pilot.pct,1)} of July's ${fmtNum(el5.totalTickets)} tickets</span></div>
-        <div class="s-row"><span class="s-pill on">Current</span><span class="s-label">All Basic + all Developer, any ARR, any priority</span><span class="s-val">${fmtNum(el5.current.tickets)} tickets/mo</span><span class="s-why">${fmtPct(el5.current.pct,1)} of July's tickets</span></div>
-        <div class="s-row"><span class="s-pill mid">Next: + Business</span><span class="s-label">All Business, any ARR, any priority</span><span class="s-val">+${fmtNum(el5.proposedBusiness.tickets)} tickets/mo</span><span class="s-why">would reach ${fmtNum(el5.proposedTotal.tickets)} tickets/mo — ${fmtPct(el5.proposedTotal.pct,1)} of July's volume</span></div>` : '';
+  const eb = (state.email && state.email.eligibilityByMonth) || null;
+  const eligKpiRow = eb ? `<div class="kpi-row autofit" id="expEligKpis"></div>` : '';
+  const ebTable = eb ? `
+    <table>
+      <tr><th>Month</th><th class="num">Current Eligibility</th><th class="num">Business tier</th><th class="num">Combined</th><th class="num">Combined %</th><th class="num">Low/Normal</th><th class="num">High/Urgent</th></tr>
+      ${eb.months.map((m,i)=>`<tr><td>${m}${i===eb.months.length-1?' (latest)':''}</td><td class="num">${fmtNum(eb.current.tickets[i])}</td><td class="num">${fmtNum(eb.business.tickets[i])}</td><td class="num">${fmtNum(eb.combined.tickets[i])}</td><td class="num">${fmtPct(eb.combined.pct[i],1)}</td><td class="num">${fmtNum(eb.lowNormal[i])}</td><td class="num">${fmtNum(eb.highUrgent[i])}</td></tr>`).join('')}
+    </table>` : '';
   el.innerHTML = `
     <div class="exp-block">
       <div class="subhead">Autoresponder eligibility roadmap</div>
-      <div class="story">${eligRows}</div>
-      <div class="note" style="margin-top:8px;">${el5 ? `Business alone (${fmtNum(el5.proposedBusiness.tickets)} tickets) is nearly as large as the current Basic + Developer scope combined (${fmtNum(el5.current.tickets)}) — it's the biggest single lever left to expand eligibility.` : ''}</div>
+      ${eligKpiRow}
+      <div class="card" style="margin-top:10px;">${ebTable}</div>
+      <div class="note" style="margin-top:8px;">Current Eligibility + Business tier = Combined, both months (${eb?`${fmtNum(eb.current.tickets[0])}+${fmtNum(eb.business.tickets[0])}=${fmtNum(eb.combined.tickets[0])} Jul; ${fmtNum(eb.current.tickets[1])}+${fmtNum(eb.business.tickets[1])}=${fmtNum(eb.combined.tickets[1])} Aug`:''}). Percentages use this table's own monthly total (810 Jul / 815 Aug), which runs a bit lower than the Automation Monthly Staging totals used elsewhere (889 Jul / 813 Aug) — unreconciled, possibly a different scope.</div>
     </div>
     <div class="exp-block">
       <div class="subhead">What expands next</div>
       <ul class="exp-list">
-        <li>Expand autoresponder eligibility</li>
-        <li>Build targeted Autoflows for repeatable L1 use cases</li>
-        <li>Add additional trusted knowledge sources</li>
-        <li>Improve Support content discoverability through the redis.io domain migration</li>
-        <li>Improve demand categorization to measure Support vs. Billing impact</li>
+        <li><strong>Expand eligibility</strong> — broaden beyond Basic + Developer.</li>
+        <li><strong>Build targeted Autoflows</strong> for repeatable L1 use cases.</li>
+        <li><strong>Add trusted knowledge sources</strong> to improve answer confidence.</li>
+        <li><strong>Improve content discoverability</strong> via the redis.io domain migration.</li>
+        <li><strong>Improve demand categorization</strong> to separate Support from Billing impact.</li>
       </ul>
     </div>
     <div class="exp-block">
@@ -2262,7 +2371,7 @@ function renderExpansionNext(){
         const tr=(state.widget&&state.widget.automationTracker&&state.widget.automationTracker.rows)||[];
         const months=state.widget.automationTracker.months||[];
         const baseRow=tr.find(r=>r.metric.indexOf('Baseline L1 touches expected')===0);
-        const removedRow=tr.find(r=>r.metric.indexOf('L1 touches removed')===0);
+        const removedRow=tr.find(r=>r.metric.indexOf('L1 touches removed')>=0);
         // Use the last complete month, not an in-progress "(MTD)" one.
         let idx = months.length-1;
         while(idx>=0 && /MTD/.test(months[idx])) idx--;
@@ -2271,11 +2380,19 @@ function renderExpansionNext(){
         const baseline=+String(baseRow.vals[idx]).replace(/\u2212/g,'-'), removed=+String(removedRow.vals[idx]).replace(/\u2212/g,'-');
         const actual=(+(baseline-removed).toFixed(1));
         return removed>=0
-          ? `FT-covered tickets got <strong>${fmtNum(removed)} fewer L1 touches</strong> than expected in ${mo} (${fmtNum(actual)} actual vs. ${fmtNum(baseline)} baseline).`
-          : `Not there yet: FT-covered tickets actually got <strong>${fmtNum(Math.abs(removed))} more L1 touches</strong> than the non-FT baseline would predict in ${mo} (${fmtNum(actual)} actual vs. ${fmtNum(baseline)} baseline).`;
-      })()} That's a small slice of all tickets, though. Next: pull in total tickets, tickets per person, L1 vs. L2/L3 split, and CSE/TAM volume by product line to see if it holds org-wide.</div>
+          ? `On track: FT-covered tickets needed <strong>${fmtNum(actual)} L1 touches</strong> in ${mo}, ${fmtNum(removed)} fewer than the ${fmtNum(baseline)} expected without automation.`
+          : `Not there yet. In ${mo}, FT-covered tickets needed <strong>${fmtNum(actual)} L1 touches</strong> versus an expected ${fmtNum(baseline)} — more human involvement, not less.`;
+      })()} Still a small sample; next we'll test whether this holds at scale across total tickets, tickets per person, L1 vs. L2/L3, and CSE/TAM by product line.</div>
     </div>
   `;
+  if(eb){
+    const n = eb.months.length-1;
+    renderKpis('expEligKpis', [
+      {label:'Current Eligibility (Aug)', value:fmtNum(eb.current.tickets[n]), unit:'/mo', sub:`${fmtPct(eb.current.pct[n],1)} of Aug volume, vs. ${fmtPct(eb.current.pct[n-1],1)} in Jul`, status:'neutral'},
+      {label:'Business Tier (Aug)', value:fmtNum(eb.business.tickets[n]), unit:'', sub:`${fmtPct(eb.business.pct[n],1)} of volume, up from ${fmtPct(eb.business.pct[n-1],1)} in Jul`, status:'good'},
+      {label:'Combined (Aug)', value:fmtNum(eb.combined.tickets[n]), unit:'/mo', sub:`${fmtPct(eb.combined.pct[n],1)} of Aug volume, up from ${fmtPct(eb.combined.pct[n-1],1)} in Jul`, status:'good'},
+    ]);
+  }
 }
 
 /* Hero banner — TLDR strip shown at the very top of the page, above the nav.
@@ -2390,8 +2507,8 @@ function renderOverview(){
   renderSupportImpact();
   renderExpansionNext();
   const hl = {}; k.headline.forEach(h=>hl[h.label]=h);
-  const jw = w.monthly.months.indexOf('Jul');
-  const julDefl = jw>=0 ? w.monthly.deflectionRate[jw] : null;
+  const jw = w.byMonth['Jul'] || {};
+  const julContainment = jw.deflectionNH!=null ? jw.deflectionNH : null;
   const ef = e.funnelJul || {};
   // Share of ALL inbound resolved with no human — same basis as Widget
   // Deflection and KB Success Rate below, not the sent-only rate (66.4% of
@@ -2400,7 +2517,7 @@ function renderOverview(){
   const arOfInbound = (ef.deflected!=null && ef.inbound) ? 100*ef.deflected/ef.inbound : null;
   renderKpis('kpi-overview', [
     {label:'Deflection Share', value:fmtPct(demand.selfPct,1).replace('%',''), unit:'%', sub:`${fmtNum(demand.self)} of ${fmtNum(demand.total)} ${demand.mName} demand events deflected — KB, Widget, and Autoresponder combined`, status:'good'},
-    {label:'Widget Deflection', value:julDefl, unit:'%', sub:'July, log flag basis (Widget tab has the all-period view)', status:'good'},
+    {label:'Widget No-Handoff Containment', value:julContainment, unit:'%', sub:'July, no-handoff basis (Widget tab has the all-period view)', status:'good'},
     {label:'KB Success Rate', value:k.kbSuccess.rate[k.kbSuccess.rate.length-1], unit:'%', sub:`Deflections ÷ (tickets + deflections), ${k.reportingMonth.currentAbbr} ${k.reportingMonth.year}`, status:'good'},
     {label:'Autoresponder Deflection', value:arOfInbound!==null?fmtPct(arOfInbound,1).replace('%',''):null, unit:'%', sub:`${ef.deflected} of ${ef.inbound} July inbound emails resolved with no human — only ${ef.sent} even got an autoresponse`, status:'good'},
   ]);
@@ -2412,14 +2529,14 @@ function renderOverview(){
   const rcConfAll = (rcm.confirmed||[]).reduce((a,b)=>a+b,0);
   const rcAllRate = rcEligAll ? 100*rcConfAll/rcEligAll : null;
   const cards = [
-    {title:'Widget', big:fmtPct(julDefl,1)+' deflection (flag basis)', goto:'widget', points:[
+    {title:'Widget', big:fmtPct(julContainment,1)+' no-handoff containment', goto:'widget', points:[
       `${fmtNum(w.headline.conversations.value)} widget conversations in the source period.`,
       `~90% contained. Follow-up validation found ${rcAllRate===null?'~10%':'~'+fmtPct(rcAllRate,0)} of contained conversations later opened a same-issue ticket within 7 days — so the reported containment isn't simply abandoned conversations.`,
     ]},
     {title:'Ticket Autoresponder', big:fmtPct(ef.deflRate,1)+' deflection', goto:'ticket', points:[
       `${fmtNum(ef.deflected)} of ${fmtNum(ef.sent)} AI-responded tickets resolved without Support in July (of ${fmtNum(ef.inbound)} total inbound — coverage, not quality, is the constraint).`,
-      (()=>{ const el5=(e.eligibilityJul||null); return el5
-        ? `Eligibility now covers all Basic + Developer (${fmtNum(el5.current.tickets)} tickets/mo, ${fmtPct(el5.current.pct,1)} of July's volume) — up from a Basic-only, &lt;$50k, Low/Normal-priority pilot (${fmtNum(el5.pilot.tickets)}). Next: all Business, any priority — potential eligible volume +${fmtNum(el5.proposedBusiness.tickets)} tickets/mo (${fmtPct(el5.proposedTotal.pct,1)} of July's volume combined).`
+      (()=>{ const eb=(e.eligibilityByMonth||null); const n=eb?eb.months.length-1:-1; return eb
+        ? `Eligibility covers Basic + Developer (${fmtNum(eb.current.tickets[n])} tickets/mo in Aug, ${fmtPct(eb.current.pct[n],1)} of volume). Adding Business tier next: +${fmtNum(eb.business.tickets[n])} tickets/mo (${fmtPct(eb.business.pct[n],1)}), reaching ${fmtNum(eb.combined.tickets[n])}/mo combined (${fmtPct(eb.combined.pct[n],1)} of Aug volume).`
         : `Next expansion: Developer + broader Basic eligibility. Potential eligible volume: TBD.`; })(),
     ]},
     {title:'KB Program', big:fmtPct(hl['Total Deflection Rate'].current,1)+' total deflection', goto:'kb', points:(()=>{
