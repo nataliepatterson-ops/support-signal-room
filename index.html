@@ -843,7 +843,6 @@
         <div class="card">
           <div class="subhead">Content health</div>
           <table id="tblContentHealth"></table>
-          <div class="note" style="margin-top:10px;">Next actions: open a dialogue with the SRE team (Joe Dunford's team) about their own KB — comparing their GitHub content against the existing Support KB to see what's worth pulling in as a trusted source.</div>
         </div>
         <div class="card">
           <div class="subhead">Search &amp; findability</div>
@@ -1266,7 +1265,7 @@ function defaultState(){
         'Recontact: 2.8% of August\'s contained conversations came back as a same-issue ticket within 7 days — down sharply from 8.5% in July (which itself was revised down from an earlier 12.6% once July\'s eligible-conversation count was recalculated). A real improvement in containment quality, not just a denominator effect.',
         'Automated drop-off signal: Forethought flagged 80 August conversations (32.0%) as drop-offs — but August recontact tracking (2.8%) says most contained conversations are not turning into tickets. Of those 80: 63 (78.8%) had no follow-up, 11 (13.8%) ended during an incomplete handoff, and QA validation confirms 68 (85.0%) as likely true drop-offs rather than false positives.',
       ],
-      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026. As of 9/11/2026, every table on this tab is August-only — handoff-topic and workflow breakdowns, conversation duration (median split by outcome), and Customer feedback (sentiment, CSAT, and quick feedback, corrected from an earlier bad quick-feedback pull). The Widget Monthly KPI table\'s April/July conversation counts (74 / 259) do not match this tab\'s established headline figures for those months — flagged, not resolved; August\'s own count (250) matches, so this month\'s numbers are trustworthy.',
+      readoutCaveat: 'Note: Zendesk comparison is excluded from headline metrics because its source period ends June 12, 2026. Every table on this tab is August-only — handoff-topic and workflow breakdowns, conversation duration (median split by outcome), and Customer feedback (sentiment, CSAT, and quick feedback). April and July\'s conversation counts were both corrected via row-level audits (9/12 and 9/13/2026) after the original figures were found to use a too-narrow scope — see the byMonth comment above for details.',
     },
     email: {
       headline: {
@@ -2068,6 +2067,18 @@ function renderKbView(){
     const articleViews = k.momSeries['Article Views']||[];
     const rateOf = (num,den) => (num==null||den==null||!den) ? null : +(100*num/den).toFixed(1);
     const momPct = (cur,pri) => (cur==null||pri==null||!pri) ? null : +(100*(cur-pri)/pri).toFixed(1);
+    // Rate-of-rates MoM (used for Confirmed/Assumed/Total Deflection Rate):
+    // computes the delta from the RAW num/den ratios, not from the already-
+    // rounded display percentages. Rounding a rate to 1 decimal first and
+    // then taking a MoM% of that rounded value compounds rounding error —
+    // e.g. Confirmed Deflection Rate previously showed -20% this way
+    // instead of the correct -17.3% that k.headline's precise figure gives.
+    const momPctRaw = (curNum,curDen,priNum,priDen) => {
+      if(curNum==null||curDen==null||!curDen||priNum==null||priDen==null||!priDen) return null;
+      const curR = curNum/curDen, priR = priNum/priDen;
+      if(!priR) return null;
+      return +(100*(curR-priR)/priR).toFixed(1);
+    };
     const confRate = rateOf(confirmed[mi], sessions[mi]);
     const confRateP = priorMi!=null ? rateOf(confirmed[priorMi], sessions[priorMi]) : null;
     const assumedRate = rateOf(assumed[mi], sessions[mi]);
@@ -2081,9 +2092,9 @@ function renderKbView(){
     const aViews = articleViews[mi]!=null ? articleViews[mi] : null;
     const aViewsP = priorMi!=null && articleViews[priorMi]!=null ? articleViews[priorMi] : null;
     hl5 = [
-      {label:'Confirmed Deflection Rate', current:confRate, prior:confRateP, mom:momPct(confRate,confRateP), isPct:true, num:confirmed[mi], den:sessions[mi], denLabel:'sessions'},
-      {label:'Assumed Deflection Rate', current:assumedRate, prior:assumedRateP, mom:momPct(assumedRate,assumedRateP), isPct:true, num:assumed[mi], den:sessions[mi], denLabel:'sessions'},
-      {label:'Total Deflection Rate', current:totalRate, prior:totalRateP, mom:momPct(totalRate,totalRateP), isPct:true, num:totalNum, den:sessions[mi], denLabel:'sessions'},
+      {label:'Confirmed Deflection Rate', current:confRate, prior:confRateP, mom:momPctRaw(confirmed[mi],sessions[mi],confirmed[priorMi],sessions[priorMi]), isPct:true, num:confirmed[mi], den:sessions[mi], denLabel:'sessions'},
+      {label:'Assumed Deflection Rate', current:assumedRate, prior:assumedRateP, mom:momPctRaw(assumed[mi],sessions[mi],assumed[priorMi],sessions[priorMi]), isPct:true, num:assumed[mi], den:sessions[mi], denLabel:'sessions'},
+      {label:'Total Deflection Rate', current:totalRate, prior:totalRateP, mom:momPctRaw(totalNum,sessions[mi],totalNumP,sessions[priorMi]), isPct:true, num:totalNum, den:sessions[mi], denLabel:'sessions'},
       {label:'Search Deflection Proxy', current:sProxy, prior:sProxyP, mom:momPct(sProxy,sProxyP), isPct:true},
       {label:'Article Views', current:aViews, prior:aViewsP, mom:momPct(aViews,aViewsP), isPct:false},
     ];
