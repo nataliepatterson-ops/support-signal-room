@@ -741,6 +741,16 @@
       </div>
       <div class="takeaway">FT-tagged tickets reached L1 more than 2.5x as often as non-FT tickets in August (35.1% vs. 13.5%) — the experiments haven't reduced L1 touches yet. Hours returned is still blocked on a minutes-per-touch agreement with Support leadership.</div>
       <div class="card"><table id="tblAutomation"></table></div>
+
+      <div class="subhead" style="margin-top:14px;">L1-touch rate by product type, August</div>
+      <div class="grid-2">
+        <div class="card"><table id="tblAutomationByProduct"></table></div>
+        <div class="card">
+          <div class="subhead">FT-tagged vs. non-FT L1-touch rate</div>
+          <div class="chart-wrap"><canvas id="chartAutomationByProduct"></canvas></div>
+        </div>
+      </div>
+      <div class="takeaway" style="margin-top:12px;">Redis Cloud drives almost all of the elevated FT L1-touch rate: 43.6% of FT-tagged Redis Cloud tickets reached L1 vs. 25.8% of non-FT Redis Cloud tickets (n=39 FT-tagged). Redis Software runs the opposite way — 0 of 14 FT-tagged tickets touched L1, against a 10.2% non-FT baseline — though that's a thin sample worth re-checking next month, not a proven win yet.</div>
     </section>
 
     <section class="block" id="sec-w-12">
@@ -1107,6 +1117,22 @@ function defaultState(){
           {metric:'Baseline L1 touches expected', vals:['7.7'], note:'Non-FT Support touch rate \u00d7 Support FT volume.'},
           {metric:'Support L1 touches removed (baseline \u2212 actual)', vals:['\u221212.3'], note:'Negative = FT-tagged tickets touched L1 more than the baseline predicts.'},
           {metric:'Hours returned', vals:['\u2014'], note:'Blocked on the minutes-per-L1-touch decision with Support leadership.'},
+        ],
+      },
+      /* Product-type cut of the same August L1-touch story, from the
+         Autoresponder Billing v Technical ticket-level export (FT Product
+         Type field). ftTouched/ftVolume/nonFtTouched reconcile exactly to
+         the published FT-tagged (20) and Non-FT-tagged (98) L1-touched
+         totals above. nonFtEligible is an approximation (Non-Proactive,
+         Support category, non-automated tag) — it lands close to but not
+         exactly on the published 725 total, likely a few excluded groups
+         or timing drift since last refresh. Pulled from raw export 9/16/2026. */
+      automationProductBreakdown: {
+        note: 'FT/non-FT L1-touched counts tie to the published totals above; Non-FT eligible denominators are approximate.',
+        rows: [
+          {product:'Redis Cloud', ftTouched:17, ftVolume:39, ftRate:43.6, nonFtTouched:41, nonFtEligible:159, nonFtRate:25.8},
+          {product:'Redis Software', ftTouched:0, ftVolume:14, ftRate:0.0, nonFtTouched:56, nonFtEligible:549, nonFtRate:10.2},
+          {product:'Other / Unknown', ftTouched:3, ftVolume:4, ftRate:75.0, nonFtTouched:1, nonFtEligible:2, nonFtRate:50.0, lowN:true},
         ],
       },
       /* Billing reference — unmodified FT system (no routing rules or
@@ -1948,6 +1974,31 @@ function renderWidgetView(){
     ${tr.rows.map(r=>`<tr><td>${r.metric}</td>${r.vals.map(v=>`<td class="num">${v}</td>`).join('')}<td style="color:var(--muted); font-size:12px;">${r.note}</td></tr>`).join('')}
     <tr><td colspan="3" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">Auto-close counts are simulated against the proposed 4h+72h rule; no live automation exists yet.</td></tr>
   `;
+
+  // ---- Support impact: same L1-touch story, cut by product type ----
+  const pb = w.automationProductBreakdown;
+  const tblProductEl = document.getElementById('tblAutomationByProduct');
+  if (pb && tblProductEl) {
+    tblProductEl.innerHTML = `
+      <tr><th>Product</th><th class="num">FT L1-touched</th><th class="num">FT volume</th><th class="num">FT rate</th><th class="num">Non-FT L1-touched</th><th class="num">Non-FT eligible</th><th class="num">Non-FT rate</th></tr>
+      ${pb.rows.map(r=>`<tr><td>${r.product}${r.lowN?' *':''}</td><td class="num">${fmtNum(r.ftTouched)}</td><td class="num">${fmtNum(r.ftVolume)}</td><td class="num">${fmtPct(r.ftRate,1)}</td><td class="num">${fmtNum(r.nonFtTouched)}</td><td class="num">${fmtNum(r.nonFtEligible)}</td><td class="num">${fmtPct(r.nonFtRate,1)}</td></tr>`).join('')}
+      <tr><td colspan="7" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">* Other/Unknown has only 2\u20134 tickets in August \u2014 too small to read as a rate. ${pb.note}</td></tr>
+    `;
+    destroyChart('automationByProduct');
+    const pbPlot = pb.rows.filter(r=>!r.lowN);
+    charts.automationByProduct = safeChart('chartAutomationByProduct', {
+      type:'bar',
+      data:{
+        labels: pbPlot.map(r=>r.product),
+        datasets:[
+          { label:'FT-tagged', data: pbPlot.map(r=>r.ftRate), backgroundColor:COLORS.red, borderRadius:4, maxBarThickness:44 },
+          { label:'Non-FT-tagged', data: pbPlot.map(r=>r.nonFtRate), backgroundColor:COLORS.blue, borderRadius:4, maxBarThickness:44 },
+        ]
+      },
+      options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
+        scales:{ y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} } }
+    });
+  }
 
   // ---- Billing reference (unmodified FT system, ticket-volume context only — see billingReference tab notes) ----
   const br = w.billingReference;
