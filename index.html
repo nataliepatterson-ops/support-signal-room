@@ -711,8 +711,12 @@
         <h3>Autoresponder funnel</h3>
         <div class="note">August Email Autoresponder Outcomes (Support only). Billing is tracked separately \u2014 see the reference table at the bottom of the page.</div>
       </div>
-      <div class="takeaway">Only 14.0% (8 of 57) close with no human touch \u2014 7 no-reply auto-closures plus an estimated 1 confirmed resolution. The rest go to a human.</div>
-      <div class="card"><table id="tblFunnel"></table></div>
+      <div class="takeaway">Only 12.3% (7 of 57) close with no human touch \u2014 all via no-reply auto-closure. A further 10 tickets are still Pending with no outcome yet. The rest go to a human.</div>
+      <div class="kpi-row autofit" id="kpi-funnel"></div>
+      <div class="card" style="margin-top:12px;">
+        <div class="subhead">Where the 57 August tickets ended up</div>
+        <div class="chart-wrap" style="height:140px;"><canvas id="chartFunnel"></canvas></div>
+      </div>
     </section>
 
     <section class="block" id="sec-w-09e">
@@ -740,17 +744,37 @@
         <div class="note">Does the autoresponder reduce L1 work, not just solve tickets? August only — FT-tagged tickets vs. Support's own non-FT tickets. Not a Support-vs-Billing comparison — see the Billing reference table at the bottom of the page.<span class="info-dot">i<span class="tip">Auto-close counts are simulated against a proposed 4h+72h rule — no live Zendesk automation implements it yet.</span></span></div>
       </div>
       <div class="takeaway">FT-tagged tickets reached L1 more than 2.5x as often as non-FT tickets in August (35.1% vs. 13.5%) — the experiments haven't reduced L1 touches yet. Hours returned is still blocked on a minutes-per-touch agreement with Support leadership.</div>
-      <div class="card"><table id="tblAutomation"></table></div>
-
-      <div class="subhead" style="margin-top:14px;">L1-touch rate by product type, August</div>
-      <div class="grid-2">
-        <div class="card"><table id="tblAutomationByProduct"></table></div>
+      <div class="kpi-row autofit" id="kpi-automation"></div>
+      <div class="grid-2" style="margin-top:12px;">
         <div class="card">
           <div class="subhead">FT-tagged vs. non-FT L1-touch rate</div>
-          <div class="chart-wrap"><canvas id="chartAutomationByProduct"></canvas></div>
+          <div class="chart-wrap" style="height:160px;"><canvas id="chartAutomation"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="note" style="margin:0;">57 FT-tagged tickets, 725 non-FT eligible tickets. Nudge rate is 0.0% on both sides. Auto-close simulation (proposed 4h+72h rule) currently flags 0 tickets — no live automation exists yet. Hours returned is blocked on a minutes-per-L1-touch agreement with Support leadership.</div>
         </div>
       </div>
-      <div class="takeaway" style="margin-top:12px;">Redis Cloud drives almost all of the elevated FT L1-touch rate: 43.6% of FT-tagged Redis Cloud tickets reached L1 vs. 25.8% of non-FT Redis Cloud tickets (n=39 FT-tagged). Redis Software runs the opposite way — 0 of 14 FT-tagged tickets touched L1, against a 10.2% non-FT baseline — though that's a thin sample worth re-checking next month, not a proven win yet.</div>
+
+      <div class="subhead" style="margin-top:14px;">How FT-tagged Support tickets resolve, by product — August</div>
+      <div class="note">Two different questions: how many never reach a human at all, and — when they do — where that load lands.<span class="info-dot">i<span class="tip">Built from the Autoresponder Billing v Technical ticket-level export (57 FT-tagged, non-proactive Support tickets in August), using the bot's own handoff/no-handoff tag — a different source than the Automation Monthly Staging tab above, so counts here won't tie exactly to the 20 L1-touched figure in the table above.</span></span></div>
+
+      <div class="grid-2">
+        <div class="card"><table id="tblBotResolved"></table></div>
+        <div class="card">
+          <div class="subhead">Resolved without a human</div>
+          <div class="chart-wrap"><canvas id="chartBotResolved"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:12px;">
+        <div class="card"><table id="tblHandoffLoad"></table></div>
+        <div class="card">
+          <div class="subhead">Where handoffs land, by product</div>
+          <div class="chart-wrap"><canvas id="chartHandoffLoad"></canvas></div>
+        </div>
+      </div>
+
+      <div class="takeaway" style="margin-top:12px;">Redis Cloud and Redis Software resolve without a human at different rates (41.0% vs. 21.4%) — but the bigger difference is where the handoff goes. For Redis Software, L1 gets almost none of the load (0 of 11 handoffs); most goes straight to L3 (63.6%). For Redis Cloud, L1 is the single largest destination (10 of 23, 43.5%). Other/Unknown is too thin (n=4) to draw conclusions from.</div>
     </section>
 
     <section class="block" id="sec-w-12">
@@ -1119,20 +1143,31 @@ function defaultState(){
           {metric:'Hours returned', vals:['\u2014'], note:'Blocked on the minutes-per-L1-touch decision with Support leadership.'},
         ],
       },
-      /* Product-type cut of the same August L1-touch story, from the
-         Autoresponder Billing v Technical ticket-level export (FT Product
-         Type field). ftTouched/ftVolume/nonFtTouched reconcile exactly to
-         the published FT-tagged (20) and Non-FT-tagged (98) L1-touched
-         totals above. nonFtEligible is an approximation (Non-Proactive,
-         Support category, non-automated tag) — it lands close to but not
-         exactly on the published 725 total, likely a few excluded groups
-         or timing drift since last refresh. Pulled from raw export 9/16/2026. */
-      automationProductBreakdown: {
-        note: 'FT/non-FT L1-touched counts tie to the published totals above; Non-FT eligible denominators are approximate.',
+      /* Resolution path for FT-tagged Support tickets (August), from the
+         Autoresponder Billing v Technical ticket-level export — 57
+         FT-tagged, non-proactive Support tickets, split by whether the
+         bot's own forethought_support_handoff tag is present, then by
+         destination Ticket group for the ones that got handed off.
+         This is a different source/definition than the Automation
+         Monthly Staging tab above (ticket-group L1 flag vs. bot handoff
+         tag), so the L1 destination count here (13) plus the 1 ticket
+         sitting in the L1 group with no handoff tag (14 total) won't tie
+         exactly to the 20 L1-touched figure in the table above — treat
+         this section as directional, not a reconciliation. Pulled from
+         raw export 9/16/2026. */
+      botResolved: {
         rows: [
-          {product:'Redis Cloud', ftTouched:17, ftVolume:39, ftRate:43.6, nonFtTouched:41, nonFtEligible:159, nonFtRate:25.8},
-          {product:'Redis Software', ftTouched:0, ftVolume:14, ftRate:0.0, nonFtTouched:56, nonFtEligible:549, nonFtRate:10.2},
-          {product:'Other / Unknown', ftTouched:3, ftVolume:4, ftRate:75.0, nonFtTouched:1, nonFtEligible:2, nonFtRate:50.0, lowN:true},
+          {product:'Redis Cloud', ftVolume:39, botOnly:16, botOnlyRate:41.0},
+          {product:'Redis Software', ftVolume:14, botOnly:3, botOnlyRate:21.4},
+          {product:'Other / Unknown', ftVolume:4, botOnly:0, botOnlyRate:0.0, lowN:true},
+        ],
+      },
+      handoffLoad: {
+        lowNNote: 'Other/Unknown: only 4 tickets handed off \u2014 too small to read as a distribution.',
+        rows: [
+          {product:'Redis Cloud', handoff:23, handoffRate:59.0, l1:10,l1Pct:43.5, l2:2,l2Pct:8.7, l3:7,l3Pct:30.4, tam:1,tamPct:4.3, cs:3,csPct:13.0, other:0,otherPct:0.0},
+          {product:'Redis Software', handoff:11, handoffRate:78.6, l1:0,l1Pct:0.0, l2:1,l2Pct:9.1, l3:7,l3Pct:63.6, tam:1,tamPct:9.1, cs:2,csPct:18.2, other:0,otherPct:0.0},
+          {product:'Other / Unknown', handoff:4, handoffRate:100.0, l1:3,l1Pct:75.0, l2:0,l2Pct:0.0, l3:0,l3Pct:0.0, tam:0,tamPct:0.0, cs:0,csPct:0.0, other:1,otherPct:25.0, lowN:true},
         ],
       },
       /* Billing reference — unmodified FT system (no routing rules or
@@ -1334,20 +1369,21 @@ function defaultState(){
       /* Support-only autoresponder outcomes. Rebuilt 9/16/2026 from the
          cross-queue "August Email Autoresponder Outcomes" table, stripping
          out Billing's contribution using the tag breakdown from the
-         Support Funnel Rebuild block below:
-         Sent 57 (was 92, which included Billing's 31\u201335\u2014note there's a
-         small unexplained gap even after removing Billing's known 31, worth
-         a follow-up check on the sheet). Total FT-Closed = solved (1) +
-         no-reply-closed (7) = 8, since Billing's 1 solved ticket is no
-         longer counted. Customer-Confirmed Resolutions is back-calculated
-         (2 total \u2212 1 known Billing = 1 Support) since there's no direct
-         Support-only tag count for ft-email-positive-feedback \u2014 treat
-         this one row as an estimate, not a confirmed tag pull. */
+         Support Funnel Rebuild block below. Every ticket cross-checked by
+         Ticket ID against the raw Autoresponder Billing v Technical /
+         Automated Email Tickets export: closed-with-no-human-touch is the
+         no-reply auto-closures (7) \u2014 the one ticket with positive
+         feedback was handed to CS and solved by a human, so it's counted
+         as a handoff, not a no-touch resolution. 10 further tickets carry
+         no handoff/timeout/solved tag and are still Pending \u2014 shown as
+         their own row so they aren't invisible. (2 further edge cases \u2014
+         1 Closed with no tag, 1 sitting in Support - L3 as "Solved" with
+         no handoff tag \u2014 are too few to warrant their own row.) */
       funnel: [
         {stage:'Autoresponder Responses Sent', count:57, pctOfPrev:null, note:'ft-email-automated, Support queue only \u2014 authoritative August volume.'},
-        {stage:'Total FT-Closed Tickets', count:8, pctOfPrev:14.0, note:'Resolved without a human touch: bot-solved (1) + no-reply auto-closures (7), Support only.'},
+        {stage:'Total FT-Closed Tickets', count:7, pctOfPrev:12.3, note:'Resolved without a human touch: no-reply auto-closures only, Support only.'},
         {stage:'No-Reply Closures', count:7, pctOfPrev:12.3, note:'forethought_basic_no_reply_closed \u2014 closed after no customer reply (Support).'},
-        {stage:'Customer-Confirmed Resolutions', count:1, pctOfPrev:1.8, note:'ft-email-positive-feedback \u2014 estimated Support share, not a direct tag count (see comment above).'},
+        {stage:'Still pending, no outcome yet', count:10, pctOfPrev:17.5, note:'Neither closed nor handed to a human as of this pull.'},
       ],
       /* Support-only ticket disposition after the FT automated email reply —
          from the sheet's "Support Funnel / Handoff Reasons Rebuild" block,
@@ -1932,10 +1968,29 @@ function renderWidgetView(){
   // was removed from the Widget tab (Aug 2026); not currently tracked here.
 
   // ---- Autoresponder funnel ----
-  document.getElementById('tblFunnel').innerHTML = `
-    <tr><th>Stage</th><th class="num">Emails</th><th class="num">% of previous stage</th><th>Note</th></tr>
-    ${e.funnel.map(f=>`<tr><td>${f.stage}</td><td class="num">${fmtNum(f.count)}</td><td class="num">${f.pctOfPrev===null?'—':fmtPct(f.pctOfPrev)}</td><td style="color:var(--muted); font-size:12px;">${f.note}</td></tr>`).join('')}
-  `;
+  const sentRow = e.funnel.find(f=>f.stage==='Autoresponder Responses Sent');
+  const closedRow0 = e.funnel.find(f=>f.stage==='Total FT-Closed Tickets');
+  const pendingRow0 = e.funnel.find(f=>f.stage==='Still pending, no outcome yet');
+  const otherCount = sentRow.count - closedRow0.count - pendingRow0.count;
+  renderKpis('kpi-funnel', [
+    {label:'Sent', value:String(sentRow.count), unit:'', sub:'ft-email-automated, Support queue — August', status:'neutral'},
+    {label:'Closed — no human touch', value:fmtPct(closedRow0.pctOfPrev,1).replace('%',''), unit:'%', sub:`${closedRow0.count} of ${sentRow.count} — all via no-reply auto-closure`, status:'good'},
+    {label:'Still pending', value:fmtPct(pendingRow0.pctOfPrev,1).replace('%',''), unit:'%', sub:`${pendingRow0.count} of ${sentRow.count} — no outcome yet`, status:'watch'},
+  ]);
+  destroyChart('funnel');
+  charts.funnel = safeChart('chartFunnel', {
+    type:'bar',
+    data:{
+      labels:[''],
+      datasets:[
+        {label:'Closed — no human touch', data:[closedRow0.count], backgroundColor:COLORS.green, stack:'s'},
+        {label:'Handed to a human', data:[otherCount], backgroundColor:COLORS.blue, stack:'s'},
+        {label:'Still pending', data:[pendingRow0.count], backgroundColor:COLORS.amber, stack:'s'},
+      ]
+    },
+    options:{ indexAxis:'y', plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
+      scales:{ x:{grid:{color:COLORS.grid}, stacked:true, max:sentRow.count}, y:{grid:{display:false}, stacked:true} } }
+  });
 
   // ---- Support autoresponder disposition: solved by bot vs. handed to L1 ----
   // (Support only — Billing has its own tag chain and review process, out of scope here.)
@@ -1969,34 +2024,70 @@ function renderWidgetView(){
 
   // ---- Support impact: FT-tagged vs. non-FT L1-touch rate & nudges (belongs to the email/autoresponder program, not widget) ----
   const tr = w.automationTracker;
-  document.getElementById('tblAutomation').innerHTML = `
-    <tr><th>Metric</th>${tr.months.map(m=>`<th class="num">${m}</th>`).join('')}<th>Guardrail / note</th></tr>
-    ${tr.rows.map(r=>`<tr><td>${r.metric}</td>${r.vals.map(v=>`<td class="num">${v}</td>`).join('')}<td style="color:var(--muted); font-size:12px;">${r.note}</td></tr>`).join('')}
-    <tr><td colspan="3" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">Auto-close counts are simulated against the proposed 4h+72h rule; no live automation exists yet.</td></tr>
-  `;
+  const trGet = name => tr.rows.find(r=>r.metric===name);
+  const ftRateVal = parseFloat(trGet('FT-tagged: Support L1-touch rate').vals[0]);
+  const nonFtRateVal = parseFloat(trGet('Non-FT-tagged: Support L1-touch rate').vals[0]);
+  const touchesRemoved = trGet('Support L1 touches removed (baseline \u2212 actual)').vals[0];
+  renderKpis('kpi-automation', [
+    {label:'FT-tagged L1-touch rate', value:String(ftRateVal), unit:'%', sub:'57 FT-tagged Support tickets', status:'bad'},
+    {label:'Non-FT-tagged L1-touch rate', value:String(nonFtRateVal), unit:'%', sub:'725 non-FT eligible tickets — the baseline', status:'neutral'},
+    {label:'L1 touches removed', value:touchesRemoved, unit:'', sub:'Negative = FT-tagged touched L1 more than baseline predicts', status:'bad'},
+  ]);
+  destroyChart('automation');
+  charts.automation = safeChart('chartAutomation', {
+    type:'bar',
+    data:{ labels:['FT-tagged', 'Non-FT-tagged'], datasets:[
+      {label:'L1-touch rate', data:[ftRateVal, nonFtRateVal], backgroundColor:[COLORS.red, COLORS.blue], borderRadius:4, maxBarThickness:60},
+    ]},
+    options:{ plugins:{legend:{display:false}},
+      scales:{ y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} } }
+  });
 
-  // ---- Support impact: same L1-touch story, cut by product type ----
-  const pb = w.automationProductBreakdown;
-  const tblProductEl = document.getElementById('tblAutomationByProduct');
-  if (pb && tblProductEl) {
-    tblProductEl.innerHTML = `
-      <tr><th>Product</th><th class="num">FT L1-touched</th><th class="num">FT volume</th><th class="num">FT rate</th><th class="num">Non-FT L1-touched</th><th class="num">Non-FT eligible</th><th class="num">Non-FT rate</th></tr>
-      ${pb.rows.map(r=>`<tr><td>${r.product}${r.lowN?' *':''}</td><td class="num">${fmtNum(r.ftTouched)}</td><td class="num">${fmtNum(r.ftVolume)}</td><td class="num">${fmtPct(r.ftRate,1)}</td><td class="num">${fmtNum(r.nonFtTouched)}</td><td class="num">${fmtNum(r.nonFtEligible)}</td><td class="num">${fmtPct(r.nonFtRate,1)}</td></tr>`).join('')}
-      <tr><td colspan="7" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">* Other/Unknown has only 2\u20134 tickets in August \u2014 too small to read as a rate. ${pb.note}</td></tr>
+  // ---- Support impact: bot-only resolution rate, by product ----
+  const br1 = w.botResolved;
+  const tblBotEl = document.getElementById('tblBotResolved');
+  if (br1 && tblBotEl) {
+    tblBotEl.innerHTML = `
+      <tr><th>Product</th><th class="num">FT-tagged volume</th><th class="num">Resolved by bot</th><th class="num">Bot-only rate</th></tr>
+      ${br1.rows.map(r=>`<tr><td>${r.product}${r.lowN?' *':''}</td><td class="num">${fmtNum(r.ftVolume)}</td><td class="num">${fmtNum(r.botOnly)}</td><td class="num">${fmtPct(r.botOnlyRate,1)}</td></tr>`).join('')}
     `;
-    destroyChart('automationByProduct');
-    const pbPlot = pb.rows.filter(r=>!r.lowN);
-    charts.automationByProduct = safeChart('chartAutomationByProduct', {
+    destroyChart('botResolved');
+    const brPlot = br1.rows.filter(r=>!r.lowN);
+    charts.botResolved = safeChart('chartBotResolved', {
+      type:'bar',
+      data:{ labels: brPlot.map(r=>r.product), datasets:[
+        { label:'Bot-only resolution rate', data: brPlot.map(r=>r.botOnlyRate), backgroundColor:palette, borderRadius:4, maxBarThickness:44 },
+      ]},
+      options:{ plugins:{legend:{display:false}},
+        scales:{ y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} } }
+    });
+  }
+
+  // ---- Support impact: when handed to a human, where the load lands, by product ----
+  const hl2 = w.handoffLoad;
+  const tblHandoffEl = document.getElementById('tblHandoffLoad');
+  if (hl2 && tblHandoffEl) {
+    tblHandoffEl.innerHTML = `
+      <tr><th>Product</th><th class="num">Handed to human</th><th class="num">\u2192 L1</th><th class="num">\u2192 L2</th><th class="num">\u2192 L3</th><th class="num">\u2192 TAM</th><th class="num">\u2192 CS</th><th class="num">\u2192 Other</th></tr>
+      ${hl2.rows.map(r=>`<tr><td>${r.product}${r.lowN?' *':''}</td><td class="num">${fmtNum(r.handoff)} (${fmtPct(r.handoffRate,1)})</td><td class="num">${fmtNum(r.l1)} (${fmtPct(r.l1Pct,1)})</td><td class="num">${fmtNum(r.l2)} (${fmtPct(r.l2Pct,1)})</td><td class="num">${fmtNum(r.l3)} (${fmtPct(r.l3Pct,1)})</td><td class="num">${fmtNum(r.tam)} (${fmtPct(r.tamPct,1)})</td><td class="num">${fmtNum(r.cs)} (${fmtPct(r.csPct,1)})</td><td class="num">${fmtNum(r.other)} (${fmtPct(r.otherPct,1)})</td></tr>`).join('')}
+      <tr><td colspan="8" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">Handed-to-human count out of FT-tagged volume; destination columns are % of that product's handoffs (each row's L1\u2013Other sums to 100%). * ${hl2.lowNNote}</td></tr>
+    `;
+    destroyChart('handoffLoad');
+    const hlPlot = hl2.rows.filter(r=>!r.lowN);
+    charts.handoffLoad = safeChart('chartHandoffLoad', {
       type:'bar',
       data:{
-        labels: pbPlot.map(r=>r.product),
+        labels: hlPlot.map(r=>r.product),
         datasets:[
-          { label:'FT-tagged', data: pbPlot.map(r=>r.ftRate), backgroundColor:COLORS.red, borderRadius:4, maxBarThickness:44 },
-          { label:'Non-FT-tagged', data: pbPlot.map(r=>r.nonFtRate), backgroundColor:COLORS.blue, borderRadius:4, maxBarThickness:44 },
+          { label:'L1', data: hlPlot.map(r=>r.l1Pct), backgroundColor:COLORS.red, stack:'s' },
+          { label:'L2', data: hlPlot.map(r=>r.l2Pct), backgroundColor:COLORS.amber, stack:'s' },
+          { label:'L3', data: hlPlot.map(r=>r.l3Pct), backgroundColor:COLORS.blue, stack:'s' },
+          { label:'TAM', data: hlPlot.map(r=>r.tamPct), backgroundColor:COLORS.green, stack:'s' },
+          { label:'CS', data: hlPlot.map(r=>r.csPct), backgroundColor:COLORS.muted, stack:'s' },
         ]
       },
       options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
-        scales:{ y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} } }
+        scales:{ y:{grid:{color:COLORS.grid}, stacked:true, max:100, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}, stacked:true} } }
     });
   }
 
