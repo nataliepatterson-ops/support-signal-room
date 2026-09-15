@@ -727,38 +727,16 @@
     <section class="block" id="sec-w-09g">
       <div class="block-head">
         <h3>Support impact — L1 touches &amp; nudges</h3>
-        <div class="note">Does the autoresponder reduce L1 work, not just solve tickets? August only — FT-tagged tickets vs. Support's own non-FT tickets. Not a Support-vs-Billing comparison — see the Billing reference table at the bottom of the page.<span class="info-dot">i<span class="tip">Auto-close counts are simulated against a proposed 4h+72h rule — no live Zendesk automation implements it yet.</span></span></div>
+        <div class="note">Does the autoresponder reduce L1 work, not just solve tickets? August only — FT-tagged (Forethought-tagged, i.e. touched by the autoresponder) tickets vs. Support's own non-FT tickets. Not a Support-vs-Billing comparison — see the Billing reference table at the bottom of the page.</div>
       </div>
-      <div class="takeaway">FT-tagged tickets reached L1 about 1.8x as often as non-FT tickets in August (24.6% vs. 13.8%) — the experiments haven't reduced L1 touches yet. Hours returned is still blocked on a minutes-per-touch agreement with Support leadership.</div>
-      <div class="kpi-row autofit" id="kpi-automation"></div>
-      <div class="grid-2" style="margin-top:12px;">
-        <div class="card">
-          <div class="subhead">FT-tagged vs. non-FT L1-touch rate</div>
-          <div class="chart-wrap" style="height:160px;"><canvas id="chartAutomation"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="note" style="margin:0;">57 FT-tagged tickets, 710 non-FT eligible tickets. Nudge rate: 28.6% FT-tagged (4 of the 14 tickets that reached L1 also hit the no-response timeout), 0.0% non-FT (structurally \u2014 non-FT tickets never carry the autoresponder's tags). Auto-close simulation (proposed 4h+72h rule) currently flags 0 tickets, unverified against raw data \u2014 no live automation exists yet. Hours returned is blocked on a minutes-per-L1-touch agreement with Support leadership.</div>
-        </div>
-      </div>
+      <div class="takeaway" id="supportImpactTakeaway"></div>
 
       <div class="subhead" style="margin-top:14px;">How FT-tagged Support tickets resolve, by product — August</div>
-      <div class="note">Two different questions: how many never reach a human at all, and — when they do — where that load lands.<span class="info-dot">i<span class="tip">Built from the Autoresponder Billing v Technical ticket-level export (57 FT-tagged, non-proactive Support tickets in August), using the autoresponder's own handoff/no-handoff tag. This is the same 14-ticket L1-touched population now used in the table above (both corrected 9/18/2026 to use this raw pull instead of the Automation Monthly Staging tab).</span></span></div>
+      <div class="note">The complete journey for every FT-tagged ticket, by product: resolved with no human touch, or handed off — and if handed off, to which team.<span class="info-dot">i<span class="tip">Built from the Autoresponder Billing v Technical ticket-level export (57 FT-tagged, non-proactive Support tickets in August), using the autoresponder's own handoff/no-handoff tag. This is the same 14-ticket L1-touched population used in the takeaway above (both corrected 9/18/2026 to use this raw pull instead of the Automation Monthly Staging tab). Each bar sums to 100% of that product's FT-tagged volume — the destination shares here are recalculated on that same base, not on handoff volume alone, so they're directly comparable to "Resolved by autoresponder."</span></span></div>
 
-      <div class="grid-2">
-        <div class="card"><table id="tblBotResolved"></table></div>
-        <div class="card">
-          <div class="subhead">Resolved without a human</div>
-          <div class="chart-wrap"><canvas id="chartBotResolved"></canvas></div>
-        </div>
-      </div>
+      <div class="card"><div class="chart-wrap" style="height:220px;"><canvas id="chartResolutionJourney"></canvas></div></div>
 
-      <div class="grid-2" style="margin-top:12px;">
-        <div class="card"><table id="tblHandoffLoad"></table></div>
-        <div class="card">
-          <div class="subhead">Where handoffs land, by product</div>
-          <div class="chart-wrap"><canvas id="chartHandoffLoad"></canvas></div>
-        </div>
-      </div>
+      <div class="card" style="margin-top:12px;"><table id="tblResolutionJourney"></table></div>
 
       <div class="takeaway" style="margin-top:12px;">Redis Cloud and Redis Software resolve without a human at different rates (41.0% vs. 21.4%) — but the bigger difference is where the handoff goes. For Redis Software, L1 gets almost none of the load (0 of 11 handoffs); most goes straight to L3 (63.6%). For Redis Cloud, L1 is the single largest destination (10 of 23, 43.5%). Other/Unknown is too thin (n=4) to draw conclusions from.</div>
     </section>
@@ -799,16 +777,16 @@
 
     <section class="block" id="sec-k-01">
       <div class="block-head"><h3>Headline metrics, <span id="kbHeadMonths">July vs. June</span></h3></div>
-      <div class="takeaway">August's deflection mix moved the opposite way from July: confirmed fell 17.6% to 14 while assumed rose 1.0% to 212 — total deflection held flat at 19.8%. Search proxies fell again, down another 8.4%.</div>
+      <div class="takeaway">August's deflection mix moved the opposite way from July: confirmed fell 17.6% to 14 while assumed fell 19.2% to 834 — total deflection fell 10.4% to 44.0%. Search proxies fell again too, down another 1.4%.</div>
       <div class="kpi-row" id="kpi-kb-headline"></div>
     </section>
 
     <section class="block" id="sec-k-01b">
       <div class="block-head">
         <h3>Search journey, <span id="kbFunnelMonth">July</span></h3>
-        <div class="note">True-subset funnel from the search tracker: each stage is a subset of the one above; result clicks are derived (searches × CTR, rounded). Sessions, article views, and deflections come from separate trackers with different denominators — shown as context tiles below, not funnel stages.</div>
+        <div class="note">True-subset funnel from the search tracker, across all search roles (Anonymous, End-user, Staff): each stage is a subset of the one above; result clicks are derived (searches × share with \u22651 click, rounded). Sessions, article views, and deflections come from separate trackers with different denominators — shown as context tiles below, not funnel stages.</div>
       </div>
-      <div class="takeaway">Search click-through improved to 53.3% (74 of 139 searches get a click), but 22 still end in a ticket — up from 11 in July. Deflection and article reach are separate-tracker context, not funnel stages.</div>
+      <div class="takeaway">Click-through actually fell once anonymous searchers are included: 53.7% of August's 949 searches got a click, down from 69.6% in July \u2014 the opposite direction from what an End-user-only view would show. 22 searches still end in a ticket, up from 11 in July. Deflection and article reach are separate-tracker context, not funnel stages.</div>
       <div class="card"><div class="bar-list" id="kbFunnel"></div></div>
       <div class="kpi-row autofit" id="kbFlowContext" style="margin-top:12px;"></div>
     </section>
@@ -818,7 +796,7 @@
         <h3>Month-over-month trend, <span id="kbTrendRange">Jan – Jul 2026</span></h3>
         <div class="note" id="kbTrendNote">July is the current reporting month and June is the comparison month.</div>
       </div>
-      <div class="takeaway">Sessions held flat in August (1,145 → 1,140) while searches ticked up to 139 and article views rebounded to 217 — total deflection stayed level at 19.8%.</div>
+      <div class="takeaway">Sessions fell in August across all user roles (2,137 → 1,927) while total searches also declined to 949 and article views fell to 5,386 — total deflection dropped 10.4% to 44.0%.</div>
       <div class="card">
         <div class="range-filter" id="momRangeFilter" style="margin-bottom:14px;"></div>
         <div class="chart-wrap tall"><canvas id="chartMomTrend"></canvas></div>
@@ -1323,10 +1301,9 @@ function defaultState(){
         emailCoverage: {value:null, sub:'Unavailable \u2014 source no longer reports total inbound email volume'},
       },
       readout: [
-        'Solved: <strong>14.0% of August\'s 57 sent tickets</strong> resolved with no further human action (8 of 57) — 1 explicit solve plus 7 auto-closed after no customer reply. 42 went to L1 handoff (9 of those via the 4-hour no-response timeout specifically). These tags can overlap on a single ticket \u2014 the one explicit solve also carries a handoff and a timeout tag \u2014 so they don\'t necessarily add up to the sent total.',
-        'August is the first month with real, post-pilot volume for the Support autoresponder — June and July ran at pilot scale and aren\'t a fair comparison point. Treat these as this program\'s baseline; September vs. August will be the first comparison worth reading.',
+        'August is the Support autoresponder\u2019s first month at real, post-pilot volume (57 sent) \u2014 see Autoresponder outcomes above for the full solved/handoff/pending breakdown. June and July ran at pilot scale and aren\u2019t a fair comparison point; September vs. August will be the first comparison worth reading.',
       ],
-      readoutCaveat: 'Note: June and July are Support pilot months, not a stable MoM baseline — August is the first real-volume month, so it\'s reported standalone rather than against July. Sent/solved/handoff counts were revised 9/3/2026 when the source switched from an aggregated tag-count table to a deduplicated ticket-level export (e.g. August\'s sent count moved from 61 to 57) — small future revisions are possible as that export matures. Hours returned from reduced L1 touches is still blocked on agreeing a minutes-per-touch value with Support leadership.',
+      readoutCaveat: 'Note: sent/solved/handoff counts were revised 9/3/2026 when the source switched from an aggregated tag-count table to a deduplicated ticket-level export (August\'s sent count moved from 61 to 57); handoff/timeout counts were further revised 9/18/2026 from 42/9 to 38/8 when reconciled against that same raw export. Small future revisions are possible as the export matures. Hours returned from reduced L1 touches is still blocked on agreeing a minutes-per-touch value with Support leadership.',
       /* July slice of the autoresponder raw logs (computed Aug 17, 2026) — feeds the overview's single-month headline. */
       funnelJul: {inbound:576, sent:110, deflected:73, deflRate:66.4},
       /* Autoresponder eligibility roadmap, rebuilt 9/18/2026 from the
@@ -1426,9 +1403,6 @@ function defaultState(){
         solveRate:   [14.0],
         handoffRate: [66.7],
         pendingRate: [14.0],
-        notes: [
-          'First real month — Support\'s autoresponder ran the full 31 days. Ticket-ID deduped; sent revised down from 61 (old tag-aggregate) to 57.',
-        ],
       },
       /* Handoff reason breakdown, from the same rebuild block. Only the
          4-hour timeout tag (forethought_support_timeout) is currently
@@ -1454,25 +1428,36 @@ function defaultState(){
       reportingMonth: {current:'August', prior:'July', currentAbbr:'Aug', priorAbbr:'Jul', year:'2026'},
       narrativeMonth: 'August',
       headline: [
-        /* August 2026 current vs July 2026 prior — matches KB Scorecard reporting month. num/den are explicit so the count+% pairing never drifts from the rate. */
-        {label:'Confirmed Deflection Rate', current:1.2, prior:1.5, mom:-17.3, isPct:true, num:14, den:1140, denLabel:'sessions'},
-        {label:'Assumed Deflection Rate', current:18.6, prior:18.3, mom:1.4, isPct:true, num:212, den:1140, denLabel:'sessions'},
-        {label:'Total Deflection Rate', current:19.8, prior:19.8, mom:0.0, isPct:true, num:226, den:1140, denLabel:'sessions'},
-        {label:'Search Deflection Proxy', current:83.8, prior:91.5, mom:-8.4, isPct:true, num:117, den:140, denLabel:'searches'},
-        {label:'Article Views', current:217, prior:188, mom:15.4, isPct:false},
+        /* August 2026 current vs July 2026 prior. Rescoped 9/18/2026 from
+           End-user-only to All-user (Admin + Agent + Anonymous + End user)
+           per the source workbook's methodology update — anonymous
+           visitors account for the majority of assumed deflection volume
+           (582 of 834 in August) and were previously excluded entirely.
+           num/den are explicit so the count+% pairing never drifts from
+           the rate. */
+        {label:'Confirmed Deflection Rate', current:0.7, prior:0.8, mom:-8.7, isPct:true, num:14, den:1927, denLabel:'sessions'},
+        {label:'Assumed Deflection Rate', current:43.3, prior:48.3, mom:-10.4, isPct:true, num:834, den:1927, denLabel:'sessions'},
+        {label:'Total Deflection Rate', current:44.0, prior:49.1, mom:-10.4, isPct:true, num:848, den:1927, denLabel:'sessions'},
+        {label:'Search Deflection Proxy', current:97.6, prior:99.0, mom:-1.4, isPct:true, num:927, den:949, denLabel:'searches'},
+        {label:'Article Views', current:5386, prior:5862, mom:-8.1, isPct:false},
       ],
       momMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+      /* Rescoped 9/18/2026: was End-user (signed in) role only, now All-user
+         (Admin + Agent + Anonymous + End user) per the source workbook's
+         methodology update. Full 8-month history recomputed from the raw
+         per-role monthly tables, matching the workbook's own pre-aggregated
+         KPI Trend section exactly. Old End-user-only figures are gone, not
+         kept alongside — the workbook itself no longer reports that scope. */
       momSeries: {
-        'Article Views': [393,329,286,278,254,197,188,217],
-        'Confirmed Deflections': [31,18,29,21,11,24,17,14],
-        'Assumed Deflections': [191,254,228,208,214,151,210,212],
-        'End-user Sessions': [1187,1251,1227,1243,1131,1049,1145,1140],
-        'Total Deflection Rate %': [18.7,21.7,20.9,18.4,19.9,16.7,19.8,19.8],
-        /* Revised methodology: the source workbook now scopes this to the
-           End-user (signed in) search role only, and only Jul/Aug have a
-           clean role-level export — earlier months are unavailable (null)
-           rather than the old all-role blend that used to fill this series. */
-        'Search Deflection Proxy %': [null,null,null,null,null,null,91.5,83.8],
+        'Article Views': [3283,3450,4853,4483,4800,3962,5862,5386],
+        'Confirmed Deflections': [32,18,29,22,11,24,17,14],
+        'Assumed Deflections': [761,744,988,982,887,738,1032,834],
+        'All User Sessions': [2085,2160,2567,2362,2098,1856,2137,1927],
+        'Total Deflection Rate %': [38.0,35.3,39.6,42.5,42.8,41.1,49.1,44.0],
+        'Search Deflection Proxy %': [92.8,95.3,94.8,93.9,94.9,97.8,99.0,97.6],
+        'Search Containment Count': [2413,2913,2433,1976,1411,1334,1108,927],
+        'Result-Click Containment Proxy %': [89.9,93.7,92.9,92.2,91.5,96.5,98.6,95.6],
+        'Search CTR %': [78.1,98.9,97.1,95.6,91.3,83.4,95.7,93.7],
       },
       /* Field names read may/apr but mean current/prior (kept for feed compatibility).
          Current = August 2026, prior = July 2026. August's Deflections-by-Role export
@@ -1485,14 +1470,14 @@ function defaultState(){
         {seg:'Total', mayConf:14, aprConf:17, confMom:-17.6, mayAssumed:834, aprAssumed:1032, assumedMom:-19.2},
       ],
       supportImpact: [
-        {metric:'End-user Sessions', current:1140, prior:1145, mom:-0.4, isPct:false},
-        {metric:'Confirmed Deflection Rate', current:1.2, prior:1.5, mom:-17.3, isPct:true},
-        {metric:'Assumed Deflection Rate', current:18.6, prior:18.3, mom:1.4, isPct:true},
-        {metric:'Total Deflection Rate', current:19.8, prior:19.8, mom:0.0, isPct:true},
-        {metric:'Search Deflection Proxy', current:83.8, prior:91.5, mom:-8.4, isPct:true},
-        {metric:'Search Containment Count', current:117, prior:120, mom:-2.5, isPct:false},
-        {metric:'Result-Click Containment Proxy', current:61.3, prior:76.8, mom:-20.2, isPct:true},
-        {metric:'Article Views', current:217, prior:188, mom:15.4, isPct:false},
+        {metric:'All User Sessions', current:1927, prior:2137, mom:-9.8, isPct:false},
+        {metric:'Confirmed Deflection Rate', current:0.7, prior:0.8, mom:-8.7, isPct:true},
+        {metric:'Assumed Deflection Rate', current:43.3, prior:48.3, mom:-10.4, isPct:true},
+        {metric:'Total Deflection Rate', current:44.0, prior:49.1, mom:-10.4, isPct:true},
+        {metric:'Search Deflection Proxy', current:97.6, prior:99.0, mom:-1.4, isPct:true},
+        {metric:'Search Containment Count', current:927, prior:1108, mom:-16.3, isPct:false},
+        {metric:'Result-Click Containment Proxy', current:95.6, prior:98.6, mom:-3.0, isPct:true},
+        {metric:'Article Views', current:5386, prior:5862, mom:-8.1, isPct:false},
         /* Raw Ticket Article Links (the source tab) was removed from the workbook
            for August — these two metrics can't be refreshed. Prior keeps July's
            last-known value for reference; current is unavailable, not zero. */
@@ -1508,13 +1493,36 @@ function defaultState(){
       ],
       /* No-Result Search % intentionally omitted: the workbook flags its definition
          as unverified (user-run Zendesk report disagrees) and says not to present it.
-         The raw no-result count stays. */
+         The raw no-result count stays.
+
+         Rescoped 9/18/2026 from End-user-only to all three search roles
+         (Anonymous, End-user, Staff). Total Searches and Searches with No
+         Results are direct sums across roles — no ambiguity there.
+         Tickets Created After Search stays at 22/11: verified two ways
+         (the per-role ticket-ratio field is 0% for Anonymous and Staff in
+         both months, and it separately reconciles exactly against the KB
+         Scorecard's own Search Containment Count math) — not just an
+         End-user figure carried over unchanged.
+
+         'Search CTR' is RENAMED and REDEFINED, not just rescoped: the raw
+         "Avg click-through rate" field is 100.9% for Anonymous in August
+         (over 100%, so it's counting something like clicks-per-search, not
+         "% of searches with a click") and can't be combined with the
+         End-user role's clean percentage into one meaningful number. Raw
+         Clicks \u00f7 Searches doesn't work either \u2014 it sums to 1,138% across
+         roles, confirming "Clicks" counts click events, not searches with
+         a click. "Searches with ≥1 click" uses the "Searches with no
+         clicks" field instead, which every role reports on the same
+         (bounded, comparable) basis. Under this corrected, full-population
+         view, click-through actually FELL from 69.6% (Jul) to 53.7% (Aug)
+         — the opposite direction from what the old End-user-only "Search
+         CTR improved to 53.3%" framing showed. */
       searchFind: [
         {metric:'Search Exit Rate', current:null, prior:null, mom:null, isPct:true},
-        {metric:'Total Searches', current:139, prior:131, mom:6.1, isPct:false},
-        {metric:'Search CTR', current:53.3, prior:42.0, mom:27.0, isPct:true},
+        {metric:'Total Searches', current:949, prior:1119, mom:-15.2, isPct:false},
+        {metric:'Searches with \u22651 click', current:53.7, prior:69.6, mom:-22.8, isPct:true},
         {metric:'Tickets Created After Search', current:22, prior:11, mom:100.0, isPct:false},
-        {metric:'Searches with No Results', current:18, prior:26, mom:-30.8, isPct:false},
+        {metric:'Searches with No Results', current:135, prior:108, mom:25.0, isPct:false},
       ],
       ticketGroupMonths: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
       /* Refreshed from the KB workbook's own Raw Tickets by Group tab (the
@@ -1537,22 +1545,27 @@ function defaultState(){
         'TAM AMR East':[0,1,0,2,3,1,3,4],
       },
       priorities: [
-        {n:1, what:'Investigate search conversion decline', why:'August search deflection fell 8.4% to 83.8% and result-click containment fell 20.2% to 61.3%, despite CTR improving to 53.3%.', kpi:'Search Deflection Proxy; Search Containment Count; Result-Click Containment Proxy', owner:'KB Owner / Support Ops', status:'Watch'},
-        {n:2, what:'Validate the deflection mix', why:'Confirmed deflections fell 17.6% while assumed deflections rose 1.0%; the total deflection rate remained essentially flat at 19.8%.', kpi:'Confirmed Deflections; Assumed Deflections; Total Deflection Rate', owner:'Support Ops', status:'Watch'},
+        {n:1, what:'Monitor search conversion slippage', why:'August all-user search deflection fell 1.4% to 97.6% and result-click containment fell 3.0% to 95.6%; all-user search CTR also softened to 93.7%.', kpi:'Search Deflection Proxy; Search Containment Count; Result-Click Containment Proxy', owner:'KB Owner / Support Ops', status:'Watch'},
+        {n:2, what:'Validate the all-user deflection mix', why:'Confirmed deflections fell 17.6% and assumed deflections fell 19.2%; total all-user deflection rate declined 10.4% to 44.0%.', kpi:'Confirmed Deflections; Assumed Deflections; Total Deflection Rate', owner:'Support Ops', status:'Watch'},
         {n:3, what:'Restore unavailable source metrics', why:'Live article inventory and KB influence cannot be refreshed because the Raw KB Inventory and Raw Ticket Article Links tabs are not present.', kpi:'Live Articles Total; New Articles Published; KB Influence on Tickets', owner:'Dashboard Owner / Support Ops', status:'Needs data'},
-        {n:4, what:'Sustain article reach and improve feedback', why:'Article views increased 15.4% to 217, but August recorded no feedback responses and subscriptions declined from 2 to 1.', kpi:'Article Views; Article Positive Feedback Rate', owner:'Content Ops', status:'Review'},
+        {n:4, what:'Sustain article reach and feedback quality', why:'All-user article views declined 8.1% to 5,386; August feedback was positive but low-volume at 4 total responses, while subscriptions declined from 2 to 1.', kpi:'Article Views; Article Positive Feedback Rate', owner:'Content Ops', status:'Review'},
         {n:5, what:'Maintain the clean August refresh', why:'Core dashboard sources are loaded through August 2026. September activity is month-to-date and remains excluded from current reporting.', kpi:'Raw Data Refresh Review; dashboard source checks', owner:'Dashboard Owner', status:'Ready'},
       ],
       /* KB Success vs Tickets — from the workbook's monthly table:
          total deflections / (tickets created + deflections). Tickets Created
          re-based Aug 13, 2026 to core support queues only (the 11 groups in
          Raw Tickets by Group above) — this lowers every month's ticket count
-         and raises every month's rate versus the pre-rebase figures. */
+         and raises every month's rate versus the pre-rebase figures.
+         Deflections rescoped 9/18/2026 from End-user-only to All-user
+         (confirmed + assumed deflections across Admin, Agent, Anonymous,
+         End user), matching the KB Scorecard update — this roughly
+         doubles the rate for every month since anonymous visitors weren't
+         counted at all before. */
       kbSuccess: {
         months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
         tickets:[887,889,918,984,956,887,1005,927],
-        deflections:[222,272,257,229,225,175,227,226],
-        rate:[20.0,23.4,21.9,18.9,19.1,16.5,18.4,19.6],
+        deflections:[793,762,1017,1004,898,762,1049,848],
+        rate:[47.2,46.2,52.6,50.5,48.4,46.2,51.1,47.8],
       },
       topFailedQueries: [
         {query:'163914', count:1},
@@ -1625,12 +1638,12 @@ const KPI_DEFS = {
   'Handoff Rate':'Share of widget conversations passed to L1 or another human queue.',
   'Confirmed Deflection Rate':'Sessions where the user explicitly confirmed the article answered their question.',
   'Assumed Deflection Rate':'Sessions with article views or search clicks and no ticket — a directional proxy, not a confirmed outcome.',
-  'Total Deflection Rate':'Confirmed plus assumed deflections per end-user session.',
+  'Total Deflection Rate':'Confirmed plus assumed deflections per session, across all user roles (Admin, Agent, Anonymous, End user).',
   'Search Deflection Proxy':'Searches that did not lead to a ticket — a directional proxy.',
   'Article Views':'Total knowledge-base article views in the reporting month.',
   'Widget No-Handoff Containment':'Share of widget conversations that ended without a handoff to a human. Excludes rows where Forethought\u2019s raw deflected flag overlaps with a Handoff workflow (see No-Handoff Containment for the April audit that found this).',
   'KB Success Rate':'Total deflections as a share of tickets created plus deflections, from the workbook monthly table.',
-  'KB Total Deflection':'Confirmed plus assumed deflections per end-user session.',
+  'KB Total Deflection':'Confirmed plus assumed deflections per session, across all user roles (Admin, Agent, Anonymous, End user).',
   'Recontact After Deflection':'Share of deflected conversations where the same customer opened a ticket within 7 days. From the Widget Repeat Contact tab.',
   'Post-Widget Ticket Rate':'Confirmed cases where the same customer opened their own support ticket within 7 days of a never-escalated widget conversation, over all never-escalated conversations that month. From the Widget Repeat Contact tab.',
   'Confirmed Same-Issue Tickets':'Manually validated: same customer, same issue, correct chronology, within the 7-day window.',
@@ -1664,11 +1677,11 @@ const STORY_METRICS = {
   ],
   kb: [
     {key:'Total Deflection Rate %', label:'Total deflection rate', dir:'>=',
-     why:'Confirmed + assumed deflections per end-user session.'},
+     why:'Confirmed + assumed deflections per session, across all user roles.'},
     {key:'Search Deflection Proxy %', label:'Search deflection proxy', dir:'>=',
      why:'Searches that did not end in a ticket \u2014 directional, and in decline for three straight months.'},
     {key:'Article Views', label:'Article views', dir:'>=',
-     why:'Reach of KB content with end users.'},
+     why:'Reach of KB content across all user roles.'},
     {key:'Confirmed Deflections', label:'Confirmed deflections', dir:'>=',
      why:'The only deflection count a customer explicitly confirmed.'},
   ],
@@ -1999,9 +2012,9 @@ function renderWidgetView(){
   const pendingRow0 = e.funnel.find(f=>f.stage==='Open/pending in autoresponder queue');
   const unclearRow0 = e.funnel.find(f=>f.stage==='Unclear outcome');
   document.getElementById('autoresponderOutcomesTakeaway').textContent =
-    `${sfMonth}: ${fmtNum(sentRow.count)} sent. ${fmtPct(sf.solveRate[sfIdx],1)} solved (${fmtNum(sf.solvedExplicit[sfIdx])} explicit + ${fmtNum(sf.noReplyClosed[sfIdx])} no-reply closures). ${fmtNum(handedRow0.count)} (${fmtPct(handedRow0.pctOfPrev,1)}) handed to a human \u2014 the default for anything that doesn't resolve on its own, not a regression. ${fmtNum(pendingRow0.count)} are still open/pending in the autoresponder's own queue, and ${fmtNum(unclearRow0.count)} closed with no tag explaining why.`;
+    `${sfMonth}: ${fmtNum(sentRow.count)} tickets responded to. ${fmtPct(sf.solveRate[sfIdx],1)} solved (${fmtNum(sf.solvedExplicit[sfIdx])} explicit + ${fmtNum(sf.noReplyClosed[sfIdx])} no-reply closures). ${fmtNum(handedRow0.count)} (${fmtPct(handedRow0.pctOfPrev,1)}) handed to a human \u2014 the default for anything that doesn't resolve on its own, not a regression. ${fmtNum(pendingRow0.count)} are still open/pending in the autoresponder's own queue, and ${fmtNum(unclearRow0.count)} closed with no tag explaining why.`;
   renderKpis('kpi-funnel', [
-    {label:'Sent', value:String(sentRow.count), unit:'', sub:'ft-email-automated, Support queue — August', status:'neutral'},
+    {label:'Tickets responded to', value:String(sentRow.count), unit:'', sub:'By the autoresponder — Support queue, August', status:'neutral'},
     {label:'Solved', value:fmtPct(sf.solveRate[sfIdx],1).replace('%',''), unit:'%', sub:`${sf.solved[sfIdx]} of ${sf.sent[sfIdx]} \u2014 ${sf.solvedExplicit[sfIdx]} explicit + ${sf.noReplyClosed[sfIdx]} no-reply closures`, status:sf.solveRate[sfIdx]==null?'neutral':(sf.solveRate[sfIdx]<5?'bad':(sf.solveRate[sfIdx]<15?'watch':'good'))},
     {label:'Handed to a human', value:fmtPct(handedRow0.pctOfPrev,1).replace('%',''), unit:'%', sub:`${handedRow0.count} of ${sentRow.count} — regardless of current status`, status:'neutral'},
     {label:'Open/pending in autoresponder queue', value:fmtPct(pendingRow0.pctOfPrev,1).replace('%',''), unit:'%', sub:`${pendingRow0.count} of ${sentRow.count} — still with the bot, never escalated`, status:'watch'},
@@ -2030,69 +2043,67 @@ function renderWidgetView(){
   // ---- Support impact: FT-tagged vs. non-FT L1-touch rate & nudges (belongs to the email/autoresponder program, not widget) ----
   const tr = w.automationTracker;
   const trGet = name => tr.rows.find(r=>r.metric===name);
+  const ftVolumeVal = parseFloat(trGet('Autoresponder tickets \u2014 Support').vals[0]);
+  const nonFtVolumeVal = parseFloat(trGet('Non-FT eligible tickets (Support)').vals[0]);
   const ftRateVal = parseFloat(trGet('FT-tagged: Support L1-touch rate').vals[0]);
   const nonFtRateVal = parseFloat(trGet('Non-FT-tagged: Support L1-touch rate').vals[0]);
-  const touchesRemoved = trGet('Support L1 touches removed (baseline \u2212 actual)').vals[0];
-  renderKpis('kpi-automation', [
-    {label:'FT-tagged L1-touch rate', value:String(ftRateVal), unit:'%', sub:'57 FT-tagged Support tickets', status:'bad'},
-    {label:'Non-FT-tagged L1-touch rate', value:String(nonFtRateVal), unit:'%', sub:'710 non-FT eligible tickets — the baseline', status:'neutral'},
-    {label:'L1 touches removed', value:touchesRemoved, unit:'', sub:'Negative = FT-tagged touched L1 more than baseline predicts', status:'bad'},
-  ]);
-  destroyChart('automation');
-  charts.automation = safeChart('chartAutomation', {
-    type:'bar',
-    data:{ labels:['FT-tagged', 'Non-FT-tagged'], datasets:[
-      {label:'L1-touch rate', data:[ftRateVal, nonFtRateVal], backgroundColor:[COLORS.red, COLORS.blue], borderRadius:4, maxBarThickness:60},
-    ]},
-    options:{ plugins:{legend:{display:false}},
-      scales:{ y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} } }
-  });
+  const baselineExpected = parseFloat(trGet('Baseline L1 touches expected').vals[0]);
+  const ftActualTouched = Math.round(ftRateVal/100*ftVolumeVal);
+  const nonFtActualTouched = Math.round(nonFtRateVal/100*nonFtVolumeVal);
+  const touchesRemovedStr = trGet('Support L1 touches removed (baseline \u2212 actual)').vals[0];
+  const touchesRemovedNum = +(baselineExpected - ftActualTouched).toFixed(1);
+  const nudgeFtRate = trGet('FT-tagged: nudge rate').vals[0];
+  const nudgeNonFtRate = trGet('Non-FT: nudge rate').vals[0];
+  const autoCloseCount = trGet('Auto-closeable under proposed 4h+72h rule').vals[0];
+  const ratioVal = (ftRateVal/nonFtRateVal).toFixed(1);
+  const hlCloud = w.handoffLoad.rows.find(r=>r.product==='Redis Cloud');
+  const hlSoftware = w.handoffLoad.rows.find(r=>r.product==='Redis Software');
+  document.getElementById('supportImpactTakeaway').innerHTML =
+    `We don't yet have clean evidence the autoresponder reduces L1 load. FT-tagged tickets reached L1 more often than non-FT tickets in August (${ftRateVal}% vs. ${nonFtRateVal}%, about ${ratioVal}x) — the opposite of the goal. But the two groups aren't a controlled comparison: the autoresponder isn't applied at random, so this gap could reflect ticket mix rather than the autoresponder's effect. It's concentrated in Redis Cloud, where L1 is the single largest destination for handoffs (${fmtPct(hlCloud.l1Pct,1)}); Redis Software rarely reaches L1 at all (${fmtPct(hlSoftware.l1Pct,1)}) — see the breakdown below.<span class="info-dot">i<span class="tip">${fmtNum(ftVolumeVal)} FT-tagged Support tickets, ${fmtNum(ftActualTouched)} of which touched L1 (${ftRateVal}%). ${fmtNum(nonFtVolumeVal)} non-FT eligible tickets, ${fmtNum(nonFtActualTouched)} of which touched L1 (${nonFtRateVal}% \u2014 the baseline, i.e. what we'd expect FT-tagged tickets to do if the autoresponder had no effect either way). If FT-tagged tickets matched that baseline, ${baselineExpected} would be expected to reach L1 instead of ${ftActualTouched} \u2014 ${Math.abs(touchesRemovedNum)} more than expected, not fewer (this is shown elsewhere as "L1 touches removed: ${touchesRemovedStr}"). Nudge rate (the autoresponder's automated follow-up when a customer goes quiet, separate from whether the ticket reaches L1): ${nudgeFtRate} FT-tagged vs. ${nudgeNonFtRate} non-FT (structural \u2014 non-FT tickets were never touched by the autoresponder, so they can't be nudged). Auto-close simulation (a proposed 4h+72h rule) currently flags ${autoCloseCount} tickets \u2014 unverified against raw data, no live automation exists yet. Hours returned is still blocked on agreeing a minutes-per-L1-touch value with Support leadership.</span></span>`;
 
-  // ---- Support impact: autoresponder-only resolution rate, by product ----
+  // ---- Support impact: full resolution journey per FT-tagged ticket, by product ----
   const br1 = w.botResolved;
-  const tblBotEl = document.getElementById('tblBotResolved');
-  if (br1 && tblBotEl) {
-    tblBotEl.innerHTML = `
-      <tr><th>Product</th><th class="num">FT-tagged volume</th><th class="num">Resolved by autoresponder</th><th class="num">Autoresponder-only rate</th></tr>
-      ${br1.rows.map(r=>`<tr><td>${r.product}${r.lowN?' *':''}</td><td class="num">${fmtNum(r.ftVolume)}</td><td class="num">${fmtNum(r.botOnly)}</td><td class="num">${fmtPct(r.botOnlyRate,1)}</td></tr>`).join('')}
-    `;
-    destroyChart('botResolved');
-    const brPlot = br1.rows.filter(r=>!r.lowN);
-    charts.botResolved = safeChart('chartBotResolved', {
-      type:'bar',
-      data:{ labels: brPlot.map(r=>r.product), datasets:[
-        { label:'Autoresponder-only resolution rate', data: brPlot.map(r=>r.botOnlyRate), backgroundColor:palette, borderRadius:4, maxBarThickness:44 },
-      ]},
-      options:{ plugins:{legend:{display:false}},
-        scales:{ y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} } }
-    });
-  }
-
-  // ---- Support impact: when handed to a human, where the load lands, by product ----
   const hl2 = w.handoffLoad;
-  const tblHandoffEl = document.getElementById('tblHandoffLoad');
-  if (hl2 && tblHandoffEl) {
-    tblHandoffEl.innerHTML = `
-      <tr><th>Product</th><th class="num">Handed to human</th><th class="num">\u2192 L1</th><th class="num">\u2192 L2</th><th class="num">\u2192 L3</th><th class="num">\u2192 TAM</th><th class="num">\u2192 CS</th><th class="num">\u2192 Other</th></tr>
-      ${hl2.rows.map(r=>`<tr><td>${r.product}${r.lowN?' *':''}</td><td class="num">${fmtNum(r.handoff)} (${fmtPct(r.handoffRate,1)})</td><td class="num">${fmtNum(r.l1)} (${fmtPct(r.l1Pct,1)})</td><td class="num">${fmtNum(r.l2)} (${fmtPct(r.l2Pct,1)})</td><td class="num">${fmtNum(r.l3)} (${fmtPct(r.l3Pct,1)})</td><td class="num">${fmtNum(r.tam)} (${fmtPct(r.tamPct,1)})</td><td class="num">${fmtNum(r.cs)} (${fmtPct(r.csPct,1)})</td><td class="num">${fmtNum(r.other)} (${fmtPct(r.otherPct,1)})</td></tr>`).join('')}
-      <tr><td colspan="8" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">Handed-to-human count out of FT-tagged volume; destination columns are % of that product's handoffs (each row's L1\u2013Other sums to 100%). * ${hl2.lowNNote}</td></tr>
+  const tblJourneyEl = document.getElementById('tblResolutionJourney');
+  if (br1 && hl2 && tblJourneyEl) {
+    const journeyRows = br1.rows.map(r=>{
+      const h = hl2.rows.find(x=>x.product===r.product) || {};
+      const vol = r.ftVolume;
+      const pctOf = n => vol ? +(100*n/vol).toFixed(1) : 0;
+      return {
+        product:r.product, lowN:r.lowN, vol,
+        resolved:r.botOnly, resolvedPct:r.botOnlyRate,
+        l1:h.l1||0, l1Pct:pctOf(h.l1||0),
+        l2:h.l2||0, l2Pct:pctOf(h.l2||0),
+        l3:h.l3||0, l3Pct:pctOf(h.l3||0),
+        tam:h.tam||0, tamPct:pctOf(h.tam||0),
+        cs:h.cs||0, csPct:pctOf(h.cs||0),
+        other:h.other||0, otherPct:pctOf(h.other||0),
+      };
+    });
+    tblJourneyEl.innerHTML = `
+      <tr><th>Product</th><th class="num">FT-tagged volume</th><th class="num">Resolved by autoresponder</th><th class="num">\u2192 L1</th><th class="num">\u2192 L2</th><th class="num">\u2192 L3</th><th class="num">\u2192 TAM</th><th class="num">\u2192 CS</th><th class="num">\u2192 Other</th></tr>
+      ${journeyRows.map(r=>`<tr><td>${r.product}${r.lowN?' *':''}</td><td class="num">${fmtNum(r.vol)}</td><td class="num">${fmtNum(r.resolved)} (${fmtPct(r.resolvedPct,1)})</td><td class="num">${fmtNum(r.l1)} (${fmtPct(r.l1Pct,1)})</td><td class="num">${fmtNum(r.l2)} (${fmtPct(r.l2Pct,1)})</td><td class="num">${fmtNum(r.l3)} (${fmtPct(r.l3Pct,1)})</td><td class="num">${fmtNum(r.tam)} (${fmtPct(r.tamPct,1)})</td><td class="num">${fmtNum(r.cs)} (${fmtPct(r.csPct,1)})</td><td class="num">${fmtNum(r.other)} (${fmtPct(r.otherPct,1)})</td></tr>`).join('')}
+      <tr><td colspan="9" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">Every column is % of that product's total FT-tagged volume, so each row sums to 100% end to end. * ${hl2.lowNNote}</td></tr>
     `;
-    destroyChart('handoffLoad');
-    const hlPlot = hl2.rows.filter(r=>!r.lowN);
-    charts.handoffLoad = safeChart('chartHandoffLoad', {
+    destroyChart('resolutionJourney');
+    const jPlot = journeyRows.filter(r=>!r.lowN);
+    charts.resolutionJourney = safeChart('chartResolutionJourney', {
       type:'bar',
       data:{
-        labels: hlPlot.map(r=>r.product),
+        labels: jPlot.map(r=>r.product),
         datasets:[
-          { label:'L1', data: hlPlot.map(r=>r.l1Pct), backgroundColor:COLORS.red, stack:'s' },
-          { label:'L2', data: hlPlot.map(r=>r.l2Pct), backgroundColor:COLORS.amber, stack:'s' },
-          { label:'L3', data: hlPlot.map(r=>r.l3Pct), backgroundColor:COLORS.blue, stack:'s' },
-          { label:'TAM', data: hlPlot.map(r=>r.tamPct), backgroundColor:COLORS.green, stack:'s' },
-          { label:'CS', data: hlPlot.map(r=>r.csPct), backgroundColor:COLORS.muted, stack:'s' },
+          { label:'Resolved by autoresponder', data: jPlot.map(r=>r.resolvedPct), backgroundColor:COLORS.green, stack:'s' },
+          { label:'\u2192 L1', data: jPlot.map(r=>r.l1Pct), backgroundColor:COLORS.red, stack:'s' },
+          { label:'\u2192 L2', data: jPlot.map(r=>r.l2Pct), backgroundColor:COLORS.amber, stack:'s' },
+          { label:'\u2192 L3', data: jPlot.map(r=>r.l3Pct), backgroundColor:COLORS.blue, stack:'s' },
+          { label:'\u2192 TAM', data: jPlot.map(r=>r.tamPct), backgroundColor:'#9B5DE5', stack:'s' },
+          { label:'\u2192 CS', data: jPlot.map(r=>r.csPct), backgroundColor:COLORS.muted, stack:'s' },
+          { label:'\u2192 Other', data: jPlot.map(r=>r.otherPct), backgroundColor:'#8A99A0', stack:'s' },
         ]
       },
-      options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
-        scales:{ y:{grid:{color:COLORS.grid}, stacked:true, max:100, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}, stacked:true} } }
+      options:{ indexAxis:'y', plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
+        scales:{ x:{grid:{color:COLORS.grid}, stacked:true, max:100, ticks:{callback:v=>v+'%'}}, y:{grid:{display:false}, stacked:true} } }
     });
   }
 
@@ -2110,7 +2121,8 @@ function renderWidgetView(){
 
 const seriesColors = {
   'Article Views': COLORS.blue, 'Confirmed Deflections': COLORS.red, 'Assumed Deflections': COLORS.amber,
-  'End-user Sessions': COLORS.muted, 'Total Deflection Rate %': COLORS.green, 'Search Deflection Proxy %': '#9B5DE5',
+  'All User Sessions': COLORS.muted, 'Total Deflection Rate %': COLORS.green, 'Search Deflection Proxy %': '#9B5DE5',
+  'Search Containment Count': '#3DDC97', 'Result-Click Containment Proxy %': '#F2A65A', 'Search CTR %': '#5CA4E0',
 };
 
 /* ---- range-filter helpers (quick win #3) ---- */
@@ -2207,7 +2219,7 @@ function renderKbView(){
   } else {
     const mi = k.momMonths.indexOf(kbMonth);
     const priorMi = mi>0 ? mi-1 : null;
-    const sessions = k.momSeries['End-user Sessions']||[];
+    const sessions = k.momSeries['All User Sessions']||[];
     const confirmed = k.momSeries['Confirmed Deflections']||[];
     const assumed = k.momSeries['Assumed Deflections']||[];
     const searchProxy = k.momSeries['Search Deflection Proxy %']||[];
@@ -2313,7 +2325,7 @@ function renderKbView(){
   setText('kbFunnelMonth', rm.current);
   const fSessions = hl['Total Deflection Rate'].den;
   const fSearches = k.searchFind.find(m=>m.metric==='Total Searches')?.current;
-  const fCtr = k.searchFind.find(m=>m.metric==='Search CTR')?.current;
+  const fCtr = k.searchFind.find(m=>m.metric==='Searches with \u22651 click')?.current;
   const fClicks = (fSearches!==null && fSearches!==undefined && fCtr!==null && fCtr!==undefined) ? Math.round(fSearches*fCtr/100) : null;
   const fViews = k.supportImpact.find(m=>m.metric==='Article Views')?.current;
   const fDefl = hl['Total Deflection Rate'].num;
@@ -2336,9 +2348,9 @@ function renderKbView(){
   }).join('');
   renderKpis('kbFlowContext', [
     {label:'Search containment', value:fmtNum(fContained), unit:'', sub:`${fmtNum(fContained)} of ${fmtNum(fSearches)} searches ended without a ticket`, status:'watch'},
-    {label:'End-user sessions', value:fmtNum(fSessions), unit:'', sub:'All-sessions denominator \u2014 separate tracker, not a funnel stage', status:'good'},
+    {label:'All-user sessions', value:fmtNum(fSessions), unit:'', sub:'All-sessions denominator \u2014 separate tracker, not a funnel stage', status:'good'},
     {label:'Article views', value:fmtNum(fViews), unit:'', sub:'Guide reach metric; includes non-search traffic', status:'watch'},
-    {label:'Deflected (conf + assumed)', value:fmtNum(fDefl), unit:'', sub:`${fmtPct(fDeflRate)} of ${fmtNum(fSessions)} end-user sessions`, status:'good'},
+    {label:'Deflected (conf + assumed)', value:fmtNum(fDefl), unit:'', sub:`${fmtPct(fDeflRate)} of ${fmtNum(fSessions)} sessions (all user roles)`, status:'good'},
   ]);
 
   // ---- KB success vs ticket volume ----
@@ -2869,7 +2881,7 @@ function applyTheme(t){
   COLORS.grid=c.grid; COLORS.text=c.text; COLORS.green=c.good; COLORS.muted=c.muted; COLORS.ring=c.ring;
   palette[3]=c.good; palette[7]=c.goodAlt;
   seriesColors['Total Deflection Rate %']=c.good;
-  seriesColors['End-user Sessions']=c.muted;
+  seriesColors['All User Sessions']=c.muted;
   if(CHARTS_AVAILABLE) Chart.defaults.color = c.tick;
   document.getElementById('themeBtn').textContent = t==='dark' ? '☀' : '☾';
   renderAll();
