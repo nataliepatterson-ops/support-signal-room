@@ -498,8 +498,7 @@
   <div class="jumpnav" id="jumpnav-ticket" style="display:none;">
     <span class="jn-label">Jump to</span>
     <a class="jn-pill" href="#head-email">Overview</a>
-    <a class="jn-pill" href="#sec-w-09c">Funnel</a>
-    <a class="jn-pill" href="#sec-w-09e">Solved vs. handoff</a>
+    <a class="jn-pill" href="#sec-w-09c">Autoresponder outcomes</a>
     <a class="jn-pill" href="#sec-w-09g">Support impact</a>
     <a class="jn-pill" href="#sec-w-12">Readout</a>
     <a class="jn-pill" href="#sec-w-13">Billing (reference)</a>
@@ -708,31 +707,18 @@
 
     <section class="block" id="sec-w-09c">
       <div class="block-head">
-        <h3>Autoresponder funnel</h3>
-        <div class="note">August Email Autoresponder Outcomes (Support only). Billing is tracked separately \u2014 see the reference table at the bottom of the page.</div>
+        <h3>Autoresponder outcomes — Support</h3>
+        <div class="note">August Email Autoresponder Outcomes (Support only). Billing is tracked separately \u2014 see the reference table at the bottom of the page. June was negligible and July's autoresponder didn't start until July 22, so August is reported standalone.<span class="info-dot">i<span class="tip">Solved combines two signals: 1 explicit solve + 7 no-reply closures = 8 of 57. Treat this as a broader "no further action needed" measure, not proof the autoresponder resolved all 8 \u2014 a no-reply closure means the customer stopped responding, which isn't the same as confirmed help. The 1 explicit solve also carries a handoff and a timeout tag and sits in Support - L3, so even that one went through a human queue before resolving \u2014 it overlaps with the "Handed to a human" tile by 1 ticket, which is why the tiles below don't sum to 57.</span></span></div>
       </div>
-      <div class="takeaway">Only 12.3% (7 of 57) close with no human touch \u2014 all via no-reply auto-closure. A further 10 tickets are still Pending with no outcome yet. The rest go to a human.</div>
+      <div class="takeaway" id="autoresponderOutcomesTakeaway"></div>
       <div class="kpi-row autofit" id="kpi-funnel"></div>
-      <div class="card" style="margin-top:12px;">
-        <div class="subhead">Where the 57 August tickets ended up</div>
-        <div class="chart-wrap" style="height:140px;"><canvas id="chartFunnel"></canvas></div>
-      </div>
-    </section>
-
-    <section class="block" id="sec-w-09e">
-      <div class="block-head">
-        <h3>Solved by bot vs. handed to L1 — Support</h3>
-        <div class="note">Support only (Billing tracked separately). Solved = customer gave positive feedback or completed the Interactive Email flow to resolution, not just a click. August only — June was negligible and July's autoresponder didn't start until July 22.<span class="info-dot">i<span class="tip">Solve rate is the only outcome directly attributable to the bot: an unsolved ticket would have gone to L1 whether or not the bot touched it, so handoff is shown as supporting detail, not a headline metric. The 4-hour no-response timeout is a narrow fallback, not the main driver of handoffs.</span></span></div>
-      </div>
-      <div class="takeaway" id="supportFunnelTakeaway"></div>
-      <div class="kpi-row autofit" id="kpi-support-funnel"></div>
       <div class="grid-2" style="margin-top:12px;">
         <div class="card">
-          <div class="subhead">August detail</div>
-          <table id="tblSupportFunnel"></table>
+          <div class="subhead">Where the 57 August tickets ended up</div>
+          <div class="chart-wrap" style="height:180px;"><canvas id="chartFunnel"></canvas></div>
         </div>
         <div class="card">
-          <div class="subhead">Why tickets get handed to L1</div>
+          <div class="subhead">Why tickets get handed off</div>
           <table id="tblHandoffReasons"></table>
         </div>
       </div>
@@ -743,7 +729,7 @@
         <h3>Support impact — L1 touches &amp; nudges</h3>
         <div class="note">Does the autoresponder reduce L1 work, not just solve tickets? August only — FT-tagged tickets vs. Support's own non-FT tickets. Not a Support-vs-Billing comparison — see the Billing reference table at the bottom of the page.<span class="info-dot">i<span class="tip">Auto-close counts are simulated against a proposed 4h+72h rule — no live Zendesk automation implements it yet.</span></span></div>
       </div>
-      <div class="takeaway">FT-tagged tickets reached L1 more than 2.5x as often as non-FT tickets in August (35.1% vs. 13.5%) — the experiments haven't reduced L1 touches yet. Hours returned is still blocked on a minutes-per-touch agreement with Support leadership.</div>
+      <div class="takeaway">FT-tagged tickets reached L1 about 1.8x as often as non-FT tickets in August (24.6% vs. 13.8%) — the experiments haven't reduced L1 touches yet. Hours returned is still blocked on a minutes-per-touch agreement with Support leadership.</div>
       <div class="kpi-row autofit" id="kpi-automation"></div>
       <div class="grid-2" style="margin-top:12px;">
         <div class="card">
@@ -751,12 +737,12 @@
           <div class="chart-wrap" style="height:160px;"><canvas id="chartAutomation"></canvas></div>
         </div>
         <div class="card">
-          <div class="note" style="margin:0;">57 FT-tagged tickets, 725 non-FT eligible tickets. Nudge rate is 0.0% on both sides. Auto-close simulation (proposed 4h+72h rule) currently flags 0 tickets — no live automation exists yet. Hours returned is blocked on a minutes-per-L1-touch agreement with Support leadership.</div>
+          <div class="note" style="margin:0;">57 FT-tagged tickets, 710 non-FT eligible tickets. Nudge rate: 28.6% FT-tagged (4 of the 14 tickets that reached L1 also hit the no-response timeout), 0.0% non-FT (structurally \u2014 non-FT tickets never carry the autoresponder's tags). Auto-close simulation (proposed 4h+72h rule) currently flags 0 tickets, unverified against raw data \u2014 no live automation exists yet. Hours returned is blocked on a minutes-per-L1-touch agreement with Support leadership.</div>
         </div>
       </div>
 
       <div class="subhead" style="margin-top:14px;">How FT-tagged Support tickets resolve, by product — August</div>
-      <div class="note">Two different questions: how many never reach a human at all, and — when they do — where that load lands.<span class="info-dot">i<span class="tip">Built from the Autoresponder Billing v Technical ticket-level export (57 FT-tagged, non-proactive Support tickets in August), using the bot's own handoff/no-handoff tag — a different source than the Automation Monthly Staging tab above, so counts here won't tie exactly to the 20 L1-touched figure in the table above.</span></span></div>
+      <div class="note">Two different questions: how many never reach a human at all, and — when they do — where that load lands.<span class="info-dot">i<span class="tip">Built from the Autoresponder Billing v Technical ticket-level export (57 FT-tagged, non-proactive Support tickets in August), using the autoresponder's own handoff/no-handoff tag. This is the same 14-ticket L1-touched population now used in the table above (both corrected 9/18/2026 to use this raw pull instead of the Automation Monthly Staging tab).</span></span></div>
 
       <div class="grid-2">
         <div class="card"><table id="tblBotResolved"></table></div>
@@ -1132,29 +1118,29 @@ function defaultState(){
         months:['Aug 2026'],
         rows:[
           {metric:'Autoresponder tickets \u2014 Support', vals:['57'], note:'ft-email-automated, Support queue.'},
-          {metric:'Non-FT eligible tickets (Support)', vals:['725'], note:'Support tickets never touched by the autoresponder.'},
-          {metric:'FT-tagged: Support L1-touch rate', vals:['35.1%'], note:'FT L1-touched \u00f7 Support FT volume \u2014 both sides Support-only.'},
-          {metric:'Non-FT-tagged: Support L1-touch rate', vals:['13.5%'], note:'The comparison baseline.'},
-          {metric:'FT-tagged: nudge rate', vals:['0.0%'], note:'L1-touched + no_response, as a share of FT L1-touched.'},
-          {metric:'Non-FT: nudge rate', vals:['0.0%'], note:''},
-          {metric:'Auto-closeable under proposed 4h+72h rule', vals:['0'], note:'Simulated against the proposed rule — no live automation yet.'},
-          {metric:'Baseline L1 touches expected', vals:['7.7'], note:'Non-FT Support touch rate \u00d7 Support FT volume.'},
-          {metric:'Support L1 touches removed (baseline \u2212 actual)', vals:['\u221212.3'], note:'Negative = FT-tagged tickets touched L1 more than the baseline predicts.'},
+          {metric:'Non-FT eligible tickets (Support)', vals:['710'], note:'Support tickets never touched by the autoresponder. Corrected 9/18/2026 from 725 to 710 \u2014 raw ticket-level export (Non-Proactive, Support, ft-email-not-automated), reconciled with all other figures on this row.'},
+          {metric:'FT-tagged: Support L1-touch rate', vals:['24.6%'], note:'FT L1-touched (14) \u00f7 Support FT volume (57) \u2014 both sides Support-only. Corrected 9/18/2026 from 35.1% (which used 20 L1-touched from the Automation Monthly Staging tab) to 24.6%, using this tab\u2019s own raw ticket-level L1-touched count (14) \u2014 the same population used in the product-breakdown cards below, so this row now reconciles with those instead of disagreeing with them.'},
+          {metric:'Non-FT-tagged: Support L1-touch rate', vals:['13.8%'], note:'The comparison baseline. Corrected 9/18/2026 from 13.5% (98 \u00f7 725) to 13.8% (98 \u00f7 710), matching the corrected eligible-tickets row above.'},
+          {metric:'FT-tagged: nudge rate', vals:['28.6%'], note:'Corrected 9/18/2026 from 0.0% \u2014 of the 14 FT-tagged tickets that reached L1 (raw ticket-level pull, Support-only), 4 also carry the timeout/no-response tag: 4 \u00f7 14 = 28.6%.'},
+          {metric:'Non-FT: nudge rate', vals:['0.0%'], note:'Trivially 0 \u2014 non-FT tickets were never touched by the autoresponder, so they can\u2019t carry its timeout/no-response tag.'},
+          {metric:'Auto-closeable under proposed 4h+72h rule', vals:['0'], note:'Simulated against the proposed rule — no live automation yet. Not independently verified against raw ticket data \u2014 the simulation logic itself isn\u2019t available to check.'},
+          {metric:'Baseline L1 touches expected', vals:['7.9'], note:'Non-FT Support touch rate (13.8%) \u00d7 Support FT volume (57). Corrected 9/18/2026 from 7.7 to 7.9 to match the corrected rate above.'},
+          {metric:'Support L1 touches removed (baseline \u2212 actual)', vals:['\u22126.1'], note:'Negative = FT-tagged tickets touched L1 more than the baseline predicts. Corrected 9/18/2026 from \u221212.3 to \u22126.1 (baseline 7.9 \u2212 actual 14), using the corrected 14-ticket L1-touched count instead of the old 20.'},
           {metric:'Hours returned', vals:['\u2014'], note:'Blocked on the minutes-per-L1-touch decision with Support leadership.'},
         ],
       },
       /* Resolution path for FT-tagged Support tickets (August), from the
          Autoresponder Billing v Technical ticket-level export — 57
          FT-tagged, non-proactive Support tickets, split by whether the
-         bot's own forethought_support_handoff tag is present, then by
+         autoresponder's own forethought_support_handoff tag is present, then by
          destination Ticket group for the ones that got handed off.
          This is a different source/definition than the Automation
-         Monthly Staging tab above (ticket-group L1 flag vs. bot handoff
-         tag), so the L1 destination count here (13) plus the 1 ticket
-         sitting in the L1 group with no handoff tag (14 total) won't tie
-         exactly to the 20 L1-touched figure in the table above — treat
-         this section as directional, not a reconciliation. Pulled from
-         raw export 9/16/2026. */
+         Monthly Staging tab above (ticket-group L1 flag vs. autoresponder handoff
+         tag), though after the 9/18/2026 correction the table above now
+         also uses this raw pull's 14-ticket L1-touched count, so the two
+         reconcile: L1 destination count here (13) plus the 1 ticket
+         sitting in the L1 group with no handoff tag = 14 total.
+         Pulled from raw export 9/16/2026. */
       botResolved: {
         rows: [
           {product:'Redis Cloud', ftVolume:39, botOnly:16, botOnlyRate:41.0},
@@ -1337,7 +1323,7 @@ function defaultState(){
         emailCoverage: {value:null, sub:'Unavailable \u2014 source no longer reports total inbound email volume'},
       },
       readout: [
-        'Solve rate: the bot resolved <strong>1.8% of August\'s 57 sent tickets</strong> outright (1 of 57) — the only outcome caused by the bot. 42 went to L1 handoff (9 of those via the 4-hour no-response timeout specifically), and 7 were auto-closed after no customer reply. These tags can overlap on a single ticket, so they don\'t necessarily add up to the sent total.',
+        'Solved: <strong>14.0% of August\'s 57 sent tickets</strong> resolved with no further human action (8 of 57) — 1 explicit solve plus 7 auto-closed after no customer reply. 42 went to L1 handoff (9 of those via the 4-hour no-response timeout specifically). These tags can overlap on a single ticket \u2014 the one explicit solve also carries a handoff and a timeout tag \u2014 so they don\'t necessarily add up to the sent total.',
         'August is the first month with real, post-pilot volume for the Support autoresponder — June and July ran at pilot scale and aren\'t a fair comparison point. Treat these as this program\'s baseline; September vs. August will be the first comparison worth reading.',
       ],
       readoutCaveat: 'Note: June and July are Support pilot months, not a stable MoM baseline — August is the first real-volume month, so it\'s reported standalone rather than against July. Sent/solved/handoff counts were revised 9/3/2026 when the source switched from an aggregated tag-count table to a deduplicated ticket-level export (e.g. August\'s sent count moved from 61 to 57) — small future revisions are possible as that export matures. Hours returned from reduced L1 touches is still blocked on agreeing a minutes-per-touch value with Support leadership.',
@@ -1383,7 +1369,9 @@ function defaultState(){
         {stage:'Autoresponder Responses Sent', count:57, pctOfPrev:null, note:'ft-email-automated, Support queue only \u2014 authoritative August volume.'},
         {stage:'Total FT-Closed Tickets', count:7, pctOfPrev:12.3, note:'Resolved without a human touch: no-reply auto-closures only, Support only.'},
         {stage:'No-Reply Closures', count:7, pctOfPrev:12.3, note:'forethought_basic_no_reply_closed \u2014 closed after no customer reply (Support).'},
-        {stage:'Still pending, no outcome yet', count:10, pctOfPrev:17.5, note:'Neither closed nor handed to a human as of this pull.'},
+        {stage:'Handed to a human', count:38, pctOfPrev:66.7, note:'forethought_support_handoff present \u2014 regardless of whether that human has since closed, solved, or is still working it.'},
+        {stage:'Open/pending in autoresponder queue', count:10, pctOfPrev:17.5, note:'No handoff, timeout, closure, or solve tag \u2014 all 10 confirmed still sitting in the Bots group, status Pending. Never escalated to a human, and hasn\u2019t hit the no-reply timeout that would auto-close it either \u2014 just waiting.'},
+        {stage:'Unclear outcome', count:2, pctOfPrev:3.5, note:'Closed or marked Solved with no handoff, timeout, solved, or no-reply tag at all \u2014 status changed without the autoresponder tagging why. Too few to categorize further.'},
       ],
       /* Support-only ticket disposition after the FT automated email reply —
          from the sheet's "Support Funnel / Handoff Reasons Rebuild" block,
@@ -1402,18 +1390,42 @@ function defaultState(){
          didn't actually start until July 22, so a Jun/Jul/Aug trend table
          was comparing a nearly-empty June, a half-month July, and a full
          August as if they were equivalent periods — confusing, not
-         informative. Removed rather than kept as pilot context. */
+         informative. Removed rather than kept as pilot context.
+
+         'solved' redefined 9/17/2026 to count both explicit solve signals
+         and no-reply closures (customers who stop replying): 1 explicit
+         (forethought_support_solved) + 7 no-reply (forethought_basic_
+         no_reply_closed) = 8, 14.0%. solvedExplicit keeps the original
+         explicit-only count for reference. Note: the one explicit-solved
+         ticket also carries forethought_support_handoff and
+         forethought_support_timeout and sits in Support - L3 — it went
+         through a full handoff/timeout cycle before resolving, so even
+         "explicit" here isn't a clean autoresponder-only case. Tags overlap by
+         design (see note above), so solved + handoff + pending +
+         noReplyClosed will not sum to sent.
+
+         handoff/pending(timeout) reconciled 9/18/2026 from 42/9 to 38/8:
+         this tab's original counts came from the Automation Monthly
+         Staging tab; the Autoresponder funnel block above was rebuilt
+         from a fresher raw ticket-level pull (Automated Email Tickets
+         export) giving 38 handoff / 8 timeout for the same 57 tickets.
+         The two pulls' ratios matched almost exactly (~21% timeout share
+         either way), confirming this is a pull-timing difference, not a
+         data error — standardized on the raw pull's numbers so this
+         table agrees with the Autoresponder funnel above instead of
+         quietly disagreeing with it. */
       supportFunnel: {
         months: ['Aug'],
         automated: [57],
         sent:      [57],
-        solved:    [1],
-        handoff:   [42],
+        solved:    [8],
+        solvedExplicit: [1],
+        handoff:   [38],
         noReplyClosed: [7],
-        pending:   [9],
-        solveRate:   [1.8],
-        handoffRate: [73.7],
-        pendingRate: [15.8],
+        pending:   [8],
+        solveRate:   [14.0],
+        handoffRate: [66.7],
+        pendingRate: [14.0],
         notes: [
           'First real month — Support\'s autoresponder ran the full 31 days. Ticket-ID deduped; sent revised down from 61 (old tag-aggregate) to 57.',
         ],
@@ -1427,9 +1439,9 @@ function defaultState(){
          above — June/July aren't comparable full months. */
       handoffReasons: {
         months: ['Aug'],
-        timeout: [9],
-        unclassified: [33],
-        total: [42],
+        timeout: [8],
+        unclassified: [30],
+        total: [38],
       },
     },
     kb: {
@@ -1645,8 +1657,8 @@ const STORY_METRICS = {
      why:'Share of the ticket stream Forethought touches. More coverage means fewer conversations even reach a human to begin with.'},
   ],
   email: [
-    {key:'solveRate', label:'Solved by bot (Support)', dir:'>=',
-     why:'Fires when the customer gives positive feedback or completes the Interactive Email flow to resolution \u2014 not just a click. Customer-indicated, not self-graded. Unsolved tickets default to L1 regardless.'},
+    {key:'solveRate', label:'Solved by autoresponder (Support)', dir:'>=',
+     why:'Fires when the customer gives positive feedback or completes the Interactive Email flow to resolution, or the ticket auto-closes after the customer stops replying \u2014 not just a click. Unsolved tickets default to L1 regardless.'},
     {key:'deflRate', label:'Autoresponder deflection (Support)', dir:'>=',
      why:'Sent autoresponses that needed no human follow-up. Support-only, matching the solve-rate row above.'},
   ],
@@ -1717,9 +1729,9 @@ function storyValues(widgetMonthOverride){
   } else {
     out.email.deflRate = {month:'Jul', value:(e.funnelJul&&e.funnelJul.deflRate!==undefined)?e.funnelJul.deflRate:null, prior:null, priorMonth:null};
   }
-  // Support-only solve rate (sent -> solved by the bot, no human) is the
+  // Support-only solve rate (sent -> solved by the autoresponder, no human) is the
   // headline "where this stands" metric for email — it's the one outcome
-  // actually attributable to the bot. Sourced from the Zendesk tag funnel.
+  // actually attributable to the autoresponder. Sourced from the Zendesk tag funnel.
   out.email.solveRate = seriesPair(e.supportFunnel.months, e.supportFunnel.solveRate);
   out.email.month = out.email.solveRate.month;
   // August is the first month with real, post-pilot volume for the Support
@@ -1967,37 +1979,11 @@ function renderWidgetView(){
   // A KB-backlog section (proposed/in-progress/completed article requests)
   // was removed from the Widget tab (Aug 2026); not currently tracked here.
 
-  // ---- Autoresponder funnel ----
-  const sentRow = e.funnel.find(f=>f.stage==='Autoresponder Responses Sent');
-  const closedRow0 = e.funnel.find(f=>f.stage==='Total FT-Closed Tickets');
-  const pendingRow0 = e.funnel.find(f=>f.stage==='Still pending, no outcome yet');
-  const otherCount = sentRow.count - closedRow0.count - pendingRow0.count;
-  renderKpis('kpi-funnel', [
-    {label:'Sent', value:String(sentRow.count), unit:'', sub:'ft-email-automated, Support queue — August', status:'neutral'},
-    {label:'Closed — no human touch', value:fmtPct(closedRow0.pctOfPrev,1).replace('%',''), unit:'%', sub:`${closedRow0.count} of ${sentRow.count} — all via no-reply auto-closure`, status:'good'},
-    {label:'Still pending', value:fmtPct(pendingRow0.pctOfPrev,1).replace('%',''), unit:'%', sub:`${pendingRow0.count} of ${sentRow.count} — no outcome yet`, status:'watch'},
-  ]);
-  destroyChart('funnel');
-  charts.funnel = safeChart('chartFunnel', {
-    type:'bar',
-    data:{
-      labels:[''],
-      datasets:[
-        {label:'Closed — no human touch', data:[closedRow0.count], backgroundColor:COLORS.green, stack:'s'},
-        {label:'Handed to a human', data:[otherCount], backgroundColor:COLORS.blue, stack:'s'},
-        {label:'Still pending', data:[pendingRow0.count], backgroundColor:COLORS.amber, stack:'s'},
-      ]
-    },
-    options:{ indexAxis:'y', plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
-      scales:{ x:{grid:{color:COLORS.grid}, stacked:true, max:sentRow.count}, y:{grid:{display:false}, stacked:true} } }
-  });
-
-  // ---- Support autoresponder disposition: solved by bot vs. handed to L1 ----
-  // (Support only — Billing has its own tag chain and review process, out of scope here.)
+  // ---- Autoresponder outcomes (merged: funnel + solved/handoff) ----
   const sf = e.supportFunnel;
   const hr = e.handoffReasons;
   renderMonthChips('emailMonthFilter', ['Aug'], emailMonth,
-    m=>{ emailMonth=m; renderWidgetView(); }, 'August only — the tables below always show August.');
+    m=>{ emailMonth=m; renderWidgetView(); }, 'August only — the table below always shows August.');
   const sfIdx = emailMonth==='All'
     // Auto-pick the latest fully-qualified month (no trailing '*'), not just
     // "latest with sent > 0" — every month now has nonzero sent, including
@@ -2006,17 +1992,36 @@ function renderWidgetView(){
     ? sf.months.map((v,i)=>(!/\*$/.test(v) && sf.sent[i]>0)?i:-1).filter(i=>i>=0).pop()
     : sf.months.indexOf(emailMonth);
   const sfMonth = sf.months[sfIdx];
-  document.getElementById('supportFunnelTakeaway').textContent =
-    `${sfMonth}: ${fmtPct(sf.solveRate[sfIdx],1)} solve rate on ${fmtNum(sf.sent[sfIdx])} sent tickets — the only outcome the bot causes. Handoff (${fmtPct(sf.handoffRate[sfIdx],1)}) is the default for anything it doesn't solve, not a regression.`;
-  renderKpis('kpi-support-funnel', [
-    {label:'Sent', value:String(sf.sent[sfIdx]), unit:'', sub:`${sf.automated[sfIdx]} auto-classified — ${sfMonth}`, status:'neutral'},
-    {label:'Solved by Bot', value:fmtPct(sf.solveRate[sfIdx],1).replace('%',''), unit:'%', sub:`${sf.solved[sfIdx]} of ${sf.sent[sfIdx]} sent — the one outcome attributable to the bot`, status:sf.solveRate[sfIdx]==null?'neutral':(sf.solveRate[sfIdx]<5?'bad':(sf.solveRate[sfIdx]<15?'watch':'good'))},
-    {label:'Timeout Rate', value:fmtPct(sf.pendingRate[sfIdx],1).replace('%',''), unit:'%', sub:`${sf.pending[sfIdx]} of ${sf.sent[sfIdx]} — hit the 4h no-response timeout tag`, status:'watch'},
+
+  const sentRow = e.funnel.find(f=>f.stage==='Autoresponder Responses Sent');
+  const closedRow0 = e.funnel.find(f=>f.stage==='Total FT-Closed Tickets');
+  const handedRow0 = e.funnel.find(f=>f.stage==='Handed to a human');
+  const pendingRow0 = e.funnel.find(f=>f.stage==='Open/pending in autoresponder queue');
+  const unclearRow0 = e.funnel.find(f=>f.stage==='Unclear outcome');
+  document.getElementById('autoresponderOutcomesTakeaway').textContent =
+    `${sfMonth}: ${fmtNum(sentRow.count)} sent. ${fmtPct(sf.solveRate[sfIdx],1)} solved (${fmtNum(sf.solvedExplicit[sfIdx])} explicit + ${fmtNum(sf.noReplyClosed[sfIdx])} no-reply closures). ${fmtNum(handedRow0.count)} (${fmtPct(handedRow0.pctOfPrev,1)}) handed to a human \u2014 the default for anything that doesn't resolve on its own, not a regression. ${fmtNum(pendingRow0.count)} are still open/pending in the autoresponder's own queue, and ${fmtNum(unclearRow0.count)} closed with no tag explaining why.`;
+  renderKpis('kpi-funnel', [
+    {label:'Sent', value:String(sentRow.count), unit:'', sub:'ft-email-automated, Support queue — August', status:'neutral'},
+    {label:'Solved', value:fmtPct(sf.solveRate[sfIdx],1).replace('%',''), unit:'%', sub:`${sf.solved[sfIdx]} of ${sf.sent[sfIdx]} \u2014 ${sf.solvedExplicit[sfIdx]} explicit + ${sf.noReplyClosed[sfIdx]} no-reply closures`, status:sf.solveRate[sfIdx]==null?'neutral':(sf.solveRate[sfIdx]<5?'bad':(sf.solveRate[sfIdx]<15?'watch':'good'))},
+    {label:'Handed to a human', value:fmtPct(handedRow0.pctOfPrev,1).replace('%',''), unit:'%', sub:`${handedRow0.count} of ${sentRow.count} — regardless of current status`, status:'neutral'},
+    {label:'Open/pending in autoresponder queue', value:fmtPct(pendingRow0.pctOfPrev,1).replace('%',''), unit:'%', sub:`${pendingRow0.count} of ${sentRow.count} — still with the bot, never escalated`, status:'watch'},
   ]);
-  document.getElementById('tblSupportFunnel').innerHTML = `
-    <tr><th>Month</th><th class="num">Sent</th><th class="num">Solved</th><th class="num">Handoff</th><th class="num">Timeout</th><th class="num">Solve %</th><th>Notes</th></tr>
-    ${sf.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(sf.sent[i])}</td><td class="num">${fmtNum(sf.solved[i])}</td><td class="num">${fmtNum(sf.handoff[i])}</td><td class="num">${fmtNum(sf.pending[i])}</td><td class="num">${sf.solveRate[i]===null?'—':fmtPct(sf.solveRate[i],1)}</td><td style="color:var(--muted); font-size:12px;">${sf.notes[i]}</td></tr>`).join('')}
-  `;
+  destroyChart('funnel');
+  charts.funnel = safeChart('chartFunnel', {
+    type:'bar',
+    data:{
+      labels:[''],
+      datasets:[
+        {label:'Closed — no human touch', data:[closedRow0.count], backgroundColor:COLORS.green, stack:'s'},
+        {label:'Handed to a human', data:[handedRow0.count], backgroundColor:COLORS.blue, stack:'s'},
+        {label:'Open/pending in autoresponder queue', data:[pendingRow0.count], backgroundColor:COLORS.amber, stack:'s'},
+        {label:'Unclear outcome', data:[unclearRow0.count], backgroundColor:COLORS.muted, stack:'s'},
+      ]
+    },
+    options:{ indexAxis:'y', plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
+      scales:{ x:{grid:{color:COLORS.grid}, stacked:true, max:sentRow.count}, y:{grid:{display:false}, stacked:true} } }
+  });
+
   document.getElementById('tblHandoffReasons').innerHTML = `
     <tr><th>Month</th><th class="num">Timeout (4h no-response)</th><th class="num">Unclassified</th><th class="num">Total handed off</th></tr>
     ${hr.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(hr.timeout[i])} (${fmtPct(100*hr.timeout[i]/hr.total[i],1)})</td><td class="num">${fmtNum(hr.unclassified[i])} (${fmtPct(100*hr.unclassified[i]/hr.total[i],1)})</td><td class="num">${fmtNum(hr.total[i])}</td></tr>`).join('')}
@@ -2030,7 +2035,7 @@ function renderWidgetView(){
   const touchesRemoved = trGet('Support L1 touches removed (baseline \u2212 actual)').vals[0];
   renderKpis('kpi-automation', [
     {label:'FT-tagged L1-touch rate', value:String(ftRateVal), unit:'%', sub:'57 FT-tagged Support tickets', status:'bad'},
-    {label:'Non-FT-tagged L1-touch rate', value:String(nonFtRateVal), unit:'%', sub:'725 non-FT eligible tickets — the baseline', status:'neutral'},
+    {label:'Non-FT-tagged L1-touch rate', value:String(nonFtRateVal), unit:'%', sub:'710 non-FT eligible tickets — the baseline', status:'neutral'},
     {label:'L1 touches removed', value:touchesRemoved, unit:'', sub:'Negative = FT-tagged touched L1 more than baseline predicts', status:'bad'},
   ]);
   destroyChart('automation');
@@ -2043,12 +2048,12 @@ function renderWidgetView(){
       scales:{ y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} } }
   });
 
-  // ---- Support impact: bot-only resolution rate, by product ----
+  // ---- Support impact: autoresponder-only resolution rate, by product ----
   const br1 = w.botResolved;
   const tblBotEl = document.getElementById('tblBotResolved');
   if (br1 && tblBotEl) {
     tblBotEl.innerHTML = `
-      <tr><th>Product</th><th class="num">FT-tagged volume</th><th class="num">Resolved by bot</th><th class="num">Bot-only rate</th></tr>
+      <tr><th>Product</th><th class="num">FT-tagged volume</th><th class="num">Resolved by autoresponder</th><th class="num">Autoresponder-only rate</th></tr>
       ${br1.rows.map(r=>`<tr><td>${r.product}${r.lowN?' *':''}</td><td class="num">${fmtNum(r.ftVolume)}</td><td class="num">${fmtNum(r.botOnly)}</td><td class="num">${fmtPct(r.botOnlyRate,1)}</td></tr>`).join('')}
     `;
     destroyChart('botResolved');
@@ -2056,7 +2061,7 @@ function renderWidgetView(){
     charts.botResolved = safeChart('chartBotResolved', {
       type:'bar',
       data:{ labels: brPlot.map(r=>r.product), datasets:[
-        { label:'Bot-only resolution rate', data: brPlot.map(r=>r.botOnlyRate), backgroundColor:palette, borderRadius:4, maxBarThickness:44 },
+        { label:'Autoresponder-only resolution rate', data: brPlot.map(r=>r.botOnlyRate), backgroundColor:palette, borderRadius:4, maxBarThickness:44 },
       ]},
       options:{ plugins:{legend:{display:false}},
         scales:{ y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} } }
@@ -2630,7 +2635,7 @@ function renderDemand(){
   const contained=(wbm.deflected!=null)?Math.max(wbm.deflected-rcNet,0):0;
 
   // Scope-matched to the ticket denominator above (core support queues only):
-  // use the Support-only "solved by bot" count for the current month, not
+  // use the Support-only "solved by autoresponder" count for the current month, not
   // the all-queues email funnel (which also includes Billing etc. and would
   // mismatch the ticket denominator's scope). Previously this was hardcoded
   // to email.funnelJul, so every month silently showed July's number.
