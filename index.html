@@ -784,9 +784,9 @@
     <section class="block" id="sec-k-01b">
       <div class="block-head">
         <h3>Search journey, <span id="kbFunnelMonth">July</span></h3>
-        <div class="note">True-subset funnel from the search tracker, across all search roles (Anonymous, End-user, Staff): each stage is a subset of the one above; result clicks are derived (searches × share with \u22651 click, rounded). Sessions, article views, and deflections come from separate trackers with different denominators — shown as context tiles below, not funnel stages.</div>
+        <div class="note">True-subset funnel from the search tracker, across all search roles (Anonymous, End-user, Staff): each stage is a subset of the one above; result clicks are derived (searches × Search CTR, rounded). Sessions, article views, and deflections come from separate trackers with different denominators — shown as context tiles below, not funnel stages.</div>
       </div>
-      <div class="takeaway">Click-through actually fell once anonymous searchers are included: 53.7% of August's 949 searches got a click, down from 69.6% in July \u2014 the opposite direction from what an End-user-only view would show. 22 searches still end in a ticket, up from 11 in July. Deflection and article reach are separate-tracker context, not funnel stages.</div>
+      <div class="takeaway">Search CTR (weighted across all roles) softened slightly to 93.7% in August from 95.7% in July, while 22 searches still end in a ticket, up from 11 in July. Deflection and article reach are separate-tracker context, not funnel stages.</div>
       <div class="card"><div class="bar-list" id="kbFunnel"></div></div>
       <div class="kpi-row autofit" id="kbFlowContext" style="margin-top:12px;"></div>
     </section>
@@ -836,7 +836,7 @@
 
     <section class="block" id="sec-k-05">
       <div class="block-head"><h3>Content health &amp; search / findability</h3></div>
-      <div class="takeaway">Searches ticked up to 139 in August and click-through improved to 53.3%, but tickets-after-search still rose to 22 — volume is recovering faster than outcomes. Live article inventory and new-article counts are unavailable this month (source tab removed).</div>
+      <div class="takeaway">Total searches (all roles) fell to 949 in August, search CTR softened slightly to 93.7% from 95.7%, and tickets-after-search rose to 22 — outcomes are drifting the wrong way, though the CTR movement itself is modest. Live article inventory and new-article counts are unavailable this month (source tab removed).</div>
       <div class="two-col-cards">
         <div class="card">
           <div class="subhead">Content health</div>
@@ -1504,23 +1504,22 @@ function defaultState(){
          Scorecard's own Search Containment Count math) — not just an
          End-user figure carried over unchanged.
 
-         'Search CTR' is RENAMED and REDEFINED, not just rescoped: the raw
-         "Avg click-through rate" field is 100.9% for Anonymous in August
-         (over 100%, so it's counting something like clicks-per-search, not
-         "% of searches with a click") and can't be combined with the
-         End-user role's clean percentage into one meaningful number. Raw
-         Clicks \u00f7 Searches doesn't work either \u2014 it sums to 1,138% across
-         roles, confirming "Clicks" counts click events, not searches with
-         a click. "Searches with ≥1 click" uses the "Searches with no
-         clicks" field instead, which every role reports on the same
-         (bounded, comparable) basis. Under this corrected, full-population
-         view, click-through actually FELL from 69.6% (Jul) to 53.7% (Aug)
-         — the opposite direction from what the old End-user-only "Search
-         CTR improved to 53.3%" framing showed. */
+         'Search CTR' CORRECTED 9/18/2026: an earlier pass here wrongly
+         concluded this couldn't be combined across roles, since
+         Anonymous's raw "Avg click-through rate" exceeds 100% (it counts
+         multiple clicks per search), and substituted a different metric
+         ("Searches with \u22651 click", 53.7%/69.6%). That substitution was
+         wrong and is reverted. The workbook's own definition specifies the
+         correct method: a search-volume-weighted average of each role's
+         own click-through rate, scope "All-user KB / search" — (\u03a3 role
+         CTR \u00d7 role searches) \u00f7 \u03a3 role searches. Verified this exactly
+         reproduces the workbook's own pre-computed trend series (93.7%
+         Aug, 95.7% Jul), already used elsewhere on this page (momSeries
+         'Search CTR %', which was correct all along). */
       searchFind: [
         {metric:'Search Exit Rate', current:null, prior:null, mom:null, isPct:true},
         {metric:'Total Searches', current:949, prior:1119, mom:-15.2, isPct:false},
-        {metric:'Searches with \u22651 click', current:53.7, prior:69.6, mom:-22.8, isPct:true},
+        {metric:'Search CTR', current:93.7, prior:95.7, mom:-2.0, isPct:true},
         {metric:'Tickets Created After Search', current:22, prior:11, mom:100.0, isPct:false},
         {metric:'Searches with No Results', current:135, prior:108, mom:25.0, isPct:false},
       ],
@@ -2325,7 +2324,7 @@ function renderKbView(){
   setText('kbFunnelMonth', rm.current);
   const fSessions = hl['Total Deflection Rate'].den;
   const fSearches = k.searchFind.find(m=>m.metric==='Total Searches')?.current;
-  const fCtr = k.searchFind.find(m=>m.metric==='Searches with \u22651 click')?.current;
+  const fCtr = k.searchFind.find(m=>m.metric==='Search CTR')?.current;
   const fClicks = (fSearches!==null && fSearches!==undefined && fCtr!==null && fCtr!==undefined) ? Math.round(fSearches*fCtr/100) : null;
   const fViews = k.supportImpact.find(m=>m.metric==='Article Views')?.current;
   const fDefl = hl['Total Deflection Rate'].num;
