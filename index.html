@@ -497,7 +497,9 @@
     <span class="jn-label">Jump to</span>
     <a class="jn-pill" href="#head-widget">Overview</a>
     <a class="jn-pill" href="#sec-w-01">Headline</a>
+    <a class="jn-pill" href="#sec-w-01e">Capacity signal</a>
     <a class="jn-pill" href="#sec-w-01f">Repeat contact</a>
+    <a class="jn-pill" href="#sec-w-01g">Why handed off</a>
     <a class="jn-pill" href="#sec-w-04">Drop-off signal</a>
     <a class="jn-pill" href="#sec-w-05">Handoff topics</a>
     <a class="jn-pill" href="#sec-w-05b">Workflow handoffs</a>
@@ -551,7 +553,7 @@
     </section>
 
     <section class="block" id="sec-o-01a">
-      <div class="block-head"><h3>Monthly deflection trend — <span id="deflStoryRange"></span></h3><div class="note">Is the share of demand deflected without a human increasing? This chart runs Jun\u2013Aug \u2014 the ticket-level export it's built on doesn't go back to January anymore (consolidated 9/18/2026 onto the Non-Proactive ticket export, see the KB tab for why). KB has run since January and Widget went live Apr 27, but neither can be shown as a separate pre-autoresponder phase in this window; Autoresponder rolled out Jul 23, which this window does capture. The phase breakdown below marks where each layer was added.<span class="info-dot">i<span class="tip">Total demand = tickets created + widget-contained conversations + KB deflections. Autoresponder deflections are already inside the ticket count, not added on top. Ticket volume excludes CSE ICP, Unassigned, Other (14 groups), and Finance Licensing/Provisioning — see Support impact below for the full group breakdown. Caveats: KB deflections are mostly assumed; widget-contained is net of confirmed 7-day repeat tickets; June's autoresponder traffic was test/pilot and is excluded.</span></span></div></div>
+      <div class="block-head"><h3>Monthly deflection trend — <span id="deflStoryRange"></span></h3><div class="note">Is the share of demand deflected without a human increasing? This chart runs Jun–Aug — the ticket-level export it's built on doesn't go back to January anymore (consolidated 9/18/2026 onto the Non-Proactive ticket export, see the KB tab for why). KB has run since January and Widget went live Apr 27, but neither can be shown as a separate pre-autoresponder phase in this window; Autoresponder rolled out Jul 23, which this window does capture. The phase breakdown below marks where each layer was added.<span class="info-dot">i<span class="tip">Total demand = tickets created + widget-contained conversations + KB deflections. Autoresponder deflections are already inside the ticket count, not added on top. Ticket volume excludes CSE ICP, Unassigned, Other (14 groups), and Finance Licensing/Provisioning — see Support impact below for the full group breakdown. Caveats: KB deflections are mostly assumed; widget-contained is net of confirmed 7-day repeat tickets; June's autoresponder traffic was test/pilot and is excluded.</span></span></div></div>
       <div class="takeaway" id="deflStoryTakeaway"></div>
       <div class="card">
         <div class="chart-wrap"><canvas id="chartShareTrend"></canvas></div>
@@ -610,14 +612,14 @@
     <section class="block" id="sec-w-01e">
       <div class="block-head">
         <h3>Capacity signal — self-service share of demand</h3>
-        <div class="note">Built because a minutes-per-touch conversion isn't available yet from Support leadership, so touches removed can't be turned into hours or headcount. This tracks capacity impact a different way: what share of total demand (tickets + contained conversations) never reached a human at all. Jun\u2013Aug only \u2014 the ticket-level export used here doesn't go back further yet.<span class="info-dot">i<span class="tip">Contained = widget conversations minus the ones handed off (so a conversation only counts if it never became a ticket at all, no double-counting). Tickets = all-category Non-Proactive ticket volume, Ticket ID deduped. Demand = tickets + contained.</span></span></div>
+        <div class="note">Built because a minutes-per-touch conversion isn't available yet from Support leadership, so touches removed can't be turned into hours or headcount. This tracks capacity impact a different way: what share of total demand (tickets + contained conversations) never reached a human at all. Jun–Aug only — the ticket-level export used here doesn't go back further yet.<span class="info-dot">i<span class="tip">Contained = widget conversations minus the ones handed off (so a conversation only counts if it never became a ticket at all, no double-counting). Tickets = all-category Non-Proactive ticket volume, Ticket ID deduped. Demand = tickets + contained.</span></span></div>
       </div>
       <div class="takeaway">Self-service share of demand grew from 14.8% in June to 20.9% in August — a real, growing capacity signal even without a hours/headcount conversion yet.</div>
       <div class="kpi-row autofit" id="kpi-capacity-signal"></div>
       <div class="grid-2" style="margin-top:12px;">
         <div class="card"><table id="tblCapacitySignal"></table></div>
         <div class="card">
-          <div class="subhead">Self-service share of demand, Jun\u2013Aug</div>
+          <div class="subhead">Self-service share of demand, Jun–Aug</div>
           <div class="chart-wrap"><canvas id="chartCapacitySignal"></canvas></div>
         </div>
       </div>
@@ -645,11 +647,17 @@
     <section class="block" id="sec-w-01g">
       <div class="block-head">
         <h3>Why widget conversations get handed to a human — QA review, August</h3>
-        <div class="note">Manual QA review, agent-judged from reading each conversation end-to-end (not derived from the raw "deflected" flag, which we already found unreliable on this table).<span class="info-dot">i<span class="tip">Source: Widget QA Master tab, Outcome + Nonresolution Reason columns, Source month = August. All 250 August rows have Outcome filled: Solved by FT (199), Handed to a human (51) \u2014 a full August read, not a thin sample. Nonresolution Reason values were initially inconsistently capitalized (e.g. two different-cased versions of "Customer demanded a human" counted as separate values); fixed at the source and re-verified before publishing here.</span></span></div>
+        <div class="note">Manual QA review, agent-judged from reading each conversation end-to-end (not derived from the raw "deflected" flag, which we already found unreliable on this table).<span class="info-dot">i<span class="tip">Source: Widget QA Master tab, Outcome + Nonresolution Reason columns, Source month = August. All 250 August rows have Outcome filled: Solved by FT (199), Handed to a human (51) — a full August read, not a thin sample. This 51 is a different count than the "35 handoffs" used elsewhere on this tab (Handed-off topics, Handoff rate by workflow) — those come from the conversation log's detected_workflows field, while this 51 comes from the QA agent's own end-to-end read of each conversation; the two sources don't fully agree on what counts as a handoff, and neither has been confirmed as more accurate than the other. Nonresolution Reason values were initially inconsistently capitalized (e.g. two different-cased versions of "Customer demanded a human" counted as separate values); fixed at the source and re-verified before publishing here.</span></span></div>
       </div>
       <div class="takeaway">Closer to the ticket autoresponder than it first looked: customers explicitly demanding a human (23 of 51, 45.1%) and account-specific action (21, 41.2%) are now nearly tied, with technical complexity a distant third (7, 13.7%). Widget users still bail to a human by preference somewhat more than email/ticket users do, but the gap is much smaller than the first pass suggested.</div>
       <div class="kpi-row autofit" id="kpi-widget-handoff-reason"></div>
       <div class="card" style="margin-top:12px;"><div class="chart-wrap" style="height:200px;"><canvas id="chartWidgetHandoffReason"></canvas></div></div>
+
+      <div class="subhead" style="margin-top:14px;">KB update needed — QA review, August</div>
+      <div class="note">Of the 51 handed-off conversations, does the underlying KB content need work — and if so, is it missing entirely or just needs editing.<span class="info-dot">i<span class="tip">Source: Widget QA Master tab, KB update needed column, Source month = August. Scoped the same way as Email: blank on all 199 "Solved by FT" rows (nothing to explain), filled on all 51 "Handed to a human" rows (zero blanks). Same column and same values as Email QA Master, so the two channels are now directly comparable on this question.</span></span></div>
+      <div class="kpi-row autofit" id="kpi-widget-kb-update"></div>
+      <div class="card" style="margin-top:12px;"><div class="chart-wrap" style="height:160px;"><canvas id="chartWidgetKbUpdate"></canvas></div></div>
+      <div class="takeaway" style="margin-top:12px;">56.9% of widget handoffs (29 of 51) involve some KB shortfall — split roughly 3:2 between missing content (17, "Gap") and content that exists but needs editing (12, "Tweak"). 21 (41.2%) needed no KB work at all — those are cases where content wasn't the issue, matching the account-specific and technical-complexity drivers found above.</div>
     </section>
 
     <section class="block" id="sec-w-04">
@@ -673,7 +681,7 @@
     <section class="block" id="sec-w-05">
       <div class="block-head">
         <h3>Handed-off topics &amp; unanswered questions</h3>
-        <div class="note">Detected topic keywords applied to August's 35 handoffs (not the old free-text topic labels). No separate "mentions across all conversations" figure exists in this source — that column now reads \u2014. Pulled 9/10/2026.</div>
+        <div class="note">Detected topic keywords applied to August's 35 handoffs (not the old free-text topic labels). No separate "mentions across all conversations" figure exists in this source — that column now reads —. Pulled 9/10/2026. This 35 comes from the conversation log's detected_workflows field; the QA breakdown above ("Why widget conversations get handed to a human") uses a different count (51) from the QA agent's own read of each conversation — see that section's tooltip for why they don't match.</div>
       </div>
       <div class="takeaway">Most August handoffs (26 of 35) don't match any of the five tracked keyword buckets — "Other / uncategorized" dominates. Of the ones that do, security/TLS/cert questions lead (4), not billing or account issues.</div>
       <div class="grid-2">
@@ -744,7 +752,7 @@
     <section class="block" id="sec-w-09c">
       <div class="block-head">
         <h3>Autoresponder outcomes — Support</h3>
-        <div class="note">August Email Autoresponder Outcomes (Support only). Billing is tracked separately \u2014 see the reference table at the bottom of the page. June was negligible and July's autoresponder didn't start until July 22, so August is reported standalone.<span class="info-dot">i<span class="tip">Solved combines two signals: 1 explicit solve + 7 no-reply closures = 8 of 57. Treat this as a broader "no further action needed" measure, not proof the autoresponder resolved all 8 \u2014 a no-reply closure means the customer stopped responding, which isn't the same as confirmed help. The 1 explicit solve also carries a handoff and a timeout tag and sits in Support - L3, so even that one went through a human queue before resolving \u2014 it overlaps with the "Handed to a human" tile by 1 ticket, which is why the tiles below don't sum to 57.</span></span></div>
+        <div class="note">August Email Autoresponder Outcomes (Support only). Billing is tracked separately — see the reference table at the bottom of the page. June was negligible and July's autoresponder didn't start until July 22, so August is reported standalone.<span class="info-dot">i<span class="tip">Solved combines two signals: 1 explicit solve + 7 no-reply closures = 8 of 57. Treat this as a broader "no further action needed" measure, not proof the autoresponder resolved all 8 — a no-reply closure means the customer stopped responding, which isn't the same as confirmed help. The 1 explicit solve also carries a handoff and a timeout tag and sits in Support - L3, so even that one went through a human queue before resolving — it overlaps with the "Handed to a human" tile by 1 ticket, which is why the tiles below don't sum to 57.</span></span></div>
       </div>
       <div class="takeaway" id="autoresponderOutcomesTakeaway"></div>
       <div class="kpi-row autofit" id="kpi-funnel"></div>
@@ -765,7 +773,7 @@
         <h3>Support impact — L1 touches &amp; nudges</h3>
         <div class="note">Does the autoresponder reduce L1 work, not just solve tickets? August only — FT-tagged (Forethought-tagged, i.e. touched by the autoresponder) tickets vs. Support's own non-FT tickets. Not a Support-vs-Billing comparison — see the Billing reference table at the bottom of the page.</div>
       </div>
-      <div class="takeaway" id="supportImpactTakeaway"></div>
+      <div class="takeaway" id="l1TouchesTakeaway"></div>
 
       <div class="subhead" style="margin-top:14px;">How FT-tagged Support tickets resolve, by product — August</div>
       <div class="note">The complete journey for every FT-tagged ticket, by product: resolved with no human touch, or handed off — and if handed off, to which team.<span class="info-dot">i<span class="tip">Built from the Autoresponder Billing v Technical ticket-level export (57 FT-tagged, non-proactive Support tickets in August), using the autoresponder's own handoff/no-handoff tag. This is the same 14-ticket L1-touched population used in the takeaway above (both corrected 9/18/2026 to use this raw pull instead of the Automation Monthly Staging tab). Each bar sums to 100% of that product's FT-tagged volume — the destination shares here are recalculated on that same base, not on handoff volume alone, so they're directly comparable to "Resolved by autoresponder."</span></span></div>
@@ -783,7 +791,7 @@
       <div class="takeaway" style="margin-top:12px;">Only 8 Support tickets were fully solved in August. The bigger story is upstream of quality: 701 tickets got no response from FT at all, and 95.6% of those (670) never had a chance to begin with — excluded by tier, regardless of KB quality or bot performance.</div>
 
       <div class="subhead" style="margin-top:14px;">Why tickets get handed to a human — QA review, August</div>
-      <div class="note">Manual QA review, agent-judged from reading each conversation end-to-end (not derived from tags, since tags can drift from reality due to manual changes).<span class="info-dot">i<span class="tip">Source: Email QA Master tab, Outcome + Non Resolution Reason columns, Source month = August, Source category = Support. All 59 reviewed tickets show Outcome = "Handed to a human," zero "Solved by FT" \u2014 expected, since this QA queue is curated to tickets that needed a resolution reason in the first place, not a full census. This is a QA sample, not the full 38-ticket "Handed to a human" population from the tag-verified count above \u2014 the two won't reconcile exactly.</span></span></div>
+      <div class="note">Manual QA review, agent-judged from reading each conversation end-to-end (not derived from tags, since tags can drift from reality due to manual changes).<span class="info-dot">i<span class="tip">Source: Email QA Master tab, Outcome + Non Resolution Reason columns, Source month = August, Source category = Support. All 59 reviewed tickets show Outcome = "Handed to a human," zero "Solved by FT" — expected, since this QA queue is curated to tickets that needed a resolution reason in the first place, not a full census. This is a QA sample, not the full 38-ticket "Handed to a human" population from the tag-verified count above — the two won't reconcile exactly.</span></span></div>
       <div class="kpi-row autofit" id="kpi-handoff-reason"></div>
       <div class="card" style="margin-top:12px;"><div class="chart-wrap" style="height:200px;"><canvas id="chartHandoffReason"></canvas></div></div>
       <div class="takeaway" style="margin-top:12px;">Account-specific action is the dominant driver (32 of 59, 54.2%) — billing exceptions, refunds, account changes only a human can execute. Technical complexity is second (19, 32.2%). Only 2 of 59 (3.4%) were customers explicitly demanding a human — most handoffs are structural, not preference or KB failure.</div>
@@ -1382,6 +1390,20 @@ function defaultState(){
           {reason:'Customer demanded a human', count:23},
           {reason:'Account-specific action required', count:21},
           {reason:'Technical complexity beyond KB scope', count:7},
+        ],
+      },
+      /* Added 9/18/2026: "KB update needed" column, matching Email QA
+         Master exactly (same field, same values), so both channels
+         answer the KB-shortfall question the same way. Scoped
+         identically too \u2014 blank on Solved by FT, filled on Handed to a
+         human. 51 of 51 handed-off rows filled, zero blanks. */
+      kbUpdateNeeded: {
+        month: 'Aug',
+        rows: [
+          {reason:'No', count:21},
+          {reason:'Yes \u2014 Gap', count:17},
+          {reason:'Yes \u2014 Tweak', count:12},
+          {reason:'Undetermined', count:1},
         ],
       },
       readout: [
@@ -2245,7 +2267,7 @@ function renderWidgetView(){
   const ratioVal = (ftRateVal/nonFtRateVal).toFixed(1);
   const hlCloud = w.handoffLoad.rows.find(r=>r.product==='Redis Cloud');
   const hlSoftware = w.handoffLoad.rows.find(r=>r.product==='Redis Software');
-  document.getElementById('supportImpactTakeaway').innerHTML =
+  document.getElementById('l1TouchesTakeaway').innerHTML =
     `We don't yet have clean evidence the autoresponder reduces L1 load. FT-tagged tickets reached L1 more often than non-FT tickets in August (${ftRateVal}% vs. ${nonFtRateVal}%, about ${ratioVal}x) — the opposite of the goal. But the two groups aren't a controlled comparison: the autoresponder isn't applied at random, so this gap could reflect ticket mix rather than the autoresponder's effect. It's concentrated in Redis Cloud, where L1 is the single largest destination for handoffs (${fmtPct(hlCloud.l1Pct,1)}); Redis Software rarely reaches L1 at all (${fmtPct(hlSoftware.l1Pct,1)}) — see the breakdown below.<span class="info-dot">i<span class="tip">${fmtNum(ftVolumeVal)} FT-tagged Support tickets, ${fmtNum(ftActualTouched)} of which touched L1 (${ftRateVal}%). ${fmtNum(nonFtVolumeVal)} non-FT eligible tickets, ${fmtNum(nonFtActualTouched)} of which touched L1 (${nonFtRateVal}% \u2014 the baseline, i.e. what we'd expect FT-tagged tickets to do if the autoresponder had no effect either way). If FT-tagged tickets matched that baseline, ${baselineExpected} would be expected to reach L1 instead of ${ftActualTouched} \u2014 ${Math.abs(touchesRemovedNum)} more than expected, not fewer (this is shown elsewhere as "L1 touches removed: ${touchesRemovedStr}"). Nudge rate (the autoresponder's automated follow-up when a customer goes quiet, separate from whether the ticket reaches L1): ${nudgeFtRate} FT-tagged vs. ${nudgeNonFtRate} non-FT (structural \u2014 non-FT tickets were never touched by the autoresponder, so they can't be nudged). Auto-close simulation (a proposed 4h+72h rule) currently flags ${autoCloseCount} tickets \u2014 unverified against raw data, no live automation exists yet. Hours returned is still blocked on agreeing a minutes-per-L1-touch value with Support leadership.</span></span>`;
 
   // ---- Support impact: full resolution journey per FT-tagged ticket, by product ----
@@ -2330,7 +2352,7 @@ function renderWidgetView(){
     const total = data.rows.reduce((s,r)=>s+r.count, 0);
     const palette2 = [COLORS.red, COLORS.amber, '#9B5DE5', COLORS.blue, COLORS.muted];
     renderKpis(kpiId, data.rows.map((r,i)=>({
-      label:r.reason, value:fmtNum(r.count), unit:'', sub:`${fmtPct(100*r.count/total,1)} of ${fmtNum(total)} classified`, status:i===0?'bad':'watch'
+      label:r.reason, value:fmtNum(r.count), unit:'', sub:`${fmtPct(100*r.count/total,1)} of ${fmtNum(total)} classified`, status:/^no\b/i.test(r.reason)?'good':(i===0?'bad':'watch')
     })));
     destroyChart(chartKey);
     charts[chartKey] = safeChart(chartId, {
@@ -2344,6 +2366,7 @@ function renderWidgetView(){
   renderQaBreakdown(e.handoffReasonQA, 'kpi-handoff-reason', 'chartHandoffReason', 'handoffReason');
   renderQaBreakdown(e.kbGapTweak, 'kpi-kb-gap-tweak', 'chartKbGapTweak', 'kbGapTweak');
   renderQaBreakdown(w.handoffReasonQA, 'kpi-widget-handoff-reason', 'chartWidgetHandoffReason', 'widgetHandoffReason');
+  renderQaBreakdown(w.kbUpdateNeeded, 'kpi-widget-kb-update', 'chartWidgetKbUpdate', 'widgetKbUpdate');
 
   // ---- Billing reference (unmodified FT system, ticket-volume context only — see billingReference tab notes) ----
   const br = w.billingReference;
