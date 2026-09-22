@@ -642,6 +642,16 @@
       </div>
     </section>
 
+    <section class="block" id="sec-w-01g">
+      <div class="block-head">
+        <h3>Why widget conversations get handed to a human — QA review, August</h3>
+        <div class="note">Manual QA review, agent-judged from reading each conversation end-to-end (not derived from the raw "deflected" flag, which we already found unreliable on this table).<span class="info-dot">i<span class="tip">Source: Widget QA Master tab, Outcome + Nonresolution Reason columns, Source month = August. All 250 August rows have Outcome filled: Solved by FT (199), Handed to a human (51) \u2014 a full August read, not a thin sample. Nonresolution Reason values were initially inconsistently capitalized (e.g. two different-cased versions of "Customer demanded a human" counted as separate values); fixed at the source and re-verified before publishing here.</span></span></div>
+      </div>
+      <div class="takeaway">Closer to the ticket autoresponder than it first looked: customers explicitly demanding a human (23 of 51, 45.1%) and account-specific action (21, 41.2%) are now nearly tied, with technical complexity a distant third (7, 13.7%). Widget users still bail to a human by preference somewhat more than email/ticket users do, but the gap is much smaller than the first pass suggested.</div>
+      <div class="kpi-row autofit" id="kpi-widget-handoff-reason"></div>
+      <div class="card" style="margin-top:12px;"><div class="chart-wrap" style="height:200px;"><canvas id="chartWidgetHandoffReason"></canvas></div></div>
+    </section>
+
     <section class="block" id="sec-w-04">
       <div class="block-head">
         <h3>Drop-off signal (automated Forethought)</h3>
@@ -771,6 +781,18 @@
       <div class="kpi-row autofit" id="kpi-deflection-chance"></div>
       <div class="card" style="margin-top:12px;"><div class="chart-wrap" style="height:140px;"><canvas id="chartDeflectionChance"></canvas></div></div>
       <div class="takeaway" style="margin-top:12px;">Only 8 Support tickets were fully solved in August. The bigger story is upstream of quality: 701 tickets got no response from FT at all, and 95.6% of those (670) never had a chance to begin with — excluded by tier, regardless of KB quality or bot performance.</div>
+
+      <div class="subhead" style="margin-top:14px;">Why tickets get handed to a human — QA review, August</div>
+      <div class="note">Manual QA review, agent-judged from reading each conversation end-to-end (not derived from tags, since tags can drift from reality due to manual changes).<span class="info-dot">i<span class="tip">Source: Email QA Master tab, Outcome + Non Resolution Reason columns, Source month = August, Source category = Support. All 59 reviewed tickets show Outcome = "Handed to a human," zero "Solved by FT" \u2014 expected, since this QA queue is curated to tickets that needed a resolution reason in the first place, not a full census. This is a QA sample, not the full 38-ticket "Handed to a human" population from the tag-verified count above \u2014 the two won't reconcile exactly.</span></span></div>
+      <div class="kpi-row autofit" id="kpi-handoff-reason"></div>
+      <div class="card" style="margin-top:12px;"><div class="chart-wrap" style="height:200px;"><canvas id="chartHandoffReason"></canvas></div></div>
+      <div class="takeaway" style="margin-top:12px;">Account-specific action is the dominant driver (32 of 59, 54.2%) — billing exceptions, refunds, account changes only a human can execute. Technical complexity is second (19, 32.2%). Only 2 of 59 (3.4%) were customers explicitly demanding a human — most handoffs are structural, not preference or KB failure.</div>
+
+      <div class="subhead" style="margin-top:14px;">KB update needed — QA review, August</div>
+      <div class="note">Of the same 59 reviewed tickets, does the underlying KB content actually need work.<span class="info-dot">i<span class="tip">Source: Email QA Master tab, KB update needed column, Source month = August, Source category = Support. The more granular "KB coverage" breakdown (Partial/Covered/Not applicable/Not found/Unable to verify) was deliberately retired from this sheet in favor of this simpler Yes/No/Undetermined signal — not lost data, a deliberate simplification.</span></span></div>
+      <div class="kpi-row autofit" id="kpi-kb-gap-tweak"></div>
+      <div class="card" style="margin-top:12px;"><div class="chart-wrap" style="height:160px;"><canvas id="chartKbGapTweak"></canvas></div></div>
+      <div class="takeaway" style="margin-top:12px;">61.0% of reviewed tickets (36 of 59) need a KB update. But paired with the finding above — account-specific action is the bigger driver — most KB work would still leave the majority of handoffs happening anyway.</div>
     </section>
 
     <section class="block" id="sec-w-12">
@@ -1342,6 +1364,26 @@ function defaultState(){
         rows: [],
         note:'Pending: add the L1 handoff-reply sample (handed-off conversations and whether the customer replied) to the widget sheet, and the feed will populate this section.',
       },
+      /* REBUILT 9/18/2026 on the finalized Widget QA Master schema
+         (Outcome + Nonresolution Reason, agent-judged from reading each
+         conversation end-to-end \u2014 not derived from the raw "deflected"
+         flag, which we already found unreliable on this exact table:
+         self-reported, runs high, doesn't match the audited number).
+         All 250 August rows have Outcome filled: Solved by FT (199),
+         Handed to a human (51) \u2014 a full August read, not a thin sample.
+         Nonresolution Reason initially came back inconsistently
+         capitalized (e.g. "Customer demanded a human" vs "Customer
+         Demanded a Human" as separate values) \u2014 fixed at the source and
+         re-verified; counts below are the corrected, consolidated
+         totals, all 51 Handed-to-a-human rows accounted for. */
+      handoffReasonQA: {
+        month: 'Aug',
+        rows: [
+          {reason:'Customer demanded a human', count:23},
+          {reason:'Account-specific action required', count:21},
+          {reason:'Technical complexity beyond KB scope', count:7},
+        ],
+      },
       readout: [
         'Performance: <strong>86.0% deflection in August</strong> — most widget conversations resolve without ever reaching a human.',
         'Recontact: 2.8% of August\'s contained conversations came back as a same-issue ticket within 7 days — down sharply from 8.5% in July (which itself was revised down from an earlier 12.6% once July\'s eligible-conversation count was recalculated). A real improvement in containment quality, not just a denominator effect.',
@@ -1411,6 +1453,42 @@ function defaultState(){
         pending: 10,
         hadChanceNoResponse: 31,
         excludedUpfront: 670,
+      },
+      /* REBUILT 9/18/2026 on the finalized Email QA Master schema
+         (Outcome + Non Resolution Reason, agent-judged from reading each
+         conversation end-to-end \u2014 not derived from tags, since tags can
+         drift from reality due to manual changes). All 59 August/Support
+         rows now have Outcome = "Handed to a human" with zero blanks and
+         zero "Solved by FT" in this specific slice (Solved-by-FT rows in
+         this workbook fall in Billing or other months, not this slice) \u2014
+         this QA queue is curated to tickets that needed a resolution
+         reason in the first place, so 100% "Handed to a human" here is
+         expected, not a finding. Still a QA sample (59 tickets), not the
+         full 38-ticket tag-verified "Handed to a human" population above
+         \u2014 the two are related but won't reconcile to the same total. */
+      handoffReasonQA: {
+        month: 'Aug',
+        rows: [
+          {reason:'Account-specific action required', count:32},
+          {reason:'Technical complexity beyond KB scope', count:19},
+          {reason:'KB gap', count:6},
+          {reason:'Customer demanded a human', count:2},
+        ],
+      },
+      /* REBUILT 9/18/2026: the granular "KB coverage" column (Partial /
+         Covered / Not applicable / Not found / Unable to verify) was
+         deliberately retired from the live Email QA Master in favor of
+         the simpler "KB update needed" (Yes/No/Undetermined) \u2014
+         confirmed this is an intentional simplification, not lost data;
+         the original granular version is archived in "Email QA Master
+         Source" if ever needed again. Same 59 August/Support rows. */
+      kbGapTweak: {
+        month: 'Aug',
+        rows: [
+          {reason:'KB update needed', count:36},
+          {reason:'No KB update needed', count:19},
+          {reason:'Undetermined', count:4},
+        ],
       },
       /* Support-only autoresponder outcomes. Rebuilt 9/16/2026 from the
          cross-queue "August Email Autoresponder Outcomes" table, stripping
@@ -2245,6 +2323,27 @@ function renderWidgetView(){
         scales:{ x:{grid:{color:COLORS.grid}, stacked:true, max:dcTotal}, y:{grid:{display:false}, stacked:true} } }
     });
   }
+
+  // ---- Handoff reason & Resolution gap QA breakdowns, August ----
+  const renderQaBreakdown = (data, kpiId, chartId, chartKey) => {
+    if (!data) return;
+    const total = data.rows.reduce((s,r)=>s+r.count, 0);
+    const palette2 = [COLORS.red, COLORS.amber, '#9B5DE5', COLORS.blue, COLORS.muted];
+    renderKpis(kpiId, data.rows.map((r,i)=>({
+      label:r.reason, value:fmtNum(r.count), unit:'', sub:`${fmtPct(100*r.count/total,1)} of ${fmtNum(total)} classified`, status:i===0?'bad':'watch'
+    })));
+    destroyChart(chartKey);
+    charts[chartKey] = safeChart(chartId, {
+      type:'bar',
+      data:{ labels: data.rows.map(r=>r.reason), datasets:[
+        { label:'Tickets', data: data.rows.map(r=>r.count), backgroundColor: data.rows.map((_,i)=>palette2[i%palette2.length]), borderRadius:4, maxBarThickness:28 },
+      ]},
+      options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{grid:{color:COLORS.grid}}, y:{grid:{display:false}} } }
+    });
+  };
+  renderQaBreakdown(e.handoffReasonQA, 'kpi-handoff-reason', 'chartHandoffReason', 'handoffReason');
+  renderQaBreakdown(e.kbGapTweak, 'kpi-kb-gap-tweak', 'chartKbGapTweak', 'kbGapTweak');
+  renderQaBreakdown(w.handoffReasonQA, 'kpi-widget-handoff-reason', 'chartWidgetHandoffReason', 'widgetHandoffReason');
 
   // ---- Billing reference (unmodified FT system, ticket-volume context only — see billingReference tab notes) ----
   const br = w.billingReference;
