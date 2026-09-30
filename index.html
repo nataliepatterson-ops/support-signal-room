@@ -477,7 +477,7 @@
     </button>
     <div class="meta-strip">
       <span id="syncMeta">page opened <span id="snapDate"></span></span><br>
-      data current as of Sep 18, 2026 (reporting month: Aug 2026) — see each tab for its own source-refresh notes<br>
+      data current as of Sep 30, 2026 (reporting month: Aug 2026; September is month-to-date, preview on the Widget tab) — see each tab for its own source-refresh notes<br>
       sources: Forethought widget, KB Scorecard
     </div>
   </div>
@@ -505,6 +505,7 @@
     <a class="jn-pill" href="#sec-w-05b">Workflow handoffs</a>
     <a class="jn-pill" href="#sec-w-04c">Duration</a>
     <a class="jn-pill" href="#sec-w-04d">Customer feedback</a>
+    <a class="jn-pill" href="#sec-w-07">September preview</a>
     <a class="jn-pill" href="#sec-w-08">Readout</a>
   </div>
   <div class="jumpnav" id="jumpnav-ticket" style="display:none;">
@@ -522,6 +523,7 @@
     <a class="jn-pill" href="#sec-k-01b">Funnel</a>
     <a class="jn-pill" href="#sec-k-02">MoM trend</a>
     <a class="jn-pill" href="#sec-k-02b">Success vs tickets</a>
+    <a class="jn-pill" href="#sec-k-02c">Traffic quality</a>
     <a class="jn-pill" href="#sec-k-03">Segments</a>
     <a class="jn-pill" href="#sec-k-04">Support impact</a>
     <a class="jn-pill" href="#sec-k-05">Content &amp; search</a>
@@ -723,6 +725,23 @@
       <div class="card"><table id="tblCsat"></table></div>
     </section>
 
+    <section class="block" id="sec-w-07">
+      <div class="block-head">
+        <h3>September so far — month-to-date preview</h3>
+        <div class="note">Not reported yet. September isn't a complete month and its QA review hasn't started, so these numbers carry no verdict colors and stay out of every August figure on this page. They become the reporting month after month-end, once the checks below are cleared.<span class="info-dot">i<span class="tip">Source: Widget Metrics Sheet, Metrics tab, "Widget Monthly KPI — Raw Fields" Sep 2026 column, read 9/30/2026. Handoffs and containment use the same basis as August (the conversation log's handoff workflow), so the August comparison figures shown in each tile are like-for-like. Drop-off, CSAT and relevance are raw Forethought signals, not QA-verified.</span></span></div>
+      </div>
+      <div class="kpi-row autofit" id="kpi-sept-mtd"></div>
+      <div class="card story" style="margin-top:12px;">
+        <div class="s-row"><span class="s-pill on">loaded</span><span class="s-label">Widget volume, handoffs, sentiment</span><span class="s-why">Read from the Sep 2026 column of the Metrics tab (9/30). Month-to-date.</span></div>
+        <div class="s-row"><span class="s-pill on">loaded</span><span class="s-label">KB traffic (Amplitude)</span><span class="s-why">Article views and visitors for July through September (Sept 30, final day partial) are on the KB tab under "KB traffic quality." That is a separate tracker from the Guide exports below.</span></div>
+        <div class="s-row"><span class="s-pill mid">check first</span><span class="s-label">Drop-off count doesn't match</span><span class="s-why">QA-classified drop-offs (183) exceed the raw count (100). In August the two matched (80). The September figure likely includes rows from other months or an unfiltered range, so the 24.0% "likely true drop-off rate" built on the 183 is not used here.</span></div>
+        <div class="s-row"><span class="s-pill na">pending</span><span class="s-label">Widget QA review</span><span class="s-why">No September conversations have been reviewed yet, so Outcome, Nonresolution Reason, KB update needed, and the pass / partial / fail rates can't be filled in.</span></div>
+        <div class="s-row"><span class="s-pill mid">check first</span><span class="s-label">Ticket autoresponder</span><span class="s-why">The sheet shows 64 sent, 16 closed by FT, and 0 confirmed resolutions (export through Sep 28). It isn't confirmed whether that is Support only or includes Billing, and this dashboard is Support only, so it needs the Support split before it can be compared with August's 57 sent.</span></div>
+        <div class="s-row"><span class="s-pill off">blocked</span><span class="s-label">Ticket volume for the capacity signal</span><span class="s-why">The Non-Proactive Zendesk ticket volume block has two #REF! cells, and its data only runs through Sep 15.</span></div>
+        <div class="s-row"><span class="s-pill na">pending</span><span class="s-label">KB Scorecard (Guide exports)</span><span class="s-why">Needs September rows in five raw tabs (Deflections by Role, End User Sessions, Search Monthly Metrics, Guide Article Metrics, Tickets by Group), then a new column in the Scorecard and the Monthly KPI Trend.</span></div>
+      </div>
+    </section>
+
     <section class="block" id="sec-w-08">
       <div class="block-head"><h3>Management readout, widget</h3></div>
       <div class="readout">
@@ -881,7 +900,7 @@
     <section class="block" id="sec-k-02c">
       <div class="block-head">
         <h3>KB traffic quality, <span id="kbTqRange">Jul – Sep 2026</span></h3>
-        <div class="note">Source: Amplitude page views on support.redislabs.com article pages, a separate tracker from the Guide exports used elsewhere on this tab. "Assumed bot" means a view with no referrer from a visitor located in Singapore or China; "assumed human" is everything else. This is an estimate: Amplitude cannot identify bots directly, country is inferred from IP address, and the assumed-human group still contains some automated traffic. Figures are entered by hand and do not come from the live sync.</div>
+        <div class="note">Source: Amplitude page views on support.redislabs.com article pages, a separate tracker from the Guide exports used elsewhere on this tab. "Assumed bot" means a view with no referrer from a visitor located in Singapore or China; "assumed human" is everything else. This is an estimate: Amplitude cannot identify bots directly, country is inferred from IP address, and the assumed-human group still contains some automated traffic. Figures are entered by hand and do not come from the live sync. September runs through Sept 30 with the final day partial, so its month-over-month changes are slightly understated.</div>
       </div>
       <div class="takeaway" id="kbTqTakeaway"></div>
       <div class="kpi-row autofit" id="kbTqKpis"></div>
@@ -1389,6 +1408,24 @@ function defaultState(){
       /* Populates once the handoff-reply sample lives in the widget sheet
          (rows: outcome, count, share). Not shown until then — the dashboard
          only presents numbers that exist in a source spreadsheet. */
+      /* Added 9/30/2026 from the Widget Metrics Sheet (Metrics tab, Sep 2026
+         column of "Widget Monthly KPI — Raw Fields"). September is
+         month-to-date: shown as a preview only, never judged, and kept out
+         of every August figure. Internally consistent (284 - 58 = 226 =
+         79.6% of 284; 58/284 = 20.4%; 100/284 = 35.2%) but not yet
+         cross-checked against a raw export. The 183 QA-classified drop-offs
+         in the same sheet are deliberately NOT carried over: they exceed the
+         100 raw drop-offs, where August's two counts matched at 80. */
+      septemberMtd: {
+        conversations: 284,
+        handoffs: 58,
+        handoffRate: 20.4,
+        containment: 79.6,
+        rawDropoffs: 100,
+        dropoffRate: 35.2,
+        csatAvg: 2.5,
+        csatN: 6,
+      },
       handoffNecessity: {
         sampleSize: null,
         rows: [],
@@ -1757,7 +1794,7 @@ function defaultState(){
         {n:2, what:'Validate the all-user deflection mix', why:'Confirmed deflections fell 17.6% and assumed deflections fell 19.2%; total all-user deflection rate declined 10.4% to 44.0%.', kpi:'Confirmed Deflections; Assumed Deflections; Total Deflection Rate', owner:'Support Ops', status:'Watch'},
         {n:3, what:'Restore unavailable source metrics', why:'Live article inventory and KB influence cannot be refreshed because the Raw KB Inventory and Raw Ticket Article Links tabs are not present.', kpi:'Live Articles Total; New Articles Published; KB Influence on Tickets', owner:'Dashboard Owner / Support Ops', status:'Needs data'},
         {n:4, what:'Sustain article reach and feedback quality', why:'All-user article views declined 8.1% to 5,386; August feedback was positive but low-volume at 4 total responses, while subscriptions declined from 2 to 1.', kpi:'Article Views; Article Positive Feedback Rate', owner:'Content Ops', status:'Review'},
-        {n:5, what:'Maintain the clean August refresh', why:'Core dashboard sources are loaded through August 2026. September activity is month-to-date and remains excluded from current reporting.', kpi:'Raw Data Refresh Review; dashboard source checks', owner:'Dashboard Owner', status:'Ready'},
+        {n:5, what:'Maintain the clean August refresh', why:'Core dashboard sources are loaded through August 2026. September is month-to-date: a preview sits on the Widget tab, but it stays out of current reporting until month-end, QA review, and the open data checks are cleared.', kpi:'Raw Data Refresh Review; dashboard source checks', owner:'Dashboard Owner', status:'Ready'},
       ],
       /* KB Success vs Tickets — CONSOLIDATED 9/18/2026 from the KB
          workbook's "Raw Tickets by Group" tab onto the Automated Email
@@ -1891,7 +1928,7 @@ const STORY_METRICS = {
     {key:'Total Deflection Rate %', label:'Total deflection rate', dir:'>=',
      why:'Confirmed + assumed deflections per session, across all user roles.'},
     {key:'Search Deflection Proxy %', label:'Search deflection proxy', dir:'>=',
-     why:'Searches that did not end in a ticket \u2014 directional, and in decline for three straight months.'},
+     why:'Share of searches that did not end in a ticket \u2014 directional. Almost no searches ever lead to a ticket, so this sits near its ceiling and small moves reflect a handful of tickets.'},
     {key:'Article Views', label:'Article views', dir:'>=',
      why:'Reach of KB content across all user roles.'},
     {key:'Confirmed Deflections', label:'Confirmed deflections', dir:'>=',
@@ -2389,6 +2426,22 @@ function renderWidgetView(){
   renderQaBreakdown(e.kbGapTweak, 'kpi-kb-gap-tweak', 'chartKbGapTweak', 'kbGapTweak');
   renderQaBreakdown(w.handoffReasonQA, 'kpi-widget-handoff-reason', 'chartWidgetHandoffReason', 'widgetHandoffReason');
   renderQaBreakdown(w.kbUpdateNeeded, 'kpi-widget-kb-update', 'chartWidgetKbUpdate', 'widgetKbUpdate');
+
+  // ---- September month-to-date preview: neutral tiles only, never judged ----
+  const sm = w.septemberMtd;
+  if (sm) {
+    const augWm = (w.byMonth && w.byMonth['Aug']) || {};
+    const augConv = augWm.conversations, augHand = augWm.handoffN;
+    const augHandPct = (augConv && augHand!=null) ? 100*augHand/augConv : null;
+    const augContain = augWm.deflectionNH;
+    renderKpis('kpi-sept-mtd', [
+      {label:'Conversations', value:fmtNum(sm.conversations), unit:'', sub:`September to date \u00b7 Aug full month: ${fmtNum(augConv)}`, status:'neutral'},
+      {label:'Handoffs', value:fmtNum(sm.handoffs), unit:'', sub:`${fmtPct(sm.handoffRate,1)} of conversations \u00b7 Aug: ${fmtNum(augHand)} (${fmtPct(augHandPct,1)})`, status:'neutral'},
+      {label:'No-handoff containment', value:sm.containment, unit:'%', sub:`September to date \u00b7 Aug: ${fmtPct(augContain,1)}`, status:'neutral'},
+      {label:'Raw drop-offs', value:fmtNum(sm.rawDropoffs), unit:'', sub:`${fmtPct(sm.dropoffRate,1)} of conversations \u00b7 automated signal, not QA-verified`, status:'neutral'},
+      {label:'CSAT', value:sm.csatAvg, unit:'', sub:`Average of ${fmtNum(sm.csatN)} responses \u00b7 too thin to read`, status:'neutral'},
+    ]);
+  }
 
   // ---- Billing reference (unmodified FT system, ticket-volume context only — see billingReference tab notes) ----
   const br = w.billingReference;
