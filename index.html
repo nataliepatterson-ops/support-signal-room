@@ -878,6 +878,28 @@
       <div class="card" style="margin-top:12px;"><table id="tblKbSuccess"></table></div>
     </section>
 
+    <section class="block" id="sec-k-02c">
+      <div class="block-head">
+        <h3>KB traffic quality, <span id="kbTqRange">Jul – Sep 2026</span></h3>
+        <div class="note">Source: Amplitude page views on support.redislabs.com article pages, a separate tracker from the Guide exports used elsewhere on this tab. "Assumed bot" means a view with no referrer from a visitor located in Singapore or China; "assumed human" is everything else. This is an estimate: Amplitude cannot identify bots directly, country is inferred from IP address, and the assumed-human group still contains some automated traffic. Figures are entered by hand and do not come from the live sync.</div>
+      </div>
+      <div class="takeaway" id="kbTqTakeaway"></div>
+      <div class="kpi-row autofit" id="kbTqKpis"></div>
+      <div class="card" style="margin-top:12px;">
+        <div class="subhead">Article views by month, split by traffic pattern</div>
+        <div class="chart-wrap"><canvas id="chartKbTraffic"></canvas></div>
+      </div>
+      <div class="card" style="margin-top:12px;"><table id="tblKbTraffic"></table></div>
+      <div class="card" style="margin-top:12px; overflow-x:auto;">
+        <div class="subhead" id="kbTqCountrySub">Country comparison</div>
+        <table id="tblKbTrafficCountry"></table>
+        <div style="margin-top:12px; font-size:12.5px; color:var(--muted-dim); line-height:1.5; max-width:760px;">Visitors are Amplitude device IDs over the period. Ticket requesters are distinct people who opened a support case in the last 12 months (Salesforce, by account billing country). The two windows differ, so compare countries with each other and do not read the ratio as a rate. A support KB normally sees roughly half of visits arrive with no referrer; Singapore and China sit near 99%.</div>
+      </div>
+      <div class="card story" style="margin-top:12px;">
+        <div class="s-row"><span class="s-pill na">open question</span><span class="s-why" id="kbTqOpen"></span></div>
+      </div>
+    </section>
+
     <section class="block" id="sec-k-03">
       <div class="block-head"><h3>Deflections by user segment</h3><div class="note" id="kbSegNote">June's Deflections-by-Role export currently includes End user only; other segments show — until it's refreshed.</div></div>
       <div class="takeaway">August's role export is complete: anonymous users still drive most assumed deflections (582 of 834); end users account for all 14 confirmed deflections.</div>
@@ -3055,7 +3077,105 @@ function checkNarrativeStaleness(){
   }
 }
 
-function renderAll(){ renderOverview(); renderWidgetView(); renderKbView(); checkNarrativeStaleness(); }
+/* =========================================================================
+   KB TRAFFIC QUALITY — Amplitude estimate (static, entered by hand).
+   Views and visitors are for support.redislabs.com/hc/en-us/articles.
+   "Flagged" = no referrer AND visitor located in Singapore or China.
+   Update the arrays below each month; everything on screen derives from them.
+   Data through Sept 30, 2026 (final day partial).
+   ========================================================================= */
+const KB_TRAFFIC = {
+  months:['Jul 2026','Aug 2026','Sep 2026'],
+  views:{ total:[14700,12939,13705], flagged:[3840,3513,6371] },
+  visitors:{ total:[6857,7073,10401], flagged:[3818,3397,6269] },
+  // Deduplicated visitors over the whole period; requesters = last 12 months (Salesforce).
+  countries:[
+    {name:'Singapore',      visitors:8503, requesters:38, noRefPct:99, flagged:true},
+    {name:'China',          visitors:5123, requesters:7,  noRefPct:99, flagged:true},
+    {name:'Germany',        visitors:356,  requesters:29, noRefPct:59, flagged:false},
+    {name:'United Kingdom', visitors:330,  requesters:68, noRefPct:51, flagged:false},
+    {name:'Canada',         visitors:284,  requesters:77, noRefPct:63, flagged:false},
+  ],
+  guideViews:{ 'Jul 2026':5862, 'Aug 2026':5386 }, // from the Guide export used above, for the open-question note
+};
+
+function renderKbTraffic(){
+  if(!document.getElementById('sec-k-02c')) return;
+  const t = KB_TRAFFIC, m = t.months, n = m.length, L = n-1;
+  const rest = a => a.total.map((v,i)=>v-a.flagged[i]);
+  const mom = (arr,i) => (i>0 && arr[i-1]) ? (arr[i]-arr[i-1])/arr[i-1]*100 : null;
+  const share = (a,i) => a.flagged[i]/a.total[i]*100;
+  const vRest = rest(t.views), uRest = rest(t.visitors);
+  const short = s => s.split(' ')[0];
+
+  setText('kbTqRange', `${short(m[0])} \u2013 ${m[L]}`);
+
+  // ---- takeaway ----
+  const uTotMom = mom(t.visitors.total, L), uRestMom = mom(uRest, L);
+  setText('kbTqTakeaway',
+    `Total article views held roughly flat (${fmtNum(t.views.total[0])} \u2192 ${fmtNum(t.views.total[L])}), but the assumed-bot share rose from ${fmtPct(share(t.views,0),0)} in ${short(m[0])} to ${fmtPct(share(t.views,L),0)} in ${short(m[L])}. ` +
+    `${short(m[L])} unique visitors grew ${fmtPct(uTotMom,0)} on the raw count and ${fmtPct(uRestMom,0)} without assumed bots.`);
+
+  // ---- KPI tiles ----
+  renderKpis('kbTqKpis', [
+    {label:`${short(m[L])} article views (Amplitude)`, value:fmtNum(t.views.total[L]), unit:'', sub:`${mom(t.views.total,L)>=0?'+':'\u2212'}${Math.abs(mom(t.views.total,L)).toFixed(1)}% vs ${short(m[L-1])}. Separate tracker from Guide article views above`, status:'neutral'},
+    {label:'Assumed bot share of views', value:share(t.views,L).toFixed(1), unit:'%', sub:`Up from ${share(t.views,L-1).toFixed(1)}% in ${short(m[L-1])} and ${share(t.views,0).toFixed(1)}% in ${short(m[0])}`, status: share(t.views,L)>share(t.views,L-1)?'bad':'good'},
+    {label:`${short(m[L])} unique visitors`, value:fmtNum(t.visitors.total[L]), unit:'', sub:`${fmtNum(t.visitors.flagged[L])} assumed bot (${share(t.visitors,L).toFixed(0)}%)`, status:'watch'},
+    {label:`${short(m[L])} visitors, assumed human`, value:fmtNum(uRest[L]), unit:'', sub:`${uRestMom>=0?'+':'\u2212'}${Math.abs(uRestMom).toFixed(1)}% vs ${short(m[L-1])} (approximate; see note above)`, status:'neutral'},
+  ]);
+
+  // ---- stacked chart ----
+  destroyChart('kbTraffic');
+  charts.kbTraffic = safeChart('chartKbTraffic', {
+    type:'bar',
+    data:{ labels:m, datasets:[
+      { label:'Assumed human', data:vRest, backgroundColor:COLORS.blue, borderRadius:4, maxBarThickness:64, stack:'v' },
+      { label:'Assumed bot', data:t.views.flagged, backgroundColor:COLORS.red, borderRadius:4, maxBarThickness:64, stack:'v' },
+    ]},
+    options:{
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}} },
+      scales:{ x:{stacked:true, grid:{display:false}}, y:{stacked:true, grid:{color:COLORS.grid}} },
+      interaction:{mode:'index', intersect:false}
+    }
+  });
+
+  // ---- monthly table ----
+  // 3rd value: true = a rise is good news; false = a rise is bad news (flagged rows), so colours invert.
+  const rows = [
+    ['Total article views', t.views.total, true],
+    ['Assumed bot views', t.views.flagged, false],
+    ['Assumed human views', vRest, true],
+    ['Total unique visitors', t.visitors.total, true],
+    ['Assumed bot visitors', t.visitors.flagged, false],
+    ['Assumed human visitors (approx.)', uRest, true],
+  ];
+  const tqTag = (v, goodUp) => {
+    if(v===null||v===undefined) return momTag(v);
+    const up = v>0, cls = v===0 ? 'flat' : ((up===goodUp) ? 'up' : 'down');
+    return `<span class="tag ${cls}">${v>0?'\u25b2':(v<0?'\u25bc':'\u00b7')} ${Math.abs(v).toFixed(1)}%</span>`;
+  };
+  const momHeads = m.slice(1).map((mm,i)=>`<th class="num">${short(mm)} vs ${short(m[i])}</th>`).join('');
+  document.getElementById('tblKbTraffic').innerHTML =
+    `<tr><th>Metric</th>${m.map(x=>`<th class="num">${x}</th>`).join('')}${momHeads}</tr>` +
+    rows.map(([label,arr,goodUp])=>`<tr><td>${label}</td>${arr.map(v=>`<td class="num">${fmtNum(v)}</td>`).join('')}${arr.slice(1).map((_,i)=>`<td class="num">${tqTag(mom(arr,i+1), goodUp)}</td>`).join('')}</tr>`).join('');
+
+  // ---- country comparison ----
+  setText('kbTqCountrySub', `Country comparison, ${short(m[0])} \u2013 ${m[L]}`);
+  document.getElementById('tblKbTrafficCountry').innerHTML =
+    `<tr><th>Country</th><th class="num">KB visitors</th><th class="num">Ticket requesters</th><th class="num">Visitors per requester</th><th class="num">No referrer</th><th style="padding-left:18px;">Assumed bot group</th></tr>` +
+    t.countries.map(c=>`<tr><td>${c.name}</td><td class="num">${fmtNum(c.visitors)}</td><td class="num">${fmtNum(c.requesters)}</td><td class="num">${fmtNum(Math.round(c.visitors/c.requesters))}</td><td class="num">${c.noRefPct}%</td><td style="padding-left:18px;"><span class="tag ${c.flagged?'down':'flat'}">${c.flagged?'yes':'comparison'}</span></td></tr>`).join('');
+
+  // ---- open question: link to the Guide-based numbers elsewhere on this tab ----
+  const g = t.guideViews, gm = Object.keys(g);
+  const gTxt = gm.map(k=>`${fmtNum(g[k])} in ${short(k)}`).join(' and ');
+  const aTxt = gm.map(k=>fmtNum(t.views.total[m.indexOf(k)])).join(' and ');
+  setText('kbTqOpen',
+    `Not yet checked: whether the Guide figures elsewhere on this tab already exclude this traffic. Guide reported article views of ${gTxt}, against ${aTxt} in Amplitude for the same months, so the two trackers count differently and should not be compared directly. ` +
+    `If Guide sessions include automated visits, assumed deflections (sessions with article views and no ticket) would be overstated, because automated visits never open tickets. Anonymous visitors already account for 60\u201375% of assumed deflections. ` +
+    `A first test: compare weekly anonymous assumed deflections against the Singapore and China pattern in Amplitude, which peaked the week of Sept 7 and fell sharply after about Sept 17.`);
+}
+
+function renderAll(){ renderOverview(); renderWidgetView(); renderKbView(); renderKbTraffic(); checkNarrativeStaleness(); }
 renderAll();
 
 /* =========================================================================
