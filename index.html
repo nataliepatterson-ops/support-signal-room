@@ -211,6 +211,12 @@
   .af-wrap .af-bar span{display:block; height:100%;}
   .af-wrap .af-legend{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--muted); margin-top:8px;}
   .af-wrap .af-note{font-size:12.5px; color:var(--muted-dim); line-height:1.5; margin-top:10px; max-width:860px;}
+  .af-wrap .share-range{font-size:15px; color:var(--muted); line-height:1.4;}
+  .af-wrap .share-num{font-size:40px; font-weight:700; color:var(--text); letter-spacing:-.02em; margin-right:4px;}
+  .af-wrap .share-leg{display:grid; grid-template-columns:14px 1fr auto; gap:6px 12px; align-items:start; margin-top:12px; font-size:13px;}
+  .af-wrap .share-leg .why{color:var(--muted); font-size:12px; display:block; margin-top:2px;}
+  .goto-link{cursor:pointer; color:#33C2FB; white-space:nowrap; margin-left:6px; font-size:12.5px;}
+  .goto-link:hover{text-decoration:underline;}
   section.block > .note{font-size:12.5px; color:var(--muted-dim); max-width:860px; text-align:left; line-height:1.5; margin:4px 0 8px;}
 
   /* ---------- range filter control (charts) ---------- */
@@ -495,7 +501,7 @@
       <span id="syncMeta">page opened <span id="snapDate"></span></span><br>
       <span id="dataAsOf">data current as of —</span> — see each tab for its own source-refresh notes<br>
       <span id="dataChecks"></span><br>
-      sources: Forethought widget, KB Scorecard
+      sources: Forethought widget and email logs, Zendesk ticket export, QA reviews, KB Scorecard, Amplitude (KB traffic)
     </div>
   </div>
   <!-- FIXED 9/18/2026: the timestamp above previously read "snapshot
@@ -514,38 +520,30 @@
     <span class="jn-label">Jump to</span>
     <a class="jn-pill" href="#head-widget">Overview</a>
     <a class="jn-pill" href="#sec-w-01">Headline</a>
-    <a class="jn-pill" href="#sec-w-01e">Capacity signal</a>
-    <a class="jn-pill" href="#sec-w-01f">Repeat contact</a>
-    <a class="jn-pill" href="#sec-w-01h">Answer quality</a>
-    <a class="jn-pill" href="#sec-w-01g">Why handed off</a>
-    <a class="jn-pill" href="#sec-w-04">Drop-off signal</a>
-    <a class="jn-pill" href="#sec-w-05">Handoff topics</a>
-    <a class="jn-pill" href="#sec-w-05b">Workflow handoffs</a>
-    <a class="jn-pill" href="#sec-w-04c">Duration</a>
-    <a class="jn-pill" href="#sec-w-04d">Customer feedback</a>
-    <a class="jn-pill" href="#sec-w-07">September preview</a>
-    <a class="jn-pill" href="#sec-w-08">Readout</a>
+      <a class="jn-pill" href="#sec-w-01h">Answer quality</a>
+      <a class="jn-pill" href="#sec-w-01e">Capacity signal</a>
+      <a class="jn-pill" href="#sec-w-01f">Repeat contact</a>
+      <a class="jn-pill" href="#sec-w-07">Other signals</a>
+      <a class="jn-pill" href="#widgetAugustDetail">August detail</a>
   </div>
   <div class="jumpnav" id="jumpnav-ticket" style="display:none;">
     <span class="jn-label">Jump to</span>
     <a class="jn-pill" href="#head-email">Overview</a>
-    <a class="jn-pill" href="#sec-w-09c">Autoresponder outcomes</a>
-    <a class="jn-pill" href="#sec-w-09g">Support impact</a>
-    <a class="jn-pill" href="#sec-w-12">Readout</a>
+    <a class="jn-pill" href="#sec-e-funnel">What happened</a>
+      <a class="jn-pill" href="#sec-e-expansion">Business tier</a>
+      <a class="jn-pill" href="#sec-w-09g">Quality review</a>
     <a class="jn-pill" href="#sec-w-13">Billing (reference)</a>
   </div>
   <div class="jumpnav" id="jumpnav-kb" style="display:none;">
     <span class="jn-label">Jump to</span>
     <a class="jn-pill" href="#head-kb">Overview</a>
     <a class="jn-pill" href="#sec-k-01">Headline</a>
-    <a class="jn-pill" href="#sec-k-01b">Funnel</a>
-    <a class="jn-pill" href="#sec-k-02">MoM trend</a>
-    <a class="jn-pill" href="#sec-k-02b">Success vs tickets</a>
-    <a class="jn-pill" href="#sec-k-02c">Traffic quality</a>
-    <a class="jn-pill" href="#sec-k-03">Segments</a>
-    <a class="jn-pill" href="#sec-k-04">Support impact</a>
-    <a class="jn-pill" href="#sec-k-05">Content &amp; search</a>
-    <a class="jn-pill" href="#sec-k-06">Ticket volume</a>
+      <a class="jn-pill" href="#sec-k-01b">Search</a>
+      <a class="jn-pill" href="#sec-k-02">Trend</a>
+      <a class="jn-pill" href="#sec-k-02c">Traffic quality</a>
+      <a class="jn-pill" href="#sec-k-03">Segments</a>
+      <a class="jn-pill" href="#sec-k-05">Content &amp; search</a>
+      <a class="jn-pill" href="#kbMoreDetail">More detail</a>
   </div>
 </div>
 
@@ -558,22 +556,22 @@
 
     <div class="page-head" id="head-overview">
       <div class="eyebrow">Executive summary</div>
-      <h2>Support signal overview</h2>
+      <h2>Self-service &amp; support automation</h2>
       <section class="hero-banner" id="heroBanner"></section>
     </div>
 
     <section class="block" id="sec-o-00">
-      <div class="block-head"><h3>Where we stand — <span id="storyOverviewMonth"></span></h3><div class="note">Verdicts show each channel's direction of travel vs the prior month. A first read is shown but not judged, and a channel whose data for the month isn't loaded yet says so instead of showing an earlier month.</div></div>
+      <div class="block-head"><h3>Where we stand — <span id="storyOverviewMonth"></span></h3><div class="note">How each channel moved compared with the prior month.</div></div>
       <div class="card story" id="story-overview"></div>
     </section>
 
     <section class="block" id="sec-o-01">
-      <div class="block-head"><h3>Cross-channel headline — <span id="crossChannelMonth">—</span></h3><div class="note">One reporting month across all channels.<span class="info-dot">i<span class="tip">Deflection here uses the log's flag basis (month-splittable); the all-period no-handoff deflection (83.3%) lives on the Widget tab.</span></span></div></div>
-      <div class="kpi-row autofit" id="kpi-overview"></div>
+      <div class="block-head"><h3>Estimated self-service share — <span id="crossChannelMonth">—</span></h3><div class="note">How much of the month's support demand ended without a person, and how well that is evidenced.</div></div>
+      <div class="card af-wrap" id="shareSection"></div>
     </section>
 
     <section class="block" id="sec-o-01a">
-      <div class="block-head"><h3>Monthly deflection trend — <span id="deflStoryRange"></span></h3><div class="note" id="deflTrendNote" data-written="Aug">Is the share of demand deflected without a human increasing? The ticket-level export it's built on doesn't go back to January anymore (consolidated 9/18/2026 onto the Non-Proactive ticket export, see the KB tab for why). KB has run since January and Widget went live Apr 27, but neither can be shown as a separate pre-autoresponder phase in this window; Autoresponder rolled out Jul 23, which this window does capture. The phase breakdown below marks where each layer was added.<span class="info-dot">i<span class="tip">Total demand = tickets created + widget-contained conversations + KB deflections. Autoresponder deflections are already inside the ticket count, not added on top. Ticket volume excludes CSE ICP, Unassigned, Other (14 groups), and Finance Licensing/Provisioning — see Support impact below for the full group breakdown. Caveats: KB deflections are mostly assumed; widget-contained is net of confirmed 7-day repeat tickets; June's autoresponder traffic was test/pilot and is excluded.</span></span></div></div>
+      <div class="block-head"><h3>Monthly trend: share without a person — <span id="deflStoryRange"></span></h3><div class="note" id="deflTrendNote">Share of demand that ended without a person, by month. Billing and proactive tickets are left out.</div></div>
       <div class="takeaway" id="deflStoryTakeaway"></div>
       <div class="card">
         <div class="chart-wrap"><canvas id="chartShareTrend"></canvas></div>
@@ -581,28 +579,15 @@
       <div class="card story" id="deflPhases" style="margin-top:12px;"></div>
     </section>
 
-    <section class="block" id="sec-o-01b">
-      <div class="block-head"><h3><span id="waterfallMonthLabel">—</span> Deflection Impact</h3><div class="note">One month's composition, not a cumulative total across the programs' lifetime — this is what made up that month's deflection, shown above.</div></div>
-      <div class="takeaway" id="waterfallTakeaway"></div>
-      <div class="card">
-        <div class="chart-wrap tall"><canvas id="chartWaterfall"></canvas></div>
-      </div>
-    </section>
-
-    <section class="block" id="sec-o-02">
-      <div class="block-head"><h3>Channel highlights</h3></div>
-      <div class="three-col-cards" id="overviewCards"></div>
-    </section>
-
     <section class="block" id="sec-o-02b">
-      <div class="block-head"><h3>Support impact — <span id="supportImpactMonth"></span></h3><div class="note">Ticket volume split by Zendesk group, not AI classification — this is the routing data, not a modeled estimate.<span class="info-dot">i<span class="tip">Support/technical = Support L1+L2+L3. Billing/finance = Finance Billing + Accounts Receivable. Support-related demand adds CS and TAM (incl. TAM AMR West) to Support/technical, since Jay's "Support" story includes CS/advisory demand — that's also the rest of the total not otherwise shown here (Support/technical % + Billing/finance % + CS/TAM's share ≈ 100%). Excluded from the total everywhere on this Overview (Hero, waterfall, monthly trend, and here): CSE ICP, Unassigned, Other (14 groups), and Finance Licensing/Provisioning.</span></span></div></div>
+      <div class="block-head"><h3>Customer-initiated tickets by team — <span id="supportImpactMonth"></span></h3><div class="note">Where the month's tickets were routed in Zendesk. This is routing data, not a content classification.</div></div>
       <div class="takeaway" id="supportImpactTakeaway"></div>
       <div class="kpi-row autofit" id="kpi-support-impact"></div>
     </section>
 
     <section class="block" id="sec-o-03">
-      <div class="block-head"><h3>Expansion / what's next</h3><div class="note">Where the program goes from here — not yet live metrics.</div></div>
-      <div class="card" id="expansionNext"></div>
+      <div class="block-head"><h3>Business tier expansion</h3><div class="note">Business-tier tickets became eligible for the autoresponder during the month.</div></div>
+      <div class="card" id="expansionCompact"></div>
     </section>
 
 
@@ -626,14 +611,26 @@
 
     <section class="block" id="sec-w-01">
       <div class="block-head"><h3>Headline performance</h3></div>
-      <div class="takeaway" id="widgetHeadlineTakeaway">No-handoff containment is strong — most widget conversations resolve without ever reaching a human.</div>
+      <div class="takeaway" id="widgetHeadlineTakeaway">No-handoff containment is strong — most widget conversations end without a detected handoff.</div>
       <div class="kpi-row autofit" id="kpi-widget-headline"></div>
+    </section>
+
+    <section class="block" id="sec-w-01h">
+      <div class="block-head"><h3>Answer quality — QA review, <span class="mtok" data-sec="qa-widget">September</span></h3>
+        <div class="note" id="qaWidgetScope"></div></div>
+      <div class="subhead">Overall grade</div>
+      <div class="kpi-row autofit" id="kpi-qa-grade"></div>
+      <div class="subhead" style="margin-top:14px;">Escalation decision</div>
+      <div class="kpi-row autofit" id="kpi-qa-esc"></div>
+      <div class="subhead" style="margin-top:14px;">Failure mode</div>
+      <div class="kpi-row autofit" id="kpi-qa-fail"></div>
+      <div class="takeaway" id="qaTkWidgetGrades" style="margin-top:12px;"></div>
     </section>
 
     <section class="block" id="sec-w-01e">
       <div class="block-head">
         <h3>Capacity signal — self-service share of demand</h3>
-        <div class="note">Built because a minutes-per-touch conversion isn't available yet from Support leadership, so touches removed can't be turned into hours or headcount. This tracks capacity impact a different way: what share of total demand (tickets + contained conversations) never reached a human at all. <span id="capRangeNote"></span><span class="info-dot">i<span class="tip">Contained = widget conversations minus the ones handed off (so a conversation only counts if it never became a ticket at all, no double-counting). Tickets = all-category Non-Proactive ticket volume, Ticket ID deduped. Demand = tickets + contained.</span></span></div>
+        <div class="note">Built because a minutes-per-touch conversion isn't available yet from Support leadership, so touches removed can't be turned into hours or headcount. This tracks capacity impact a different way: what share of total demand (tickets plus widget conversations without a handoff) never reached a person. It can rise simply because ticket volume falls, so read it alongside the handoff rate. <span id="capRangeNote"></span><span class="info-dot">i<span class="tip">Contained = widget conversations minus the ones handed off (so a conversation only counts if it had no handoff, no double-counting). Tickets = all-category Non-Proactive ticket volume, Ticket ID deduped. Demand = tickets + contained.</span></span></div>
       </div>
       <div class="takeaway" id="capTakeaway"></div>
       <div class="kpi-row autofit" id="kpi-capacity-signal"></div>
@@ -649,7 +646,7 @@
     <section class="block" id="sec-w-01f">
       <div class="block-head">
         <h3>Repeat contact after containment</h3>
-        <div class="note" data-written="Aug">Same customer, same issue, own support ticket within 7 days of a fully-contained widget conversation. Lower is better — a containment-quality signal, not a failure rate for No-Handoff Containment. Widget Repeat Contact tab, refreshed 9/4/2026.</div>
+        <div class="note" data-written="Aug">Same customer, same issue, own support ticket within 7 days of a fully-contained widget conversation. Lower is better — a containment-quality signal, not a failure rate for No-Handoff Containment.</div>
       </div>
       <div class="takeaway" data-written="Aug">2.8% of August's contained conversations came back as same-issue tickets within 7 days — down sharply from 8.5% in July — each one is counted as a win by the headline No-Handoff Containment metric.</div>
       <div class="kpi-row autofit" id="kpi-widget-repeat"></div>
@@ -665,18 +662,9 @@
       </div>
     </section>
 
-    <section class="block" id="sec-w-01h">
-      <div class="block-head"><h3>Answer quality — QA review, <span class="mtok" data-sec="qa-widget">September</span></h3>
-        <div class="note" id="qaWidgetScope"></div></div>
-      <div class="subhead">Overall grade</div>
-      <div class="kpi-row autofit" id="kpi-qa-grade"></div>
-      <div class="subhead" style="margin-top:14px;">Escalation decision</div>
-      <div class="kpi-row autofit" id="kpi-qa-esc"></div>
-      <div class="subhead" style="margin-top:14px;">Failure mode</div>
-      <div class="kpi-row autofit" id="kpi-qa-fail"></div>
-      <div class="takeaway" id="qaTkWidgetGrades" style="margin-top:12px;"></div>
-    </section>
-
+    <details class="card" id="widgetAugustDetail" style="margin-top:14px;">
+      <summary style="cursor:pointer; font-weight:600;">Earlier detail (August) — not yet refreshed for September</summary>
+      <div style="margin-top:12px;">
     <section class="block" id="sec-w-01g">
       <div class="block-head">
         <h3>Why widget conversations get handed to a human — QA review, <span class="mtok" data-sec="sec-w-01g">August</span></h3>
@@ -744,7 +732,7 @@
         <h3>Conversation duration</h3>
         <div class="note" data-written="Aug">Median time spent in the widget, split by whether the conversation had a handoff or not. Updated 9/11/2026: time_spent_in_widget filtered on detected_workflows contains Handoff. Overall median across all 250 August conversations (not split): 66 seconds.</div>
       </div>
-      <div class="takeaway" data-written="Aug">Conversations with no handoff end in a median 46 seconds; handed-off ones run nearly 7 minutes (410s) — when self-service works, it is roughly 9x faster for the customer.</div>
+      <div class="takeaway" data-written="Aug">Conversations with no handoff end in a median 46 seconds; handed-off ones run nearly 7 minutes (410s). This is time spent in the conversation, not time to resolution.</div>
       <div class="card"><table id="tblDurations"></table></div>
     </section>
 
@@ -753,21 +741,15 @@
         <h3>Customer feedback</h3>
         <div class="note" data-written="Aug">CSAT and relevance ratings from the widget conversation log. All rows are now August-only (pulled 9/11/2026, "Widget Monthly KPI — Raw Fields"). Quick feedback is event-level, not per conversation — a single conversation can trigger multiple feedback prompts.</div>
       </div>
-      <div class="takeaway" data-written="Aug">22.1% of August conversations end with negative sentiment. CSAT is real but far too thin to trust (n=2). Correction from last pull: quick feedback was reported as 0/0/0 ("confirmed zero") — that was wrong. The real August numbers are 0 positive, 6 negative, 425 unanswered out of 431 total prompts — 98.6% go unanswered.</div>
+      <div class="takeaway" data-written="Aug">22.1% of August conversations end with negative sentiment. CSAT is real but far too thin to trust (n=2). August quick feedback: 0 positive, 6 negative, 425 unanswered out of 431 total prompts — 98.6% go unanswered.</div>
       <div class="card"><table id="tblCsat"></table></div>
     </section>
+      </div>
+    </details>
 
     <section class="block" id="sec-w-07">
       <div class="block-head"><h3>Raw widget signals, <span id="widgetRawMonth">—</span></h3><div class="note" id="widgetRawNote"></div></div>
       <div class="kpi-row autofit" id="kpi-widget-raw"></div>
-    </section>
-
-    <section class="block" id="sec-w-08">
-      <div class="block-head"><h3>Management readout, widget</h3></div>
-      <div class="readout">
-        <div class="head">Executive summary</div>
-        <ul id="readoutWidget"></ul>
-      </div>
     </section>
 
   </div>
@@ -778,61 +760,27 @@
     <div class="page-head" id="head-email">
       <div class="eyebrow">Executive overview</div>
       <h2>Ticket Autoresponder</h2>
-      <p>How the ticket autoresponder is affecting Support: how many tickets it was eligible for, how many it replied to, and where those tickets ended up — handed to a human, pending, or closed without one — plus whether it is actually reducing L1 touches. The funnel at the top follows the reporting month; the detailed sections below still show August.</p>
+      <p>How the ticket autoresponder is doing on Support tickets: how many it can help, how many it replied to, and where those tickets ended up.</p>
     </div>
 
-    <div class="month-filter" id="emailMonthFilter"></div>
 
     <section class="block" id="sec-e-funnel">
       <div class="block-head"><h3>What happened to the tickets</h3><div class="note">Support, customer-initiated tickets only. Billing and proactive tickets are left out.</div></div>
       <div class="card af-wrap" id="autoFunnelTicket"></div>
     </section>
 
-    <section class="block" id="sec-e-00">
-      <div class="block-head"><h3>Where this stands — <span id="storyEmailMonth"></span></h3><div class="note">September is the reporting month, but its autoresponder outcomes aren't final yet (replies are Support-only; many tickets are still settling) only yet (the sheet shows 64 sent and 16 closed through Sep 28), so they aren't shown. August, the first month with real post-pilot volume, is the last clean read. Once September is split by queue, September vs. August will be the first fair month-over-month comparison.</div></div>
-      <div class="card story" id="story-email"></div>
-    </section>
-
-    <section class="block" id="sec-w-09c">
-      <div class="block-head">
-        <h3>Autoresponder outcomes — Support</h3>
-        <div class="note" data-written="Aug">August Email Autoresponder Outcomes (Support only). Billing is tracked separately — see the reference table at the bottom of the page. June was negligible and July's autoresponder didn't start until July 22, so August is reported standalone.<span class="info-dot">i<span class="tip">Solved combines two signals: 1 explicit solve + 7 no-reply closures = 8 of 57. Treat this as a broader "no further action needed" measure, not proof the autoresponder resolved all 8 — a no-reply closure means the customer stopped responding, which isn't the same as confirmed help. The 1 explicit solve also carries a handoff and a timeout tag and sits in Support - L3, so even that one went through a human queue before resolving — it overlaps with the "Handed to a human" tile by 1 ticket, which is why the tiles below don't sum to 57.</span></span></div>
-      </div>
-      <div class="takeaway" id="autoresponderOutcomesTakeaway"></div>
-      <div class="kpi-row autofit" id="kpi-funnel"></div>
-      <div class="grid-2" style="margin-top:12px;">
-        <div class="card">
-          <div class="subhead" id="arOutcomesTitle">Where the tickets ended up</div>
-          <div class="chart-wrap" style="height:180px;"><canvas id="chartFunnel"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="subhead">Why tickets get handed off</div>
-          <table id="tblHandoffReasons"></table>
-        </div>
-      </div>
+    <section class="block" id="sec-e-expansion">
+      <div class="block-head"><h3>Autoresponder expansion — Business tier</h3><div class="note">What adding the Business SLA tier changed. Support, customer-initiated tickets only.</div></div>
+      <div class="card" id="expansionNext"></div>
     </section>
 
     <section class="block" id="sec-w-09g">
       <div class="block-head">
-        <h3>Support impact — L1 touches &amp; nudges</h3>
-        <div class="note" data-written="Aug">Does the autoresponder reduce L1 work, not just solve tickets? August only — FT-tagged (Forethought-tagged, i.e. touched by the autoresponder) tickets vs. Support's own non-FT tickets. Not a Support-vs-Billing comparison — see the Billing reference table at the bottom of the page.</div>
-      </div>
-      <div class="takeaway" id="l1TouchesTakeaway"></div>
-
-      <div class="subhead" style="margin-top:14px;">How FT-tagged Support tickets resolve, by product — <span class="mtok" data-sec="sec-w-09g">August</span></div>
-      <div class="note" data-written="Aug">The complete journey for every FT-tagged ticket, by product: resolved with no human touch, or handed off — and if handed off, to which team.<span class="info-dot">i<span class="tip">Built from the Autoresponder Billing v Technical ticket-level export (57 FT-tagged, non-proactive Support tickets in August), using the autoresponder's own handoff/no-handoff tag. This is the same 14-ticket L1-touched population used in the takeaway above (both corrected 9/18/2026 to use this raw pull instead of the Automation Monthly Staging tab). Each bar sums to 100% of that product's FT-tagged volume — the destination shares here are recalculated on that same base, not on handoff volume alone, so they're directly comparable to "Resolved by autoresponder."</span></span></div>
-
-      <div class="card"><div class="chart-wrap" style="height:220px;"><canvas id="chartResolutionJourney"></canvas></div></div>
-
-      <div class="card" style="margin-top:12px;"><table id="tblResolutionJourney"></table></div>
-
-      <div class="takeaway" data-written="Aug" style="margin-top:12px;">Redis Cloud and Redis Software resolve without a human at different rates (41.0% vs. 21.4%) — but the bigger difference is where the handoff goes. For Redis Software, L1 gets almost none of the load (0 of 11 handoffs); most goes straight to L3 (63.6%). For Redis Cloud, L1 is the single largest destination (10 of 23, 43.5%). Other/Unknown is too thin (n=4) to draw conclusions from.</div>
-
-      <div class="subhead" style="margin-top:14px;">Full ticket disposition — <span class="mtok" data-sec="sec-w-09g">August</span></div>
-      <div class="note" data-written="Aug">Every Non-Proactive Support ticket in August, split by what actually happened: solved, handed off, still pending, had a chance but got nothing, or excluded upfront.<span class="info-dot">i<span class="tip">Solved/Handed to a human/Pending come from the tag-verified Autoresponder outcomes section above (the 57-ticket Sent population) — not from FT_Raw_Aug_Emails.xlsx's is_deflected flag, which doesn't hold up under scrutiny (44 marked deflected with zero Handoff workflows detected, versus the tag-verified Solved count of 8 for the same population — the same self-reported-flag problem we already found and fixed on the Widget side). Had a chance / Excluded upfront still comes from FT_Raw_Aug_Emails.xlsx (response_sent = False), matched to SLA Package, since that side never relied on is_deflected. Segments won't sum to a clean total — Solved overlaps with Handed to a human by 1 ticket, same overlap noted in the Autoresponder outcomes section above.</span></span></div>
-      <div class="kpi-row autofit" id="kpi-deflection-chance"></div>
-      <div class="card" style="margin-top:12px;"><div class="chart-wrap" style="height:140px;"><canvas id="chartDeflectionChance"></canvas></div></div>
-      <div class="takeaway" data-written="Aug" style="margin-top:12px;">Only 8 Support tickets were fully solved in August. The bigger story is upstream of quality: 701 tickets got no response from FT at all, and 95.6% of those (670) never had a chance to begin with — excluded by tier, regardless of KB quality or bot performance.</div>
+        <h3>Quality review of replied tickets</h3>
+      <div class="note">An independent review of the tickets the autoresponder replied to (September), plus a note on L1 workload (August).</div>
+    </div>
+    <div class="subhead" style="margin-top:6px;">L1 workload — August</div>
+    <div class="takeaway" id="l1TouchesTakeaway"></div>
 
       <div class="subhead" style="margin-top:14px;">QA review of the reviewed tickets — <span class="mtok" data-sec="qa-email">September</span></div>
       <div class="note" id="qaScopeEmail"></div>
@@ -854,18 +802,11 @@
       <div class="takeaway" id="qaTkEmailKb" style="margin-top:12px;"></div>
     </section>
 
-    <section class="block" id="sec-w-12">
-      <div class="block-head"><h3>Management readout, ticket autoresponder</h3></div>
-      <div class="readout">
-        <div class="head">Executive summary</div>
-        <ul id="readoutEmail"></ul>
-      </div>
-    </section>
 
     <section class="block" id="sec-w-13">
       <div class="block-head">
         <h3>Billing — reference only</h3>
-        <div class="note">The Billing side, kept as an aside. Nothing here is in any headline number: the Finance queues are left out of ticket volume and the self-service share, and the autoresponder figures above are Support only. Billing's FT autoresponder runs with no routing rules or exclusions — a different, unmodified system on a different queue — so this is not a comparison for Support.</div>
+        <div class="note">The Billing side, kept as an aside. Nothing here is in any headline number: the Finance queues are left out of ticket volume and the self-service share, and the autoresponder figures above are Support only. Billing's autoresponder runs with no routing rules or exclusions — a different, unmodified system on a different queue — so this is not a comparison for Support.</div>
       </div>
       <div class="card"><table id="tblBillingReference"></table></div>
     </section>
@@ -897,7 +838,7 @@
     <section class="block" id="sec-k-01b">
       <div class="block-head">
         <h3>Search journey, <span id="kbFunnelMonth">—</span></h3>
-        <div class="note">True-subset funnel from the search tracker, across all search roles (Anonymous, End-user, Staff): each stage is a subset of the one above; result clicks are derived (searches × Search CTR, rounded). Sessions, article views, and deflections come from separate trackers with different denominators — shown as context tiles below, not funnel stages.</div>
+        <div class="note">Search measures for the month, across all search roles (Anonymous, End-user, Staff). These are related counts, not a strict funnel: result clicks are estimated as searches × Search CTR, and one search can produce more than one click. Sessions, article views, and deflections come from separate trackers with different denominators — shown as context tiles below, not funnel stages.</div>
       </div>
       <div class="takeaway" id="kbTk01b"></div>
       <div class="card"><div class="bar-list" id="kbFunnel"></div></div>
@@ -917,22 +858,10 @@
       </div>
     </section>
 
-    <section class="block" id="sec-k-02b">
-      <div class="block-head">
-        <h3>KB success vs. ticket volume</h3>
-        <div class="note">Total deflections as a share of (tickets created + deflections). Survives volume swings in a way raw deflection counts don't.</div>
-      </div>
-      <div class="takeaway" id="kbTk02b"></div>
-      <div class="card">
-        <div class="chart-wrap tall"><canvas id="chartKbSuccess"></canvas></div>
-      </div>
-      <div class="card" style="margin-top:12px;"><table id="tblKbSuccess"></table></div>
-    </section>
-
     <section class="block" id="sec-k-02c">
       <div class="block-head">
         <h3>KB traffic quality, <span id="kbTqRange">Jul – Sep 2026</span></h3>
-        <div class="note">Source: Amplitude page views on support.redislabs.com article pages, a separate tracker from the Guide exports used elsewhere on this tab. "Assumed bot" means a view with no referrer from a visitor located in Singapore or China; "assumed human" is everything else. This is an estimate: Amplitude cannot identify bots directly, country is inferred from IP address, and the assumed-human group still contains some automated traffic. Figures are entered by hand and do not come from the live sync. September runs through Sept 30 with the final day partial, so its month-over-month changes are slightly understated.</div>
+        <div class="note">Source: Amplitude page views on support.redislabs.com article pages, a separate tracker from the Guide exports used elsewhere on this tab. "Flagged traffic" means a view with no referrer from a visitor located in Singapore or China; "remaining traffic" is everything else. This is an estimate: Amplitude cannot identify bots directly, country is inferred from IP address, and the assumed-human group still contains some automated traffic. Figures are entered by hand and do not come from the live sync. September runs through Sept 30 with the final day partial, so its month-over-month changes are slightly understated.</div>
       </div>
       <div class="takeaway" id="kbTqTakeaway"></div>
       <div class="kpi-row autofit" id="kbTqKpis"></div>
@@ -942,9 +871,11 @@
       </div>
       <div class="card" style="margin-top:12px;"><table id="tblKbTraffic"></table></div>
       <div class="card" style="margin-top:12px; overflow-x:auto;">
+        <details style="margin-top:14px;"><summary style="cursor:pointer; font-weight:600;">Country comparison (diagnostic)</summary>
         <div class="subhead" id="kbTqCountrySub">Country comparison</div>
         <table id="tblKbTrafficCountry"></table>
         <div style="margin-top:12px; font-size:12.5px; color:var(--muted-dim); line-height:1.5; max-width:760px;">Visitors are Amplitude device IDs over the period. Ticket requesters are distinct people who opened a support case in the last 12 months (Salesforce, by account billing country). The two windows differ, so compare countries with each other and do not read the ratio as a rate. A support KB normally sees roughly half of visits arrive with no referrer; Singapore and China sit near 99%.</div>
+      </details>
       </div>
       <div class="card story" style="margin-top:12px;">
         <div class="s-row"><span class="s-pill na">open question</span><span class="s-why" id="kbTqOpen"></span></div>
@@ -963,12 +894,6 @@
       </div>
     </section>
 
-    <section class="block" id="sec-k-04">
-      <div class="block-head"><h3>Support impact, <span id="kbSupportMonth">—</span> view</h3></div>
-      <div class="takeaway" id="kbTk04"></div>
-      <div class="card"><table id="tblSupportImpact"></table></div>
-    </section>
-
     <section class="block" id="sec-k-05">
       <div class="block-head"><h3>Content health &amp; search / findability</h3></div>
       <div class="takeaway" id="kbTk05"></div>
@@ -982,6 +907,27 @@
           <table id="tblSearch"></table>
         </div>
       </div>
+    </section>
+
+    <details class="card" id="kbMoreDetail" style="margin-top:14px;">
+      <summary style="cursor:pointer; font-weight:600;">More knowledge-base detail</summary>
+      <div style="margin-top:12px;">
+    <section class="block" id="sec-k-02b">
+      <div class="block-head">
+        <h3>Deflections relative to ticket volume</h3>
+      <div class="note">Total deflections as a share of (tickets created + deflections). This divides two different populations, so treat it as a rough indicator, not a success rate.</div>
+      </div>
+      <div class="takeaway" id="kbTk02b"></div>
+      <div class="card">
+        <div class="chart-wrap tall"><canvas id="chartKbSuccess"></canvas></div>
+      </div>
+      <div class="card" style="margin-top:12px;"><table id="tblKbSuccess"></table></div>
+    </section>
+
+    <section class="block" id="sec-k-04">
+      <div class="block-head"><h3>Support impact, <span id="kbSupportMonth">—</span> view</h3></div>
+      <div class="takeaway" id="kbTk04"></div>
+      <div class="card"><table id="tblSupportImpact"></table></div>
     </section>
 
     <section class="block" id="sec-k-06">
@@ -999,9 +945,11 @@
     <section class="block" id="sec-k-07">
       <div class="block-head"><h3>Deflection by subject — not yet measurable</h3></div>
       <div class="card story">
-        <div class="s-row"><span class="s-pill na">data gap</span><span class="s-why">Zendesk's deflection export carries no topic or category, so KB deflections cannot be split into CS / Support / Billing the way the widget and autoresponder tabs now are. Two additions would close it: (1) include the deflecting article's Guide section/category in the deflection export, or (2) log the article ID on each deflection event and map it to the KB's category tree. Until then, the nearest context is the ticket-driver table above (which articles sit next to tickets) and ticket volume by group (where demand lives).</span></div>
+        <div class="s-row"><span class="s-pill na">data gap</span><span class="s-why">Topic-level attribution is unavailable: the deflection export carries no topic or category, so knowledge-base deflections can't yet be split by subject.</span></div>
       </div>
     </section>
+      </div>
+    </details>
   </div>
 
 </main>
@@ -1285,7 +1233,7 @@ function defaultState(){
           {metric:'Total eligible tickets (all categories)', vals:['774','889','813','744'], note:'Control total\u2014Billing + Support + non-FT, ticket-ID deduped.'},
           {metric:'Autoresponder tickets \u2014 Billing', vals:['10','41','31','33'], note:'ft-email-automated, Billing category \u2014 runs with no routing rules or exclusions.'},
           {metric:'Billing share of eligible tickets', vals:['1.3%','4.6%','3.8%','4.4%'], note:'Billing / total eligible.'},
-          {metric:'Finance-queue tickets (AR, Billing, Operations)', vals:['35','34','28','30'], note:'Non-Proactive tickets in the Finance queues, all Billing category. Not in any headline number.'},
+          {metric:'Finance-queue tickets (AR, Billing, Operations)', vals:['35','34','28','30'], note:'Customer-initiated tickets in the Finance queues, all Billing category. Not in any headline number.'},
           {metric:'First replies \u2014 Billing', vals:['\u2014','\u2014','30','34'], note:'Billing tickets the autoresponder replied to (Forethought log), each ticket once.'},
           {metric:'QA resolution \u2014 Billing', vals:['\u2014','\u2014','12/6/12/0','2/0/31/1'], note:'Reviewer\u2019s read of the same tickets, in this order: Resolved / Partially / Unresolved / Undetermined.'},
         ],
@@ -1499,7 +1447,7 @@ function defaultState(){
         ],
       },
       readout: [
-        'Performance: <strong>86.0% deflection in August</strong> — most widget conversations resolve without ever reaching a human.',
+        'Performance: <strong>86.0% deflection in August</strong> — most widget conversations end without a detected handoff.',
         'Recontact: 2.8% of August\'s contained conversations came back as a same-issue ticket within 7 days — down sharply from 8.5% in July (which itself was revised down from an earlier 12.6% once July\'s eligible-conversation count was recalculated). A real improvement in containment quality, not just a denominator effect.',
         'Automated drop-off signal: Forethought flagged 80 August conversations (32.0%) as drop-offs — but August recontact tracking (2.8%) says most contained conversations are not turning into tickets. Of those 80: 63 (78.8%) had no follow-up, 11 (13.8%) ended during an incomplete handoff, and QA validation confirms 68 (85.0%) as likely true drop-offs rather than false positives.',
       ],
@@ -1532,7 +1480,9 @@ function defaultState(){
       /* The autoresponder funnel per month: Support, customer-initiated tickets. eligible = the bot's own flag (Basic, Developer, Business except
          urgent/high; no SLA package is treated as Basic) or a reply; replied = carries an autoresponder tag; outcomes are mutually exclusive.
          Delivered by the feed each month; these are the built-in values. final = the ticket tab holds tickets created 14+ days after month end. */
-      autoFunnel: {"Aug": {"asOf": "Sep 15", "tickets": 763, "eligible": 66, "replied": 57, "noReply": {"total": 9, "reasons": {"noArticle": 8, "error": 1}}, "outcomes": {"handoff": 38, "pending": 10, "neverReplied": 7, "solved": 1, "closedNoTag": 1, "openNoTag": 0}, "afterHandoff": {"finished": 31, "inProgress": 7}, "business": {"tickets": 125, "eligible": 3}, "final": true, "finalAfter": "Sep 14"}, "Sep": {"asOf": "Oct 7", "tickets": 704, "eligible": 88, "replied": 83, "noReply": {"total": 5, "reasons": {"noArticle": 3, "language": 2}}, "outcomes": {"handoff": 40, "pending": 21, "neverReplied": 15, "solved": 3, "closedNoTag": 4, "openNoTag": 0}, "afterHandoff": {"finished": 29, "inProgress": 11}, "business": {"tickets": 98, "eligible": 9}, "final": false, "finalAfter": "Oct 14"}},
+      autoFunnel: {"Aug": {"asOf": "Sep 15", "tickets": 763, "eligible": 66, "replied": 57, "noReply": {"total": 9, "reasons": {"noArticle": 8, "error": 1}}, "outcomes": {"handoff": 38, "pending": 10, "neverReplied": 7, "solved": 1, "closedNoTag": 1, "openNoTag": 0}, "afterHandoff": {"finished": 31, "inProgress": 7}, "business": {"tickets": 125, "eligible": 3}, "final": true, "finalAfter": "Sep 14", "byTier": {"basic": {"tickets": 40, "eligible": 26, "replied": 21}, "none": {"tickets": 42, "eligible": 31, "replied": 27}, "developer": {"tickets": 14, "eligible": 2, "replied": 2}, "business": {"tickets": 125, "eligible": 3, "replied": 3}, "enterprise": {"tickets": 542, "eligible": 4, "replied": 4}}}, "Sep": {"asOf": "Oct 7", "tickets": 704, "eligible": 88, "replied": 83, "noReply": {"total": 5, "reasons": {"noArticle": 3, "language": 2}}, "outcomes": {"handoff": 40, "pending": 21, "neverReplied": 15, "solved": 3, "closedNoTag": 4, "openNoTag": 0}, "afterHandoff": {"finished": 29, "inProgress": 11}, "business": {"tickets": 98, "eligible": 9}, "final": false, "finalAfter": "Oct 14", "byTier": {"none": {"tickets": 37, "eligible": 37, "replied": 35}, "enterprise": {"tickets": 523, "eligible": 7, "replied": 6}, "basic": {"tickets": 39, "eligible": 34, "replied": 33}, "business": {"tickets": 98, "eligible": 9, "replied": 8}, "developer": {"tickets": 7, "eligible": 1, "replied": 1}}, "expansion": {"key": "business", "label": "Business tier", "launched": "Sep 23", "daysLive": 8, "tickets": 98, "eligible": 9, "replied": 8, "outcomes": {"handoff": 7, "pending": 1, "neverReplied": 0, "solved": 0, "closedNoTag": 0, "openNoTag": 0}, "sinceLaunch": {"tickets": 25, "eligible": 9, "replied": 8}, "without": {"eligible": 79, "replied": 75, "outcomes": {"handoff": 33, "pending": 20, "neverReplied": 15, "solved": 3, "closedNoTag": 4, "openNoTag": 0}}}}},
+      /* What the August roadmap expected from adding the Business tier (from the retired eligibility analysis, Aug 2026). */
+      expansionPlan: {business:{month:'August', tickets:128, lowNormal:99, highUrgent:29}},
       firstReplies: {Aug:{support:59, supportNP:55, billing:30, total:89}, Sep:{support:92, supportNP:82, billing:34, total:126}},
       unconfirmed: {Sep:{sent:83, closed:15, confirmed:0, through:'tags as of Oct 7'}},   // per month; add the next month here if its export isn't confirmed as Support only
       /* Autoresponder eligibility roadmap, rebuilt 9/18/2026 from the
@@ -1884,8 +1834,8 @@ function defaultState(){
        breakdowns, the capacity signal, the repeat-contact tracker, KB success and ticket volume — are
        read straight from their data instead; see SECTION_MONTH_GETTERS.) */
     sectionMonths: {
-      'sec-o-03':'Aug', 'sec-w-04':'Aug', 'sec-w-05':'Aug', 'sec-w-05b':'Aug', 'sec-w-04c':'Aug', 'sec-w-04d':'Aug',
-      'sec-w-08':'Aug', 'sec-w-12':'Aug',
+      'sec-w-04':'Aug', 'sec-w-05':'Aug', 'sec-w-05b':'Aug', 'sec-w-04c':'Aug', 'sec-w-04d':'Aug',
+      
     },
     /* Analyst notes for the data-status panel, per reporting month: things a reader should know that
        the data can't say for itself. level = check | blocked. */
@@ -1964,9 +1914,9 @@ const KPI_DEFS = {
 const STORY_METRICS = {
   widget: [
     {key:'deflectionNH', label:'No-Handoff Containment', dir:'>=',
-     why:'Share of widget conversations that resolved without ever reaching a human \u2014 the number to report. (Forethought\u2019s raw deflected flag runs higher and is tracked separately as a data-quality check, not shown here since it\u2019s an internal tagging signal, not a business result.)'},
+     why:'Share of widget conversations that ended without a detected handoff \u2014 the number to report. (Forethought\u2019s raw deflected flag runs higher and is tracked separately as a data-quality check, not shown here since it\u2019s an internal tagging signal, not a business result.)'},
     {key:'capacityShare', label:'Self-service share of demand', dir:'>=',
-     why:'Contained conversations (never became a ticket) as a share of total demand (tickets + contained). Built as a capacity signal because a minutes-per-touch conversion from Support leadership isn\u2019t available yet \u2014 see the Capacity Signal section below. Jun\u2013Aug only.'},
+     why:'Conversations with no handoff as a share of total demand (tickets + contained). Built as a capacity signal because a minutes-per-touch conversion from Support leadership isn\u2019t available yet \u2014 see the Capacity Signal section below. Jun\u2013Aug only.'},
     {key:'repeatContact', label:'Repeat-contact rate (7-day)', dir:'<=',
      why:'Contained conversations that came back as tickets \u2014 deflection that did not stick.'},
   ],
@@ -2092,7 +2042,7 @@ function storyDeltaChip(r){
 }
 function trendPill(r){
   if(r.pending) return '<span class="s-pill na">pending</span>';
-  if(r.check) return '<span class="s-pill mid">rising, check first</span>';
+  if(r.check) return '<span class="s-pill mid">up, unconfirmed</span>';
   if(r.firstRead) return '<span class="s-pill na">first read</span>';
   if(!r.delta) return '<span class="s-pill na">new — baseline</span>';
   if(r.delta.good===null) return '<span class="s-pill na">flat</span>';
@@ -2138,12 +2088,12 @@ function volVs(cur, pri, priName){
 const volDir = (cur,pri) => (!(pri>0)||cur==null) ? 0 : (Math.abs(100*(cur-pri)/pri)<2 ? 0 : (cur>pri ? 1 : -1));
 /* ---- Autoresponder funnel: eligible -> replied -> outcomes, prior month beside the reporting month ---- */
 const AF_OUTCOMES = [
-  {key:'handoff', label:'Handed to a human', color:'#C795E3', tip:'Re-tagged forethought_support_handoff: the autoresponder passed the ticket to a person.'},
-  {key:'pending', label:'Pending in FT queue', color:'#33C2FB', tip:'The autoresponder replied and the ticket is parked in Pending status waiting for the customer; it still carries the ft-email-automated tag.'},
-  {key:'neverReplied', label:'Closed, customer never replied', color:'#DCFF1E', tip:'Closed by the no-reply rule (forethought_basic_no_reply_closed). An assumed resolution: the customer did not respond, which does not prove the problem was solved.'},
-  {key:'solved', label:'Solved, no handoff', color:'#3DDC97', tip:'Status Solved with no handoff tag. Probably solved by the bot or the customer, but an agent could have closed it without tagging.'},
-  {key:'closedNoTag', label:'Closed, no outcome tag', color:'#7C8E96', tip:'Status Closed but never re-tagged, so how it ended is unknown. A tagging gap worth fixing at the source.'},
-  {key:'openNoTag', label:'Open, no outcome tag', color:'#FF4438', tip:'Replied, still Open, and no outcome tag: a person may have it without a handoff tag.'},
+  {key:'handoff', label:'Handed to a human', color:'#C795E3', tip:'The autoresponder handed the ticket to a person.'},
+  {key:'pending', label:'Pending, waiting on the customer', color:'#33C2FB', tip:'The autoresponder replied and the ticket is parked in Pending status, waiting for the customer to respond.'},
+  {key:'neverReplied', label:'Closed, customer never replied', color:'#DCFF1E', tip:'Closed after the customer stopped replying. An assumed resolution: it does not prove the problem was solved.'},
+  {key:'solved', label:'Solved, no handoff', color:'#3DDC97', tip:'Marked Solved with no handoff recorded. Probably solved by the bot or the customer, but an agent could have closed it without logging a handoff.'},
+  {key:'closedNoTag', label:'Closed, outcome not recorded', color:'#7C8E96', tip:'The ticket is Closed but its outcome was never recorded, so how it ended is unknown.'},
+  {key:'openNoTag', label:'Open, outcome not recorded', color:'#FF4438', tip:'The autoresponder replied, the ticket is still Open, and no outcome was recorded: a person may have it without a handoff being logged.'},
 ];
 function renderAutoFunnel(hostId){
   const host = document.getElementById(hostId); if(!host) return;
@@ -2155,18 +2105,18 @@ function renderAutoFunnel(hostId){
   const cell = (n,d,suffix) => `<td class="num">${fmtNum(n)}${d!=null?`<span class="af-sub">${pc(n,d,0)}${suffix||''}</span>`:''}</td>`;
   const tip = t => `<span class="info-dot">i<span class="tip">${t}</span></span>`;
   const reasonLbl = {noArticle:'no article found', language:'language not enabled', error:'error', other:'other'};
-  const head = cols.map(c=>`<th>${c.name}<span class="af-asof">tags as of ${c.f.asOf} \u00b7 ${c.f.final?'final':`not final (settles after ${c.f.finalAfter})`}</span></th>`).join('');
+  const head = cols.map(c=>`<th>${c.name}<span class="af-asof">data as of ${c.f.asOf} \u00b7 ${c.f.final?'final':'provisional'}</span></th>`).join('');
   const closedWo = f => f.outcomes.neverReplied + f.outcomes.solved;
   let rows = '';
   rows += `<tr><td>Support tickets (customer-initiated)</td>${cols.map(c=>`<td class="num">${fmtNum(c.f.tickets)}</td>`).join('')}</tr>`;
   rows += `<tr><td>Eligible for the autoresponder ${tip("The autoresponder's own flag (is_eligible): Basic, Developer and Business tiers, except urgent or high-priority Business tickets. Tickets with no SLA package are treated as Basic. Developer tickets are mostly escalations, so few are eligible.")}</td>${cols.map(c=>`<td class="num">${fmtNum(c.f.eligible)}<span class="af-sub">${pc(c.f.eligible,c.f.tickets,1)} of tickets</span></td>`).join('')}</tr>`;
-  rows += `<tr class="af-key"><td>Autoresponder replied ${tip('Tickets carrying an autoresponder tag (waiting, handed off, solved or closed with no reply). This is the same basis as the 57 reported for August.')}</td>${cols.map(c=>cell(c.f.replied,c.f.eligible,' of eligible')).join('')}</tr>`;
+  rows += `<tr class="af-key"><td>Autoresponder replied ${tip('Tickets the autoresponder replied to. This is the same basis as the 57 reported for August.')}</td>${cols.map(c=>cell(c.f.replied,c.f.eligible,' of eligible')).join('')}</tr>`;
   rows += `<tr class="af-out"><td style="color:var(--muted)">Eligible, no reply ${tip('Eligible tickets the bot did not answer, with the reason from its own log: no article found means no knowledge-base content matched.')}</td>${cols.map(c=>`<td class="num" style="color:var(--muted)">${fmtNum(c.f.noReply.total)}<span class="af-sub">${Object.keys(c.f.noReply.reasons).map(k=>`${c.f.noReply.reasons[k]} ${reasonLbl[k]||k}`).join(', ')||'\u2014'}</span></td>`).join('')}</tr>`;
   AF_OUTCOMES.forEach(o=>{
     if(o.key==='openNoTag' && !cols.some(c=>(c.f.outcomes[o.key]||0)>0)) return;
     rows += `<tr class="af-out"><td><span class="af-dot" style="background:${o.color}"></span>${o.label} ${tip(o.tip)}</td>${cols.map(c=>cell(c.f.outcomes[o.key]||0,c.f.replied,' of replied')).join('')}</tr>`;
   });
-  rows += `<tr class="af-key"><td>Closed without a human ${tip('Closed, customer never replied + Solved, no handoff. Of these, only the second group is a direct solve; the first is assumed.')}</td>${cols.map(c=>cell(closedWo(c.f),c.f.replied,' of replied')).join('')}</tr>`;
+  rows += `<tr class="af-key"><td>Closed without a recorded handoff ${tip('Closed, customer never replied + Solved, no handoff. No handoff was recorded, but a person may still have worked the ticket. The first group is an assumed resolution (the customer stopped replying).')}</td>${cols.map(c=>cell(closedWo(c.f),c.f.replied,' of replied')).join('')}</tr>`;
   rows += `<tr class="af-out"><td style="color:var(--muted)">Of the handoffs, finished by a human ${tip('Handed-off tickets that are now Solved or Closed. The rest are still Open, Pending or on Hold with a person.')}</td>${cols.map(c=>{ const h=c.f.outcomes.handoff; return `<td class="num" style="color:var(--muted)">${fmtNum(c.f.afterHandoff.finished)} of ${fmtNum(h)}<span class="af-sub">${pc(c.f.afterHandoff.finished,h,0)}</span></td>`; }).join('')}</tr>`;
   const bar = f => `<div class="af-bar">${AF_OUTCOMES.map(o=>{ const n=f.outcomes[o.key]||0; return n ? `<span style="width:${100*n/f.replied}%; background:${o.color}" title="${o.label}: ${n}"></span>` : ''; }).join('')}</div>`;
   const bars = cols.map(c=>`<div style="margin-top:12px;"><b>${c.name}</b> <span style="color:var(--muted); font-size:12px;">\u2014 where the ${fmtNum(c.f.replied)} replied tickets ended up</span>${bar(c.f)}</div>`).join('');
@@ -2174,15 +2124,15 @@ function renderAutoFunnel(hostId){
   const bizLine = c => { const b=c.f.business; if(!b||!b.tickets) return ''; let t=`${c.name}: ${fmtNum(b.eligible)} of ${fmtNum(b.tickets)} Business tickets eligible`; const p=b.byPriority;
     if(p) t += ` \u2014 ${fmtNum(p.highUrgent.tickets)} were urgent/high priority (${fmtNum(p.highUrgent.eligible)} eligible) and ${fmtNum(p.lowNormal.tickets)} low/normal (${fmtNum(p.lowNormal.eligible)} eligible)`; return t; };
   const anyPrio = cols.some(c=>c.f.business && c.f.business.byPriority);
-  const notes = `<div class="af-note"><b>Business tier.</b> The autoresponder skips urgent and high-priority Business tickets. ${cols.map(bizLine).filter(Boolean).join('; ')}.${anyPrio ? '' : " To show how many were skipped for priority, add Zendesk's Priority field to the ticket pull."}</div>
-    <div class="af-note">${cols.length>1?'The months are measured as of different dates, so they are not the same age; pending is the figure most affected. ':''}Each ticket is counted once, in the month it was created. "Closed, customer never replied" is an assumed resolution, the same idea as an assumed deflection.</div>`;
+  const notes = `<div class="af-note"><b>Business tier.</b> The autoresponder skips urgent and high-priority Business tickets. ${cols.map(bizLine).filter(Boolean).join('; ')}.${anyPrio ? '' : " The ticket pull does not include priority yet, so the urgent/high split is not shown."}</div>
+    <div class="af-note">${cols.length>1?'The months are measured as of different dates, so they are not the same age; pending is the figure most affected. ':''}Each ticket is counted once, in the month it was created. "Closed, customer never replied" is an assumed resolution, the same idea as an assumed deflection.${cols.some(c=>!c.f.final)?` Provisional months become final once the ticket data is refreshed after the 14-day settling period (${cols.filter(c=>!c.f.final).map(c=>c.name+': after '+c.f.finalAfter).join('; ')}).`:''}</div>`;
   host.innerHTML = `<table><tr><th></th>${head}</tr>${rows}</table>${bars}${legend}${notes}`;
 }
 function renderAutoFunnels(){ renderAutoFunnel('autoFunnelTicket'); }   // lives on the Ticket Autoresponder tab only
 
 function renderOverviewStory(vals){
   const el=document.getElementById('story-overview'); if(!el) return;
-  const row = (name, cls, status, txt) => `<div class="s-row"><span class="s-pill ${cls}">${status}</span><span class="s-label">${name}</span><span class="s-why">${txt}</span></div>`;
+  const row = (name, cls, status, txt, goto) => `<div class="s-row"><span class="s-pill ${cls}">${status}</span><span class="s-label">${name}</span><span class="s-why">${txt}${goto?` <a class="goto-link" data-goto="${goto}">Open ${name} \u2192</a>`:''}</span></div>`;
 
   // Widget — self-service share of demand (contained conversations as a
   // share of total demand), the capacity signal built 9/18/2026 because a
@@ -2202,11 +2152,11 @@ function renderOverviewStory(vals){
     // The reporting month has widget data: lead with containment. A first read is shown, never judged.
     const up = wbCur.deflectionNH >= wbPri.deflectionNH;
     const vDir = volDir(wbCur.conversations, wbPri.conversations), cDelta = wbCur.deflectionNH - wbPri.deflectionNH;
-    const volLbl = vDir>0 ? 'More chats' : (vDir<0 ? 'Fewer chats' : 'Steady volume'), contLbl = cDelta>0.5 ? 'higher containment' : (cDelta<-0.5 ? 'lower containment' : 'steady containment');
+    const volLbl = vDir>0 ? 'More chats' : (vDir<0 ? 'Fewer chats' : 'Steady volume'), contLbl = cDelta>0.5 ? 'fewer handoffs' : (cDelta<-0.5 ? 'more handoffs' : 'steady handoffs');
     const contN = wbCur.conversations - wbCur.handoffN, contP = wbPri.conversations - wbPri.handoffN;
     wCls = wFirst ? 'na' : (up?'on':'off');
     wStatus = wFirst ? 'First read' : `${volLbl}, ${contLbl}`;
-    wTxt = `${fmtNum(wbCur.conversations)} widget conversations in ${rmS.current}, ${volVs(wbCur.conversations, wbPri.conversations, rmS.prior)}. The widget handled ${fmtNum(contN)} of them without a handoff (${fmtNum(contP)} in ${rmS.prior}); ${fmtNum(wbCur.handoffN)} went to a person (${fmtNum(wbPri.handoffN)} in ${rmS.prior}). No-handoff containment ${up?'rose':'fell'} to ${fmtPct(wbCur.deflectionNH,1)} from ${fmtPct(wbPri.deflectionNH,1)}.${wFirst?` This is a first read (${w0FirstTxt}), so it isn't judged yet.`:''}`;
+    wTxt = `${fmtNum(wbCur.conversations)} widget conversations in ${rmS.current}, ${volVs(wbCur.conversations, wbPri.conversations, rmS.prior)}. ${fmtNum(contN)} ended without a handoff (${fmtNum(contP)} in ${rmS.prior}) and ${fmtNum(wbCur.handoffN)} went to a person (${fmtNum(wbPri.handoffN)} in ${rmS.prior}). The share without a handoff ${up?'rose':'fell'} to ${fmtPct(wbCur.deflectionNH,1)} from ${fmtPct(wbPri.deflectionNH,1)}.${wFirst?` This is a first read (${w0FirstTxt}), so it isn't judged yet.`:''}`;
   } else if(!wbCur){
     wCls = 'na'; wStatus = 'Pending';
     wTxt = `${rmS.current}'s widget figures aren't loaded yet.`;
@@ -2228,7 +2178,7 @@ function renderOverviewStory(vals){
   const supHas = (state.email.supportFunnel.months||[]).indexOf(rmS.currentAbbr) >= 0;
   const unc = (state.email.unconfirmed||{})[rmS.currentAbbr];
   const l1Make = withMonth => (ftRate && nonFtRate)
-    ? `Tickets the autoresponder replied to reached first-line support (L1) ${(parseFloat(ftRate.vals[0])/parseFloat(nonFtRate.vals[0])).toFixed(1)}x as often as other tickets${withMonth?` in ${monthFull(state.email.funnelMonth)}`:''} (${ftRate.vals[0]} vs. ${nonFtRate.vals[0]}) \u2014 the opposite of the goal, and the biggest open question on this tab.`
+    ? `Tickets the autoresponder replied to reached first-line support (L1) ${(parseFloat(ftRate.vals[0])/parseFloat(nonFtRate.vals[0])).toFixed(1)}x as often as other tickets${withMonth?` in ${monthFull(state.email.funnelMonth)}`:''} (${ftRate.vals[0]} vs. ${nonFtRate.vals[0]}) (an unmatched comparison, not a measure of added workload).`
     : 'Not enough data yet to size the L1-touch comparison.';
   const l1Txt = l1Make(true);
   // Lead with how many tickets the autoresponder replied to, then where they stand (final or so far).
@@ -2236,11 +2186,10 @@ function renderOverviewStory(vals){
   const eDir = haveAf ? volDir(aC.replied, aP.replied) : 0;
   const eVol = !haveAf ? null : (eDir>0 ? 'More replies' : (eDir<0 ? 'Fewer replies' : 'Steady volume'));
   const oc = aC ? aC.outcomes : null, aFinal = !!(aC && aC.final);
-  const frTxt = haveAf ? `The autoresponder replied to ${fmtNum(aC.replied)} Support tickets in ${rmS.current}, ${volVs(aC.replied, aP.replied, rmS.prior)}; ${fmtNum(aC.eligible)} were eligible and it replied to ${Math.round(100*aC.replied/aC.eligible)}% of them. ` : '';
-  const outTxt = aC ? `${aFinal?'Where they ended up':'Where they stand so far'}: ${fmtNum(oc.handoff)} handed to a human, ${fmtNum(oc.pending)} pending in the FT queue, ${fmtNum(oc.neverReplied)} closed with no customer reply, ${fmtNum(oc.solved)} solved with no handoff${oc.closedNoTag?`, ${fmtNum(oc.closedNoTag)} closed with no outcome tag`:''}.${aFinal?'':` Not final until the ticket tab is refreshed after ${aC.finalAfter}.`} ` : '';
-  const eCls = (supHas||aFinal) ? 'off' : 'na', eStatus = (supHas||aFinal) ? (eVol||'Needs attention') : (eVol ? `${eVol}, outcomes so far` : 'Pending');
-  const eTxt = (aC ? frTxt + outTxt : (unc ? `${rmS.current}'s autoresponder figures aren't final yet.` : `${rmS.current}'s results aren't loaded yet.`))
-    + (supHas && !aC ? l1Txt : ` Last clean read, ${monthFull(state.email.funnelMonth)}: ${l1Make(false).charAt(0).toLowerCase()+l1Make(false).slice(1)}`);
+  const frTxt = haveAf ? `The autoresponder replied to ${fmtNum(aC.replied)} Support tickets in ${rmS.current}, ${volVs(aC.replied, aP.replied, rmS.prior)}. It was eligible for ${fmtNum(aC.eligible)} and replied to ${Math.round(100*aC.replied/aC.eligible)}% of them. ` : '';
+  const outTxt = aC ? `${aFinal?`Where the ${fmtNum(aC.replied)} ended up`:`Where the ${fmtNum(aC.replied)} stand today (provisional, as of ${aC.asOf})`}: ${fmtNum(oc.handoff)} handed to a person, ${fmtNum(oc.pending)} waiting on the customer, ${fmtNum(oc.neverReplied)} closed after the customer stopped replying, ${fmtNum(oc.solved)} solved with no handoff${oc.closedNoTag?`, ${fmtNum(oc.closedNoTag)} closed with no recorded outcome`:''}.` : '';
+  const eCls = (supHas||aFinal) ? 'off' : 'na', eStatus = (supHas||aFinal) ? (eVol||'Needs attention') : (eVol ? `${eVol}, provisional` : 'Pending');
+  const eTxt = aC ? frTxt + outTxt : (unc ? `${rmS.current}'s autoresponder figures aren't final yet.` : `${rmS.current}'s results aren't loaded yet.`);
 
   // KB — total deflection rate (confirmed + assumed, against the full
   // session base), not the confirmed-only count: 17 confirmed deflections on
@@ -2251,16 +2200,16 @@ function renderOverviewStory(vals){
   const kUp = td.current>=td.prior, an = anonFacts(k);
   const checkRise = kUp && !!(k.uncheckedRise && k.uncheckedRise[rmS.currentAbbr]) && !!an;   // a rise that still needs checking is not shown as a clean win
   const kCls = checkRise ? 'mid' : (kUp?'on':'off');
-  const kStatus = checkRise ? 'Up, but check traffic' : (kUp?'Improving':'Down');
+  const kStatus = checkRise ? 'Up, unconfirmed' : (kUp?'Improving':'Down');
   const kDir = kUp ? 'rose to' : 'fell to';
   const segT = (k.segments||[]).find(r=>r.seg==='Total') || {};
   const kTxt = `Total deflection rate ${kDir} ${fmtPct(td.current)} (${fmtNum(td.num)} of ${fmtNum(td.den)} sessions${segT.mayConf!=null?`: ${fmtNum(segT.mayConf)} confirmed + ${fmtNum(segT.mayAssumed)} assumed`:''}), ${kUp?'up':'down'} from ${fmtPct(td.prior)} in ${k.reportingMonth.prior}.`
-    + (checkRise ? ` Guide anonymous sessions were ${an.sessWord} (${fmtNum(an.sess[0])} to ${fmtNum(an.sess[1])}), but ${fmtPct(an.rate[1],0)} of them counted as assumed deflections, ${an.rateUp?'up':'down'} from ${fmtPct(an.rate[0],0)} in ${k.reportingMonth.prior} \u2014 check for automated traffic before treating the rise as an improvement.` : '');
+    + (checkRise ? ` Guide anonymous sessions were ${an.sessWord} (${fmtNum(an.sess[0])} to ${fmtNum(an.sess[1])}), but ${fmtPct(an.rate[1],0)} of them counted as assumed deflections (${fmtPct(an.rate[0],0)} in ${k.reportingMonth.prior}), so part of the rise may be automated traffic and is unconfirmed.` : '');
 
   el.innerHTML = [
-    row('Widget', wCls, wStatus, wTxt),
-    row('Ticket autoresponder', eCls, eStatus, eTxt),
-    row('Knowledge base', kCls, kStatus, kTxt),
+    row('Widget', wCls, wStatus, wTxt, 'widget'),
+    row('Ticket autoresponder', eCls, eStatus, eTxt, 'ticket'),
+    row('Knowledge base', kCls, kStatus, kTxt, 'kb'),
   ].join('');
 }
 
@@ -2412,7 +2361,7 @@ function renderWidgetView(){
   if(widgetMonth===null) widgetMonth = (state.kb.reportingMonth||{}).currentAbbr || 'All';
   const SV = storyValues(widgetMonth);
   renderStory('story-widget','widget',SV); setText('storyWidgetMonth', SV.widget.month||'');
-  renderStory('story-email','email',SV); setText('storyEmailMonth', SV.email.month||'');
+  
   const w = state.widget, e = state.email;
   renderMonthChips('widgetMonthFilter', ['All', ...Object.keys(w.byMonth||{})], widgetMonth,
     m=>{ widgetMonth=m; renderWidgetView(); }, 'Filters the KPI headers and Where this stands; tables and charts stay full-period.');
@@ -2435,8 +2384,8 @@ function renderWidgetView(){
 
   const wtkEl = document.getElementById('widgetHeadlineTakeaway');
   if(wtkEl) wtkEl.textContent = wMissing ? `${monthFull(widgetMonth)}'s widget data isn't loaded yet.` : wm
-    ? `No-handoff containment was ${fmtPct(wm.deflectionNH,1)} in ${widgetMonth}${(w.firstRead&&w.firstRead[widgetMonth])?' on a first read':''} — ${wm.conversations-wm.handoffN} of ${wm.conversations} widget conversations resolved without ever reaching a human.`
-    : 'No-handoff containment is strong — most widget conversations resolve without ever reaching a human.';
+    ? `No-handoff containment was ${fmtPct(wm.deflectionNH,1)} in ${widgetMonth}${(w.firstRead&&w.firstRead[widgetMonth])?' on a first read':''} — ${wm.conversations-wm.handoffN} of ${wm.conversations} widget conversations ended without a detected handoff.`
+    : 'No-handoff containment is strong — most widget conversations end without a detected handoff.';
 
   // ---- Capacity signal: self-service share of demand (Jun-Aug) ----
   const cs = w.capacitySignal;
@@ -2445,7 +2394,7 @@ function renderWidgetView(){
     const csPrev = csLast - 1;
     const csMoM = csPrev>=0 ? +(cs.share[csLast]-cs.share[csPrev]).toFixed(1) : null;
     renderKpis('kpi-capacity-signal', [
-      {label:'Contained (never became a ticket)', value:fmtNum(cs.contained[csLast]), unit:'', sub:`${cs.months[csLast]} \u2014 widget conversations minus handoffs`, status:'good'},
+      {label:'No handoff during the conversation', value:fmtNum(cs.contained[csLast]), unit:'', sub:`${cs.months[csLast]} \u2014 widget conversations minus handoffs`, status:'good'},
       {label:'Total demand', value:fmtNum(cs.demand[csLast]), unit:'', sub:`${cs.months[csLast]} \u2014 tickets (${fmtNum(cs.tickets[csLast])}) + contained (${fmtNum(cs.contained[csLast])})`, status:'neutral'},
       {label:'Self-service share of demand', value:fmtPct(cs.share[csLast],1).replace('%',''), unit:'%', sub:csMoM!=null?`${csMoM>0?'+':''}${csMoM}pp vs. ${cs.months[csPrev]}`:'First month in this series', status:csMoM==null?'neutral':(csMoM>=0?'good':'bad')},
     ]);
@@ -2480,7 +2429,6 @@ function renderWidgetView(){
     options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{max:100, grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}}, y:{grid:{display:false}} } }
   });
 
-  document.getElementById('readoutWidget').innerHTML = w.readout.map(t=>`<li>${t}</li>`).join('') + `<li class="caveat">${w.readoutCaveat}</li>`;
 
   // ---- Repeat contact after deflection (Widget Repeat Contact tab) ----
   const rc = w.repeatContact;
@@ -2543,8 +2491,6 @@ function renderWidgetView(){
   // ---- Autoresponder outcomes (merged: funnel + solved/handoff) ----
   const sf = e.supportFunnel;
   const hr = e.handoffReasons;
-  renderMonthChips('emailMonthFilter', [e.funnelMonth], emailMonth,
-    m=>{ emailMonth=m; renderWidgetView(); }, `${monthFull(e.funnelMonth)} only — the table below always shows ${monthFull(e.funnelMonth)}.`);
   const sfIdx = emailMonth==='All'
     // Auto-pick the latest fully-qualified month (no trailing '*'), not just
     // "latest with sent > 0" — every month now has nonzero sent, including
@@ -2559,34 +2505,6 @@ function renderWidgetView(){
   const handedRow0 = e.funnel.find(f=>f.stage==='Handed to a human');
   const pendingRow0 = e.funnel.find(f=>f.stage==='Open/pending in autoresponder queue');
   const unclearRow0 = e.funnel.find(f=>f.stage==='Unclear outcome');
-  document.getElementById('autoresponderOutcomesTakeaway').textContent =
-    `${sfMonth}: ${fmtNum(sentRow.count)} tickets responded to. ${fmtPct(sf.solveRate[sfIdx],1)} solved (${fmtNum(sf.solvedExplicit[sfIdx])} explicit + ${fmtNum(sf.noReplyClosed[sfIdx])} no-reply closures). ${fmtNum(handedRow0.count)} (${fmtPct(handedRow0.pctOfPrev,1)}) handed to a human \u2014 the default for anything that doesn't resolve on its own, not a regression. ${fmtNum(pendingRow0.count)} are still open/pending in the autoresponder's own queue, and ${fmtNum(unclearRow0.count)} closed with no tag explaining why.`;
-  renderKpis('kpi-funnel', [
-    {label:'Tickets responded to', value:String(sentRow.count), unit:'', sub:`By the autoresponder — Support queue, ${monthFull(e.funnelMonth)}`, status:'neutral'},
-    {label:'Solved', value:fmtPct(sf.solveRate[sfIdx],1).replace('%',''), unit:'%', sub:`${sf.solved[sfIdx]} of ${sf.sent[sfIdx]} \u2014 ${sf.solvedExplicit[sfIdx]} explicit + ${sf.noReplyClosed[sfIdx]} no-reply closures`, status:sf.solveRate[sfIdx]==null?'neutral':(sf.solveRate[sfIdx]<5?'bad':(sf.solveRate[sfIdx]<15?'watch':'good'))},
-    {label:'Handed to a human', value:fmtPct(handedRow0.pctOfPrev,1).replace('%',''), unit:'%', sub:`${handedRow0.count} of ${sentRow.count} — regardless of current status`, status:'neutral'},
-    {label:'Open/pending in autoresponder queue', value:fmtPct(pendingRow0.pctOfPrev,1).replace('%',''), unit:'%', sub:`${pendingRow0.count} of ${sentRow.count} — still with the bot, never escalated`, status:'watch'},
-  ]);
-  destroyChart('funnel');
-  charts.funnel = safeChart('chartFunnel', {
-    type:'bar',
-    data:{
-      labels:[''],
-      datasets:[
-        {label:'Closed — no human touch', data:[closedRow0.count], backgroundColor:COLORS.green, stack:'s'},
-        {label:'Handed to a human', data:[handedRow0.count], backgroundColor:COLORS.blue, stack:'s'},
-        {label:'Open/pending in autoresponder queue', data:[pendingRow0.count], backgroundColor:COLORS.amber, stack:'s'},
-        {label:'Unclear outcome', data:[unclearRow0.count], backgroundColor:COLORS.muted, stack:'s'},
-      ]
-    },
-    options:{ indexAxis:'y', plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
-      scales:{ x:{grid:{color:COLORS.grid}, stacked:true, max:sentRow.count}, y:{grid:{display:false}, stacked:true} } }
-  });
-
-  document.getElementById('tblHandoffReasons').innerHTML = `
-    <tr><th>Month</th><th class="num">Timeout (4h no-response)</th><th class="num">Unclassified</th><th class="num">Total handed off</th></tr>
-    ${hr.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(hr.timeout[i])} (${fmtPct(100*hr.timeout[i]/hr.total[i],1)})</td><td class="num">${fmtNum(hr.unclassified[i])} (${fmtPct(100*hr.unclassified[i]/hr.total[i],1)})</td><td class="num">${fmtNum(hr.total[i])}</td></tr>`).join('')}
-  `;
 
   // ---- Support impact: FT-tagged vs. non-FT L1-touch rate & nudges (belongs to the email/autoresponder program, not widget) ----
   const tr = w.automationTracker;
@@ -2607,83 +2525,7 @@ function renderWidgetView(){
   const hlCloud = w.handoffLoad.rows.find(r=>r.product==='Redis Cloud');
   const hlSoftware = w.handoffLoad.rows.find(r=>r.product==='Redis Software');
   document.getElementById('l1TouchesTakeaway').innerHTML =
-    `We don't yet have clean evidence the autoresponder reduces L1 load. FT-tagged tickets reached L1 more often than non-FT tickets in ${monthFull(state.email.funnelMonth)} (${ftRateVal}% vs. ${nonFtRateVal}%, about ${ratioVal}x) — the opposite of the goal. But the two groups aren't a controlled comparison: the autoresponder isn't applied at random, so this gap could reflect ticket mix rather than the autoresponder's effect. It's concentrated in Redis Cloud, where L1 is the single largest destination for handoffs (${fmtPct(hlCloud.l1Pct,1)}); Redis Software rarely reaches L1 at all (${fmtPct(hlSoftware.l1Pct,1)}) — see the breakdown below.<span class="info-dot">i<span class="tip">${fmtNum(ftVolumeVal)} FT-tagged Support tickets, ${fmtNum(ftActualTouched)} of which touched L1 (${ftRateVal}%). ${fmtNum(nonFtVolumeVal)} non-FT eligible tickets, ${fmtNum(nonFtActualTouched)} of which touched L1 (${nonFtRateVal}% \u2014 the baseline, i.e. what we'd expect FT-tagged tickets to do if the autoresponder had no effect either way). If FT-tagged tickets matched that baseline, ${baselineExpected} would be expected to reach L1 instead of ${ftActualTouched} \u2014 ${Math.abs(touchesRemovedNum)} more than expected, not fewer (this is shown elsewhere as "L1 touches removed: ${touchesRemovedStr}"). Nudge rate (the autoresponder's automated follow-up when a customer goes quiet, separate from whether the ticket reaches L1): ${nudgeFtRate} FT-tagged vs. ${nudgeNonFtRate} non-FT (structural \u2014 non-FT tickets were never touched by the autoresponder, so they can't be nudged). Auto-close simulation (a proposed 4h+72h rule) currently flags ${autoCloseCount} tickets \u2014 unverified against raw data, no live automation exists yet. Hours returned is still blocked on agreeing a minutes-per-L1-touch value with Support leadership.</span></span>`;
-
-  // ---- Support impact: full resolution journey per FT-tagged ticket, by product ----
-  const br1 = w.botResolved;
-  const hl2 = w.handoffLoad;
-  const tblJourneyEl = document.getElementById('tblResolutionJourney');
-  if (br1 && hl2 && tblJourneyEl) {
-    const journeyRows = br1.rows.map(r=>{
-      const h = hl2.rows.find(x=>x.product===r.product) || {};
-      const vol = r.ftVolume;
-      const pctOf = n => vol ? +(100*n/vol).toFixed(1) : 0;
-      return {
-        product:r.product, lowN:r.lowN, vol,
-        resolved:r.botOnly, resolvedPct:r.botOnlyRate,
-        l1:h.l1||0, l1Pct:pctOf(h.l1||0),
-        l2:h.l2||0, l2Pct:pctOf(h.l2||0),
-        l3:h.l3||0, l3Pct:pctOf(h.l3||0),
-        tam:h.tam||0, tamPct:pctOf(h.tam||0),
-        cs:h.cs||0, csPct:pctOf(h.cs||0),
-        other:h.other||0, otherPct:pctOf(h.other||0),
-      };
-    });
-    tblJourneyEl.innerHTML = `
-      <tr><th>Product</th><th class="num">FT-tagged volume</th><th class="num">Resolved by autoresponder</th><th class="num">\u2192 L1</th><th class="num">\u2192 L2</th><th class="num">\u2192 L3</th><th class="num">\u2192 TAM</th><th class="num">\u2192 CS</th><th class="num">\u2192 Other</th></tr>
-      ${journeyRows.map(r=>`<tr><td>${r.product}${r.lowN?' *':''}</td><td class="num">${fmtNum(r.vol)}</td><td class="num">${fmtNum(r.resolved)} (${fmtPct(r.resolvedPct,1)})</td><td class="num">${fmtNum(r.l1)} (${fmtPct(r.l1Pct,1)})</td><td class="num">${fmtNum(r.l2)} (${fmtPct(r.l2Pct,1)})</td><td class="num">${fmtNum(r.l3)} (${fmtPct(r.l3Pct,1)})</td><td class="num">${fmtNum(r.tam)} (${fmtPct(r.tamPct,1)})</td><td class="num">${fmtNum(r.cs)} (${fmtPct(r.csPct,1)})</td><td class="num">${fmtNum(r.other)} (${fmtPct(r.otherPct,1)})</td></tr>`).join('')}
-      <tr><td colspan="9" style="color:var(--muted-dim); font-size:11.5px; font-style:italic;">Every column is % of that product's total FT-tagged volume, so each row sums to 100% end to end. * ${hl2.lowNNote}</td></tr>
-    `;
-    destroyChart('resolutionJourney');
-    const jPlot = journeyRows.filter(r=>!r.lowN);
-    charts.resolutionJourney = safeChart('chartResolutionJourney', {
-      type:'bar',
-      data:{
-        labels: jPlot.map(r=>r.product),
-        datasets:[
-          { label:'Resolved by autoresponder', data: jPlot.map(r=>r.resolvedPct), backgroundColor:COLORS.green, stack:'s' },
-          { label:'\u2192 L1', data: jPlot.map(r=>r.l1Pct), backgroundColor:COLORS.red, stack:'s' },
-          { label:'\u2192 L2', data: jPlot.map(r=>r.l2Pct), backgroundColor:COLORS.amber, stack:'s' },
-          { label:'\u2192 L3', data: jPlot.map(r=>r.l3Pct), backgroundColor:COLORS.blue, stack:'s' },
-          { label:'\u2192 TAM', data: jPlot.map(r=>r.tamPct), backgroundColor:'#9B5DE5', stack:'s' },
-          { label:'\u2192 CS', data: jPlot.map(r=>r.csPct), backgroundColor:COLORS.muted, stack:'s' },
-          { label:'\u2192 Other', data: jPlot.map(r=>r.otherPct), backgroundColor:'#8A99A0', stack:'s' },
-        ]
-      },
-      options:{ indexAxis:'y', plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
-        scales:{ x:{grid:{color:COLORS.grid}, stacked:true, max:100, ticks:{callback:v=>v+'%'}}, y:{grid:{display:false}, stacked:true} } }
-    });
-  }
-
-  // ---- Deflection chance: full ticket disposition, August ----
-  const dc = e.deflectionChance;
-  if (dc) {
-    const dcTotal = dc.solved + dc.handedToHuman + dc.pending + dc.hadChanceNoResponse + dc.excludedUpfront;
-    const pct = n => +(100*n/dcTotal).toFixed(1);
-    renderKpis('kpi-deflection-chance', [
-      {label:'Solved', value:fmtNum(dc.solved), unit:'', sub:`${fmtPct(pct(dc.solved),1)} of ${fmtNum(dcTotal)} \u2014 1 explicit + 7 no-reply closures`, status:'good'},
-      {label:'Handed to a human', value:fmtNum(dc.handedToHuman), unit:'', sub:`${fmtPct(pct(dc.handedToHuman),1)} \u2014 FT engaged but a human took it from there`, status:'watch'},
-      {label:'Pending in FT queue', value:fmtNum(dc.pending), unit:'', sub:`${fmtPct(pct(dc.pending),1)} \u2014 still with the bot, never escalated`, status:'watch'},
-      {label:'Had a chance, no response', value:fmtNum(dc.hadChanceNoResponse), unit:'', sub:`${fmtPct(pct(dc.hadChanceNoResponse),1)} \u2014 Basic/Developer tier, but got nothing`, status:'watch'},
-      {label:'Excluded upfront', value:fmtNum(dc.excludedUpfront), unit:'', sub:`${fmtPct(pct(dc.excludedUpfront),1)} \u2014 Enterprise, Premium Enterprise, Business, Legacy, or unknown tier`, status:'bad'},
-    ]);
-    destroyChart('deflectionChance');
-    charts.deflectionChance = safeChart('chartDeflectionChance', {
-      type:'bar',
-      data:{
-        labels:[''],
-        datasets:[
-          { label:'Solved', data:[dc.solved], backgroundColor:COLORS.green, stack:'s' },
-          { label:'Handed to a human', data:[dc.handedToHuman], backgroundColor:COLORS.red, stack:'s' },
-          { label:'Pending in FT queue', data:[dc.pending], backgroundColor:'#9B5DE5', stack:'s' },
-          { label:'Had a chance, no response', data:[dc.hadChanceNoResponse], backgroundColor:COLORS.amber, stack:'s' },
-          { label:'Excluded upfront', data:[dc.excludedUpfront], backgroundColor:COLORS.muted, stack:'s' },
-        ]
-      },
-      options:{ indexAxis:'y', plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
-        scales:{ x:{grid:{color:COLORS.grid}, stacked:true, max:dcTotal}, y:{grid:{display:false}, stacked:true} } }
-    });
-  }
+    `We don't yet have clean evidence the autoresponder reduces L1 load. Tickets the autoresponder replied to reached first-line support (L1) more often than other tickets in ${monthFull(state.email.funnelMonth)} (${ftRateVal}% vs. ${nonFtRateVal}%, about ${ratioVal}x). But the two groups aren't a controlled comparison: the autoresponder isn't applied at random, so this gap could reflect ticket mix rather than the autoresponder's effect. It's concentrated in Redis Cloud, where L1 is the single largest destination for handoffs (${fmtPct(hlCloud.l1Pct,1)}); Redis Software rarely reaches L1 at all (${fmtPct(hlSoftware.l1Pct,1)}) — see the breakdown below.<span class="info-dot">i<span class="tip">${fmtNum(ftVolumeVal)} FT-tagged Support tickets, ${fmtNum(ftActualTouched)} of which touched L1 (${ftRateVal}%). ${fmtNum(nonFtVolumeVal)} non-FT eligible tickets, ${fmtNum(nonFtActualTouched)} of which touched L1 (${nonFtRateVal}% \u2014 the baseline, i.e. what we'd expect FT-tagged tickets to do if the autoresponder had no effect either way). If FT-tagged tickets matched that baseline, ${baselineExpected} would be expected to reach L1 instead of ${ftActualTouched} \u2014 ${Math.abs(touchesRemovedNum)} more than expected, not fewer (this is shown elsewhere as "L1 touches removed: ${touchesRemovedStr}"). Nudge rate (the autoresponder's automated follow-up when a customer goes quiet, separate from whether the ticket reaches L1): ${nudgeFtRate} FT-tagged vs. ${nudgeNonFtRate} non-FT (structural \u2014 non-FT tickets were never touched by the autoresponder, so they can't be nudged). Auto-close simulation (a proposed 4h+72h rule) currently flags ${autoCloseCount} tickets \u2014 unverified against raw data, no live automation exists yet. Hours returned is still blocked on agreeing a minutes-per-L1-touch value with Support leadership.</span></span>`;
 
   // ---- Handoff reason & Resolution gap QA breakdowns, August ----
   const renderQaBreakdown = (data, kpiId, chartId, chartKey, statusFn, colorFn) => {
@@ -2708,7 +2550,7 @@ function renderWidgetView(){
   const resColor = {Resolved:COLORS.green, 'Partially Resolved':COLORS.blue, Unresolved:COLORS.red, Undetermined:COLORS.muted};
   renderQaBreakdown(e.qaResolution, 'kpi-qa-resolution', 'chartQaResolution', 'qaResolution', r=>resStatus[r.reason]||'neutral', r=>resColor[r.reason]||COLORS.muted);
   { const el = document.getElementById('qaScopeEmail'), b = e.handoffReasonQA;
-    if(el && b) el.textContent = `${monthFull(b.month)} \u00b7 ${fmtNum(b.of)} reviewed tickets \u00b7 ${b.scope||''}`; }
+    if(el && b){ const af0=(e.autoFunnel||{})[(state.kb.reportingMonth||{}).currentAbbr]; el.textContent = `${monthFull(b.month)} \u00b7 ${fmtNum(b.of)} reviewed tickets \u00b7 ${b.scope||''}${(af0 && af0.replied!==b.of)?` \u00b7 This review covers every Support ticket the autoresponder replied to, including proactive ones; the funnel above counts the ${fmtNum(af0.replied)} customer-initiated tickets.`:''}`; } }
   { const el = document.getElementById('widgetEarlierReviewNote'), b = w.handoffReasonQA;
     if(el && b) el.textContent = `Earlier review, ${monthFull(b.month)} only. The current Widget QA Master no longer carries the Outcome, reason and KB-update fields these two blocks use, so they stay on ${monthFull(b.month)}; the current review is in Answer quality above.`; }
   renderQaBreakdown(w.handoffReasonQA, 'kpi-widget-handoff-reason', 'chartWidgetHandoffReason', 'widgetHandoffReason');
@@ -2730,7 +2572,7 @@ function renderWidgetView(){
         if(rsig.csatAvg!=null) items.push({label:'CSAT', value:rsig.csatAvg, unit:'', sub:`Average of ${fmtNum(rsig.csatN)} responses \u00b7 too thin to read`, status:'neutral'});
       }
       setText('widgetRawMonth', `${rmW.current}${fr?' (first read)':''}`);
-      setText('widgetRawNote', `${fr?`${rmW.current} is a first read (${typeof w.firstRead[rmW.currentAbbr]==='string'?w.firstRead[rmW.currentAbbr]:'not final'}), taken before the final pull and before QA review, so these carry no verdict colors. `:''}Handoffs and containment use the same basis as every other month, so the prior-month figures are like-for-like. Drop-off, CSAT and relevance are raw Forethought signals, not QA-verified. The Data status panel on the Overview lists what is still pending.`);
+      setText('widgetRawNote', `${fr?`${rmW.current} is a first read (${typeof w.firstRead[rmW.currentAbbr]==='string'?w.firstRead[rmW.currentAbbr]:'not final'}), taken before the final pull and before QA review, so these carry no verdict colors. `:''}Handoffs and containment use the same basis as every other month, so the prior-month figures are like-for-like. Drop-off, CSAT and relevance are raw Forethought signals, not QA-verified. `);
       renderKpis('kpi-widget-raw', items);
     }
   }
@@ -2744,7 +2586,6 @@ function renderWidgetView(){
   `;
 
 
-  document.getElementById('readoutEmail').innerHTML = e.readout.map(t=>`<li>${t}</li>`).join('') + `<li class="caveat">${e.readoutCaveat}</li>`;
 }
 
 const seriesColors = {
@@ -2994,14 +2835,14 @@ function renderKbView(){
     data:{ labels:ks.months, datasets:[
       { type:'bar', label:'Tickets created', data:ks.tickets, backgroundColor:COLORS.muted, borderRadius:4, maxBarThickness:38, yAxisID:'y' },
       { type:'bar', label:'Total deflections', data:ks.deflections, backgroundColor:COLORS.blue, borderRadius:4, maxBarThickness:38, yAxisID:'y' },
-      { type:'line', label:'KB success rate %', data:ks.rate, borderColor:COLORS.red, backgroundColor:COLORS.red, tension:0.35, pointRadius:3, borderWidth:2, yAxisID:'y1' },
+      { type:'line', label:'Deflection share %', data:ks.rate, borderColor:COLORS.red, backgroundColor:COLORS.red, tension:0.35, pointRadius:3, borderWidth:2, yAxisID:'y1' },
     ]},
     options:{ plugins:{legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}}},
       scales:{ y:{grid:{color:COLORS.grid}}, y1:{position:'right', grid:{display:false}, ticks:{callback:v=>v+'%'}}, x:{grid:{display:false}} },
       interaction:{mode:'index', intersect:false} }
   });
   document.getElementById('tblKbSuccess').innerHTML = `
-    <tr><th>Month</th><th class="num">Tickets created</th><th class="num">Total deflections</th><th class="num">KB success rate</th></tr>
+    <tr><th>Month</th><th class="num">Tickets created</th><th class="num">Total deflections</th><th class="num">Deflection share</th></tr>
     ${ks.months.map((m,i)=>`<tr><td>${m}</td><td class="num">${fmtNum(ks.tickets[i])}</td><td class="num">${fmtNum(ks.deflections[i])}</td><td class="num">${fmtPct(ks.rate[i])}</td></tr>`).join('')}
   `;
 
@@ -3067,10 +2908,10 @@ function deflStoryData(){
    for months before it existed, otherwise null (not loaded). */
 function arClosedForMonth(m){
   const e=state.email, sf=e.supportFunnel||{}, i=(sf.months||[]).indexOf(m);
-  if(i>=0 && sf.solved) return sf.solved[i];   // closed without a human = never replied + solved, the same count the Overview share uses
+  if(i>=0 && sf.solved) return sf.solved[i];   // closed without a recorded handoff = never replied + solved, the same count the Overview share uses
   const pc=e.pilotClosed||{}; return (m in pc) ? pc[m] : null;
 }
-function renderDeflStory(){
+function renderDeflStory(demand){
   const el=document.getElementById('deflPhases'); if(!el) return;
   const D=deflStoryData(); if(!D.length) return;
   const rm=state.kb.reportingMonth||{};
@@ -3078,13 +2919,11 @@ function renderDeflStory(){
   setText('deflStoryRange', monthRange(first.m, last.m));
   { const n=document.getElementById('deflTrendNote');
     if(n){ let b=n.querySelector(':scope > .dyn'); if(!b){ b=document.createElement('span'); b.className='dyn'; n.insertBefore(b, n.firstChild.nextSibling); }
-      b.textContent = ` This chart runs ${monthRange(first.m,last.m)}${last.m!==rm.currentAbbr?` and stops at ${monthFull(last.m)} because ${rm.current} isn't scored yet (it needs its Non-Proactive ticket export)`:''}.`; } }
+      b.textContent = ` Runs ${monthRange(first.m,last.m)}${(last.m!==rm.currentAbbr && rm.current)?`; ${rm.current} is provisional and shown as the last point`:''}.`; } }
   setText('waterfallMonthLabel', (rm.current&&rm.year) ? `${rm.current} ${rm.year}` : last.m);
   const growth=((last.demand-first.demand)/first.demand*100).toFixed(0);
   const tk=document.getElementById('deflStoryTakeaway');
-  if(tk) tk.textContent = `Total demand grew ${growth}% since ${first.m}, but the share deflected without a human went from ${fmtPct(first.share)} to ${fmtPct(last.share)} \u2014 each program layer added on top of the last.`;
-  const wtk=document.getElementById('waterfallTakeaway');
-  if(wtk && !demandPending) wtk.textContent = `${last.m}'s ${fmtNum(last.self)} deflected contacts would otherwise have landed on top of the ${fmtNum(last.tickets)} tickets created.`;
+  if(tk) tk.textContent = `Total demand grew ${growth}% since ${first.m}, while the share that ended without a person went from ${fmtPct(first.share)} to ${fmtPct(last.share)} in ${last.m}.${(demand && demand.selfPct!=null && last.m!==rm.currentAbbr && rm.current)?` ${rm.current} is ${fmtPct(demand.selfPct)}${demand.prov?' (provisional)':''}.`:''}`;
   // FIXED 9/18/2026: idx() fell back to index 0 when a month wasn't found,
   // so once the ticket series was consolidated to Jun-Aug (no more Apr/May),
   // idx('Apr') and idx('May') both silently resolved to 0 \u2014 June ended up
@@ -3100,22 +2939,23 @@ function renderDeflStory(){
         {name:'+ Autoresponder (rollout Jul 23)', from:(idx('Jul')??D.length-1), to:D.length-1, note:'Auto-answered tickets that needed no human reply add the third layer.'},
       ]
     : [
-        {name:'KB + Widget (pre-autoresponder)', from:0, to:(idx('Jun')??0), note:'Widget went live Apr 27, before this ticket-level export begins \u2014 no pre-widget baseline is available in this data, so KB and Widget aren\u2019t shown as separate phases here.'},
-        {name:'+ Autoresponder (rollout Jul 23)', from:(idx('Jul')??1), to:D.length-1, note:'Auto-answered tickets that needed no human reply add a second layer.'},
+        {name:'Before the autoresponder', from:0, to:(idx('Jun')??0), note:'Knowledge base and chat widget only (the widget went live Apr 27).'},
+        {name:'With the autoresponder', from:(idx('Jul')??1), to:D.length-1, note:'Tickets closed without a recorded handoff add a second layer (rolled out Jul 23).'},
       ];
   el.innerHTML=phases.map(p=>{
     const seg=D.slice(p.from,p.to+1).map(d=>d.share).filter(v=>v!=null);
     const rng=!seg.length?'\u2014':(seg.length>1?`${fmtPct(seg[0])} \u2192 ${fmtPct(seg[seg.length-1])}`:fmtPct(seg[0]));
     const span=D[p.from]?(p.to>p.from?`${D[p.from].m} \u2013 ${D[p.to].m}`:D[p.from].m):'';
-    return `<div class="s-row"><span class="s-pill na">${p.name}</span><span class="s-label">${span}</span><span class="s-val">${rng}</span><span class="s-summary">deflection share</span><span class="s-why">${p.note}</span></div>`;
+    return `<div class="s-row"><span class="s-pill na">${p.name}</span><span class="s-label">${span}</span><span class="s-val">${rng}</span><span class="s-summary">ended without a person</span><span class="s-why">${p.note}</span></div>`;
   }).join('');
   // Single trend line \u2014 the one number the waterfall snapshot can't show:
   // is the deflection share holding up as demand grows month to month.
   destroyChart('shareTrend');
+  const Dp = (demand && demand.selfPct!=null && last.m!==rm.currentAbbr && rm.currentAbbr) ? D.concat([{m:rm.currentAbbr+' (provisional)', share:+demand.selfPct.toFixed(1)}]) : D;
   charts.shareTrend = safeChart('chartShareTrend', {
     type:'line',
-    data:{ labels:D.map(d=>d.m), datasets:[
-      {label:'Deflection share %', data:D.map(d=>d.share), borderColor:COLORS.red, backgroundColor:COLORS.red, tension:0.3, pointRadius:3, borderWidth:2},
+    data:{ labels:Dp.map(d=>d.m), datasets:[
+      {label:'Share that ended without a person %', data:Dp.map(d=>d.share), borderColor:COLORS.red, backgroundColor:COLORS.red, tension:0.3, pointRadius:3, borderWidth:2},
     ]},
     options:{ plugins:{legend:{display:false}},
       scales:{ x:{grid:{display:false}}, y:{grid:{color:COLORS.grid}, ticks:{callback:v=>v+'%'}, beginAtZero:true} } }
@@ -3167,7 +3007,7 @@ function renderSupportImpact(){
   const financeN = refIdx>=0 ? Object.keys(refG).reduce((t,name)=>t+(refG[name][refIdx]||0),0) : null;
   const tamNames = live.filter(isTam).map(n=>n.replace(/^TAM AMR /,'')).filter(n=>n!=='TAM');
   const tiles = [
-    {label:'All Demand', value:fmtNum(allDemand), unit:'', sub:`Customer-initiated tickets created in ${monthLabel}, across the Support, CS and TAM queues${financeN!=null?`. ${fmtNum(financeN)} Finance-queue tickets are left out (see the Billing reference on the Ticket tab)`:''}`, status:'neutral'},
+    {label:'In-scope tickets', value:fmtNum(allDemand), unit:'', sub:`Customer-initiated tickets created in ${monthLabel}, across the Support, CS and TAM queues${financeN!=null?`. ${fmtNum(financeN)} Finance-queue tickets are left out (see the Billing reference on the Ticket tab)`:''}`, status:'neutral'},
     {label:'Support / Technical', value:pct(supportTech), unit:'%', sub:`${fmtNum(supportTech)} tickets \u2014 Support L1, L2 and L3`, status:'neutral'},
     {label:'CS', value:pct(cs), unit:'%', sub:`${fmtNum(cs)} tickets \u2014 Customer Success`, status:'neutral'},
     {label:'TAM', value:pct(tam), unit:'%', sub:`${fmtNum(tam)} tickets \u2014 TAM${tamNames.length?` plus the ${tamNames.join(', ')} queues`:''}`, status:'neutral'},
@@ -3182,56 +3022,64 @@ function renderSupportImpact(){
    metrics. */
 function renderExpansionNext(){
   const el = document.getElementById('expansionNext'); if(!el) return;
-  const eb = (state.email && state.email.eligibilityByMonth) || null;
-  const eligKpiRow = eb ? `<div class="kpi-row autofit" id="expEligKpis"></div>` : '';
-  const ebTable = eb ? `
-    <table>
-      <tr><th>Month</th><th class="num">Current Eligibility</th><th class="num">Business tier</th><th class="num">Combined</th><th class="num">Combined %</th><th class="num">Low/Normal</th><th class="num">High/Urgent</th></tr>
-      ${eb.months.map((m,i)=>`<tr><td>${m}${i===eb.months.length-1?' (latest)':''}</td><td class="num">${fmtNum(eb.current.tickets[i])}</td><td class="num">${fmtNum(eb.business.tickets[i])}</td><td class="num">${fmtNum(eb.combined.tickets[i])}</td><td class="num">${fmtPct(eb.combined.pct[i],1)}</td><td class="num">${fmtNum(eb.lowNormal[i])}</td><td class="num">${fmtNum(eb.highUrgent[i])}</td></tr>`).join('')}
-    </table>` : '';
-  el.innerHTML = `
-    <div class="exp-block">
-      <div class="subhead">Autoresponder eligibility roadmap</div>
-      ${eligKpiRow}
-      <div class="card" style="margin-top:10px;">${ebTable}</div>
-      <div class="note" style="margin-top:8px;">Current Eligibility + Business tier = Combined, both months (${eb?`${fmtNum(eb.current.tickets[0])}+${fmtNum(eb.business.tickets[0])}=${fmtNum(eb.combined.tickets[0])} Jul; ${fmtNum(eb.current.tickets[1])}+${fmtNum(eb.business.tickets[1])}=${fmtNum(eb.combined.tickets[1])} Aug`:''}). Percentages use this table's own monthly total (810 Jul / 815 Aug), which runs a bit lower than the Automation Monthly Staging totals used elsewhere (889 Jul / 813 Aug) — unreconciled, possibly a different scope.</div>
-    </div>
-    <div class="exp-block">
-      <div class="subhead">What expands next</div>
-      <ul class="exp-list">
-        <li><strong>Expand eligibility</strong> — broaden beyond Basic + Developer.</li>
-        <li><strong>Build targeted Autoflows</strong> for repeatable L1 use cases.</li>
-        <li><strong>Add trusted knowledge sources</strong> to improve answer confidence.</li>
-        <li><strong>Improve content discoverability</strong> via the redis.io domain migration.</li>
-        <li><strong>Improve demand categorization</strong> to separate Support from Billing impact.</li>
-      </ul>
-    </div>
-    <div class="exp-block">
-      <div class="subhead">Building toward: fewer human touches, not just deflection %</div>
-      <div class="note">${(()=>{
-        const tr=(state.widget&&state.widget.automationTracker&&state.widget.automationTracker.rows)||[];
-        const months=state.widget.automationTracker.months||[];
-        const baseRow=tr.find(r=>r.metric.indexOf('Baseline L1 touches expected')===0);
-        const removedRow=tr.find(r=>r.metric.indexOf('L1 touches removed')>=0);
-        // Use the last complete month, not an in-progress "(MTD)" one.
-        let idx = months.length-1;
-        while(idx>=0 && /MTD/.test(months[idx])) idx--;
-        const mo=months[idx]||'this month';
-        if(!baseRow||!removedRow||idx<0) return '';
-        const baseline=+String(baseRow.vals[idx]).replace(/\u2212/g,'-'), removed=+String(removedRow.vals[idx]).replace(/\u2212/g,'-');
-        const actual=(+(baseline-removed).toFixed(1));
-        return removed>=0
-          ? `On track: FT-covered tickets needed <strong>${fmtNum(actual)} L1 touches</strong> in ${mo}, ${fmtNum(removed)} fewer than the ${fmtNum(baseline)} expected without automation.`
-          : `Not there yet. In ${mo}, FT-covered tickets needed <strong>${fmtNum(actual)} L1 touches</strong> versus an expected ${fmtNum(baseline)} — more human involvement, not less.`;
-      })()} Still a small sample; next we'll test whether this holds at scale across total tickets, tickets per person, L1 vs. L2/L3, and CSE/TAM by product line.</div>
-    </div>
-  `;
-  if(eb){
-    const n = eb.months.length-1;
-    renderKpis('expEligKpis', [
-      {label:'Current Eligibility (Aug)', value:fmtNum(eb.current.tickets[n]), unit:'/mo', sub:`${fmtPct(eb.current.pct[n],1)} of Aug volume, vs. ${fmtPct(eb.current.pct[n-1],1)} in Jul`, status:'neutral'},
-      {label:'Business Tier (Aug)', value:fmtNum(eb.business.tickets[n]), unit:'', sub:`${fmtPct(eb.business.pct[n],1)} of volume, up from ${fmtPct(eb.business.pct[n-1],1)} in Jul`, status:'good'},
-      {label:'Combined (Aug)', value:fmtNum(eb.combined.tickets[n]), unit:'/mo', sub:`${fmtPct(eb.combined.pct[n],1)} of Aug volume, up from ${fmtPct(eb.combined.pct[n-1],1)} in Jul`, status:'good'},
+  el.classList.add('af-wrap');
+  const rm = state.kb.reportingMonth || {}, af = state.email.autoFunnel || {}, cur = af[rm.currentAbbr], pri = af[rm.priorAbbr];
+  if(!cur){ el.innerHTML = `<div class="af-note">${rm.current||'The reporting month'}'s autoresponder data isn't loaded yet.</div>`; const c0=document.getElementById('expansionCompact'); if(c0) c0.innerHTML = el.innerHTML; return; }
+  const x = cur.expansion, short = x ? x.label.replace(/ tier$/i,'') : '';
+  const cmp = document.getElementById('expansionCompact');
+  if(cmp){
+    if(x){ const xo=x.outcomes, xc=xo.neverReplied+xo.solved;
+      cmp.innerHTML = `<div style="font-size:14px; line-height:1.55;">${x.label} became eligible for the autoresponder on <b>${x.launched}</b> (${x.daysLive} days of ${rm.current}). In that time: <b>${fmtNum(x.eligible)}</b> eligible tickets and <b>${fmtNum(x.replied)}</b> replies \u2014 ${fmtNum(xo.handoff)} handed to a person, ${fmtNum(xo.pending)} waiting on the customer, ${fmtNum(xc)} closed without a recorded handoff. <a class="goto-link" data-goto="ticket">See the full breakdown \u2192</a></div>`;
+      cmp.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>{ const t=document.querySelector('.tab-btn[data-view="'+b.dataset.goto+'"]'); if(t) t.click(); }));
+    } else cmp.innerHTML = `<div class="af-note" style="margin-top:0;">No new tier went live for the autoresponder in ${rm.current}.</div>`;
+  }
+  const pc = (n,d,dp) => d ? (100*n/d).toFixed(dp==null?1:dp)+'%' : '\u2014';
+  const sign = n => n>0 ? '+'+fmtNum(n) : (n<0 ? '\u2212'+fmtNum(Math.abs(n)) : '0');
+  const pts = (a,b) => { const d=a-b; return (d>=0?'+':'\u2212')+Math.abs(d).toFixed(1)+' pts'; };
+  const tierNames = {basic:'Basic', none:'No SLA package (treated as Basic)', developer:'Developer', business:'Business', enterprise:'Enterprise, Premium and Legacy'};
+  let html = '';
+  if(x){
+    const w = x.without, o = cur.outcomes, wo = w.outcomes, closedW = o.neverReplied+o.solved, closedWo = wo.neverReplied+wo.solved;
+    const full = x.daysLive >= 28;
+    html += `<div class="af-note" style="margin-top:0;">${x.label} went live for the autoresponder on <b>${x.launched}</b>. Urgent and high-priority Business tickets are still excluded. ${full?`It was live for all of ${rm.current}.`:`It was live for <b>${x.daysLive} days</b> of ${rm.current}, so this is an early read.`}</div>`;
+    const row = (label, a, b, share) => `<tr><td>${label}</td><td class="num">${fmtNum(a)}${share?`<span class="af-sub">${pc(a, w.replied)} of replied</span>`:''}</td><td class="num">${fmtNum(b)}${share?`<span class="af-sub">${pc(b, cur.replied)} of replied</span>`:''}</td><td class="num">${share ? `${sign(b-a)}<span class="af-sub">${pts(100*b/cur.replied, 100*a/w.replied)}</span>` : `${sign(b-a)}<span class="af-sub">${a?(b>=a?'+':'\u2212')+Math.abs(Math.round(100*(b-a)/a))+'%':''}</span>`}</td></tr>`;
+    html += `<div class="subhead" style="margin-top:14px;">${rm.current}, with and without ${short} tickets</div>
+      <table><tr><th></th><th>Without ${x.label}</th><th>With ${x.label}</th><th>Change</th></tr>
+        ${row('Eligible tickets', w.eligible, cur.eligible)}
+        ${row('Autoresponder replied', w.replied, cur.replied)}
+        ${row('Handed to a human', wo.handoff, o.handoff, true)}
+        ${row('Pending, waiting on the customer', wo.pending, o.pending, true)}
+        ${row('Closed without a recorded handoff', closedWo, closedW, true)}
+      </table>`;
+    const sl = x.sinceLaunch, xo = x.outcomes, xClosed = xo.neverReplied+xo.solved;
+    html += `<div class="subhead" style="margin-top:18px;">${short} tickets since launch (${x.launched} onward)</div><div class="kpi-row autofit" id="expSinceKpis"></div>`;
+    html += `<div class="af-note">Business tickets by priority (urgent/high versus low/normal) will show here once Zendesk's Priority field is in the ticket pull.</div>`;
+    const replyPct = w.replied ? Math.round(100*(cur.replied-w.replied)/w.replied) : null;
+    const shNow = 100*o.handoff/cur.replied, shWo = 100*wo.handoff/w.replied;
+    html += `<div class="takeaway" style="margin-top:12px;">${x.label} added ${fmtNum(x.eligible)} eligible and ${fmtNum(x.replied)} replied tickets in its first ${x.daysLive} days${replyPct!=null?` (+${replyPct}% on the rest of the month)`:''}. ${fmtNum(xo.handoff)} of the ${fmtNum(x.replied)} replies were handed to a human and ${xClosed?fmtNum(xClosed):'none'} closed without one, so it ${xClosed?'widened reach and added a few closures':'widened reach without adding deflection yet'}. Across the month, the handoff share ${shNow>=shWo?'rose':'fell'} from ${shWo.toFixed(1)}% to ${shNow.toFixed(1)}% and closed-without-a-handoff ${100*closedW/cur.replied>=100*closedWo/w.replied?'rose':'fell'} from ${pc(closedWo,w.replied)} to ${pc(closedW,cur.replied)} of replies.</div>`;
+  } else {
+    html += `<div class="af-note" style="margin-top:0;">No tier expansion is recorded as live in ${rm.current}.</div>`;
+  }
+  // eligibility by SLA tier, prior month beside the reporting month
+  if(cur.byTier){
+    const cols = [pri&&pri.byTier ? {name:rm.prior, t:pri.byTier} : null, {name:rm.current, t:cur.byTier}].filter(Boolean);
+    const order = ['basic','none','developer','business','enterprise'];
+    const cell = (b) => b ? `<td class="num">${fmtNum(b.tickets)}</td><td class="num">${fmtNum(b.eligible)}<span class="af-sub">${pc(b.eligible,b.tickets,0)}</span></td><td class="num">${fmtNum(b.replied)}</td>` : '<td class="num">\u2014</td><td class="num">\u2014</td><td class="num">\u2014</td>';
+    html += `<div class="subhead" style="margin-top:18px;">Who the autoresponder reaches, by SLA tier</div>
+      <table><tr><th rowspan="2"></th>${cols.map(c=>`<th colspan="3" style="text-align:center;">${c.name}</th>`).join('')}</tr>
+        <tr>${cols.map(()=>'<th>Tickets</th><th>Eligible</th><th>Replied</th>').join('')}</tr>
+        ${order.filter(k=>cols.some(c=>c.t[k])).map(k=>`<tr${k==='business'?' class="af-key"':''}><td>${tierNames[k]}</td>${cols.map(c=>cell(c.t[k])).join('')}</tr>`).join('')}
+      </table>
+      <div class="af-note">Eligible is the autoresponder's own flag (Basic, Developer and Business except urgent or high priority; no SLA package is treated as Basic). Developer tickets are mostly escalations, so few are eligible.</div>`;
+  }
+  el.innerHTML = html;
+  if(x){ const sl=x.sinceLaunch, xo=x.outcomes, xClosed=xo.neverReplied+xo.solved;
+    renderKpis('expSinceKpis', [
+      {label:`${short} tickets created`, value:fmtNum(sl.tickets), unit:'', sub:`${x.launched} through the end of ${rm.current}`, status:'neutral'},
+      {label:'Eligible', value:fmtNum(sl.eligible), unit:'', sub:`${pc(sl.eligible,sl.tickets,0)} of those tickets`, status:'neutral'},
+      {label:'Autoresponder replied', value:fmtNum(sl.replied), unit:'', sub:`${pc(sl.replied,sl.eligible,0)} of eligible`, status:'neutral'},
+      {label:'Handed to a human', value:fmtNum(xo.handoff), unit:'', sub:`${pc(xo.handoff,x.replied,0)} of replied`, status:'watch'},
+      {label:'Closed without a recorded handoff', value:fmtNum(xClosed), unit:'', sub:`${pc(xClosed,x.replied,0)} of replied`, status:xClosed?'good':'watch'},
     ]);
   }
 }
@@ -3242,70 +3090,52 @@ function renderExpansionNext(){
 let demandPending = false;
 function renderHeroPending(monthLabel, kbDefl, contained, pend, unconf){
   const el = document.getElementById('heroBanner'); if(!el) return;
-  const needs = [pend.tickets && "the month's Non-Proactive ticket volume", pend.widget && "the month's widget conversations", pend.ar && "the autoresponder's final results (tickets still settling)"].filter(Boolean).join(', ').replace(/, ([^,]*)$/, ' and $1');
-  const arHtml = (pend.ar && unconf) ? `<div class="hb-text" style="margin-top:8px; font-size:13px; color:var(--muted);">Support-only, non-proactive: <b>${fmtNum(unconf.sent)}</b> autoresponder replies and <b>${fmtNum(unconf.closed)}</b> closed without a human so far (${unconf.through}). Tickets are still settling (the autoresponder re-tags a ticket as it is handed off or closed), so these are left out of the overall share until the month is final.</div>` : '';
-  const identityHtml = `<div class="hb-text" style="margin-top:8px; font-size:12px; color:var(--muted-dim);">"Cases" here means events (a KB session, a widget conversation, a ticket), not deduplicated customer journeys \u2014 there's no cross-channel identity resolution.</div>`;
-  const chat = contained==null ? ` (chat conversations aren't loaded yet)` : ` and chat contained <b>${fmtNum(contained)}</b> conversations`;
+  const needs = [pend.tickets && "the month's ticket volume", pend.widget && "the month's widget conversations", pend.ar && "the autoresponder's results"].filter(Boolean).join(', ').replace(/, ([^,]*)$/, ' and $1');
   el.innerHTML = `<div class="hb-inner">
     <span class="hb-eyebrow">${monthLabel} snapshot</span>
-    <div class="hb-text">In ${monthLabel}, the knowledge base deflected <b>${fmtNum(kbDefl)}</b> sessions${chat}. Total demand and the overall deflection share need ${needs}, so they are left blank until that data is loaded rather than estimated.</div>
-    ${arHtml}
-    ${identityHtml}
+    <div class="hb-text">${monthLabel}'s overall self-service share needs ${needs}, so it is not shown yet. So far, ${fmtNum(kbDefl)} knowledge-base sessions ended without a ticket${contained==null?'':` and ${fmtNum(contained)} chat conversations had no handoff`}.</div>
   </div>`;
 }
 function renderWaterfallPending(monthLabel, kbDefl, contained, pend){
-  destroyChart('waterfall');
-  const cv = document.getElementById('chartWaterfall'), card = cv && cv.closest('.card'); if(card) card.style.display='none';
-  const tk = document.getElementById('waterfallTakeaway');
-  if(tk) tk.textContent = `${monthLabel}'s composition can't be drawn yet: it still needs ${(()=>{ const n=[pend&&pend.tickets&&"the month's ticket volume", pend&&pend.widget&&"the month's widget conversations", (!pend||pend.ar)&&'the autoresponder results (tickets still settling)'].filter(Boolean); return n.length?n.join(' and '):'more data'; })()}. So far: ${fmtNum(kbDefl)} KB deflections${contained==null?'':` and ${fmtNum(contained)} contained widget conversations`}.`;
+  const host = document.getElementById('shareSection'); if(!host) return;
+  const n=[pend&&pend.tickets&&"the month's ticket volume", pend&&pend.widget&&"the month's widget conversations", (!pend||pend.ar)&&"the autoresponder's results"].filter(Boolean);
+  host.innerHTML = `<div class="af-note" style="margin-top:0;">${monthLabel}'s share can't be shown yet: it still needs ${n.length?n.join(' and '):'more data'}. So far: ${fmtNum(kbDefl)} knowledge-base sessions ended without a ticket${contained==null?'':` and ${fmtNum(contained)} chat conversations had no handoff`}.</div>`;
 }
-function renderHero(monthLabel, total, kbDefl, contained, arDefl, self, selfPct, caveats, arSent, prov){
+function renderHero(monthLabel, total, kbDefl, contained, arDefl, self, selfPct, caveats, arSent, prov, strictPct){
   const el = document.getElementById('heroBanner');
   if(!el) return;
   const caveatHtml = (caveats && caveats.length) ? `<div class="hb-caveat">Data lag: ${caveats.join('; ')}.</div>` : '';
-  // arSent (tickets the autoresponder replied to) is usually much bigger
-  // than arDefl (tickets it fully solved with no human at all) — surface
-  // that reach here so "1" doesn't read as "barely touched anything," while
-  // being careful not to call it deflection: the L1-touch data on the Ticket
-  // Autoresponder tab doesn't yet show that reach translating into less
-  // human work.
-  const reachHtml = (arSent!=null && arSent>arDefl)
-    ? `<div class="hb-text" style="margin-top:8px; font-size:13px; color:var(--muted);">The autoresponder replied to <b>${fmtNum(arSent)}</b> Support tickets in ${monthLabel} — most still needed a human to close out, but that's a broader footprint than the <b>${fmtNum(arDefl)}</b> fully-solved count above suggests. Whether that's easing Support's workload isn't confirmed yet — see the L1-touch comparison on the Ticket Autoresponder tab.</div>`
-    : '';
-  const identityCaveatHtml = `<div class="hb-text" style="margin-top:8px; font-size:12px; color:var(--muted-dim);">"Cases" here means events (a KB session, a widget conversation, a ticket), not deduplicated customer journeys — there's no cross-channel identity resolution, so the same person hitting KB, then the widget, then filing a ticket for one issue would count as three separate cases, not one.</div>`;
+  const range = (strictPct!=null) ? `An estimated <b>${fmtPct(strictPct,0)} to ${fmtPct(selfPct,0)}</b> of them ended without a person, depending on how strictly that is counted (see Estimated self-service share below).` : `An estimated <b>${fmtPct(selfPct,0)}</b> of them ended without a person.`;
   el.innerHTML = `<div class="hb-inner">
     <span class="hb-eyebrow">${monthLabel} snapshot</span>
-    <div class="hb-text">In ${monthLabel}, total demand reached <b>${fmtNum(total)}</b> cases. We deflected <b>${fmtNum(kbDefl)}</b> through our knowledge base, another <b>${fmtNum(contained)}</b> through chat conversations, and <b>${fmtNum(arDefl)}</b> more through AI-driven ticket responses that needed no human follow-up at all. Together, that's <b>${fmtNum(self)}</b> cases deflected — ${prov?'at least a ':'a '}<b>${fmtPct(selfPct,0)}</b> deflection rate${prov?' so far':''}.</div>
-    ${prov?`<div class="hb-text" style="margin-top:8px; font-size:13px; color:var(--muted);">${monthLabel}'s autoresponder tickets are still settling (tags as of ${prov.asOf}), so the autoresponder's share is a floor: pending tickets can only add to it. The final figure is set once the ticket tab is refreshed after ${prov.finalAfter}.</div>`:''}
-    ${reachHtml}
-    ${identityCaveatHtml}
+    <div class="hb-text">In ${monthLabel}, customers generated <b>${fmtNum(total)}</b> support events across the knowledge base, the chat widget and support tickets. ${range}</div>
+    ${prov?`<div class="hb-text" style="margin-top:8px; font-size:13px; color:var(--muted);">Ticket autoresponder outcomes are provisional (as of ${prov.asOf}). ${finalNote(prov)}</div>`:''}
     ${caveatHtml}
   </div>`;
 }
-/* Potential-tickets waterfall — same four deflection layers as the table
-   below, ordered start (potential tickets) to end (final tickets created)
-   per leadership's request, instead of a flat biggest-to-smallest bar list. */
-function renderWaterfall(total, kbDefl, contained, arDefl, human){
-  const _cv = document.getElementById('chartWaterfall'), _card = _cv && _cv.closest('.card'); if(_card) _card.style.display='';
-  const afterKb = total - kbDefl;
-  const afterWidget = afterKb - contained;
-  const labels = ['Potential tickets','KB deflection','Widget deflection','Autoresponder deflection','Final tickets created'];
-  const data = [ [0,total], [afterKb,total], [afterWidget,afterKb], [human,afterWidget], [0,human] ];
-  const bg = [COLORS.muted, COLORS.amber, COLORS.green, COLORS.blue, COLORS.red];
-  destroyChart('waterfall');
-  charts.waterfall = safeChart('chartWaterfall', {
-    type:'bar',
-    data:{ labels, datasets:[{ data, backgroundColor:bg, borderRadius:4, maxBarThickness:34 }] },
-    options:{
-      indexAxis:'y',
-      plugins:{ legend:{display:false},
-        tooltip:{ callbacks:{ label:(ctx)=>{
-          const [s,e2] = ctx.raw; const amt = Math.abs(e2-s);
-          return ctx.label==='Potential tickets'||ctx.label==='Final tickets created' ? fmtNum(amt) : `−${fmtNum(amt)} deflected`;
-        } } } },
-      scales:{ x:{grid:{color:COLORS.grid}, ticks:{callback:v=>fmtNum(v)}}, y:{grid:{display:false}} },
-    }
-  });
+/* "Final after Oct 14" reads wrongly once that date has passed and nobody has refreshed the ticket data. */
+function finalNote(prov){
+  const y = (state.kb.reportingMonth||{}).year || new Date().getFullYear();
+  const t = Date.parse(`${prov.finalAfter}, ${y}`);
+  return (t && Date.now() > t) ? 'The ticket data has not been refreshed since, so these may still change.' : `They are final once the ticket data is refreshed after ${prov.finalAfter}.`;
+}
+/* One section replaces the old cross-channel tiles and waterfall: the range, an evidence bar, and what each part means. */
+function renderWaterfall(total, kbDefl, contained, arDefl, human, ex){
+  const host = document.getElementById('shareSection'); if(!host) return;
+  const e = ex || {}, kbConf = e.kbConf||0, arSolved = e.arSolved||0;
+  const strict = kbConf + contained + arSolved, assumed = (kbDefl-kbConf) + (arDefl-arSolved), person = human;
+  const pct = n => total ? (100*n/total) : 0, f1 = n => pct(n).toFixed(1)+'%';
+  const parts = [
+    {n:strict,  color:'#3DDC97', name:'Confirmed or directly observed', why:`Customer-confirmed knowledge-base deflections (${fmtNum(kbConf)}), chat conversations with no handoff (${fmtNum(contained)}), and tickets solved with no recorded handoff (${fmtNum(arSolved)}).`},
+    {n:assumed, color:'#DCFF1E', name:'Assumed', why:`Knowledge-base sessions that ended with no ticket but no confirmation (${fmtNum(kbDefl-kbConf)}), and tickets closed after the customer stopped replying (${fmtNum(arDefl-arSolved)}).`},
+    {n:person,  color:'#7C8E96', name:'Handled by a person', why:`Tickets a person worked: ${fmtNum(person)} of the ${fmtNum(person+arDefl)} tickets created.`},
+  ];
+  const month = (state.kb.reportingMonth||{}).current || '';
+  host.innerHTML = `<div class="share-range"><span class="share-num">${pct(strict).toFixed(0)}%</span> to <span class="share-num">${pct(strict+assumed).toFixed(0)}%</span> of ${month}'s ${fmtNum(total)} support events ended without a person</div>
+    <div class="af-note" style="margin-top:4px;">The lower figure counts only confirmed or directly observed outcomes. The upper figure also counts assumed ones.</div>
+    <div class="af-bar" style="height:22px; margin-top:14px;">${parts.map(x=>`<span style="width:${pct(x.n)}%; background:${x.color}" title="${x.name}: ${fmtNum(x.n)}"></span>`).join('')}</div>
+    <div class="share-leg">${parts.map(x=>`<span class="af-dot" style="background:${x.color}; margin-top:4px;"></span><span><b>${x.name}</b><span class="why">${x.why}</span></span><span style="text-align:right; white-space:nowrap;"><b>${fmtNum(x.n)}</b><span class="af-sub">${f1(x.n)}</span></span>`).join('')}</div>
+    <div class="af-note">Counts events (a knowledge-base session, a chat conversation, a ticket), not unique customers: one person can appear in more than one channel.${e.prov?` Ticket autoresponder outcomes are provisional (as of ${e.prov.asOf}).`:''}</div>`;
 }
 /* Computes the current month's demand split once, renders the waterfall +
    hero banner from it, and returns the numbers so renderOverview() can reuse
@@ -3368,112 +3198,29 @@ function renderDemand(){
   const total=human+arDefl+contained+kbDefl;
   const self=total-human;
   const selfPct=total?100*self/total:0;
-  renderWaterfall(total, kbDefl, contained, arDefl, human);
+  // Evidence split: which of the autoresponder closures and KB deflections are confirmed vs assumed
+  const miK = curAbbr ? k.momMonths.indexOf(curAbbr) : -1;
+  const kbConf = (miK>=0 && k.momSeries['Confirmed Deflections'][miK]!=null) ? k.momSeries['Confirmed Deflections'][miK] : 0;
+  const arSolved = arProv ? afCur.outcomes.solved : (arIdx>=0 ? (e.supportFunnel.solvedExplicit[arIdx]||0) : 0);
+  const strictPct = total ? 100*(kbConf + contained + arSolved)/total : null;
+  renderWaterfall(total, kbDefl, contained, arDefl, human, {kbConf, arSolved, prov: arProv ? afCur : null});
   // Hero copy spells the month out in full (e.g. "July") — reportingMonth
   // carries the full name; curAbbr stays abbreviated for the lookups above.
-  renderHero(rm.current || mName, total, kbDefl, contained, arDefl, self, selfPct, caveats, arSent, arProv ? afCur : null);
-  return {mName, total, kbDefl, contained, arDefl, human, self, selfPct, prov: arProv ? afCur : null};
+  renderHero(rm.current || mName, total, kbDefl, contained, arDefl, self, selfPct, caveats, arSent, arProv ? afCur : null, strictPct);
+  return {mName, total, kbDefl, contained, arDefl, human, self, selfPct, strictPct, tickets: human + arDefl, prov: arProv ? afCur : null};
 }
 
 function renderOverview(){
-  const w = state.widget, e = state.email, k = state.kb;
+  const rm = state.kb.reportingMonth || {};
   const SV = storyValues();
-  const rm = k.reportingMonth || {};
   renderOverviewStory(SV); setText('storyOverviewMonth', rm.current ? `${rm.current} ${rm.year||''}`.trim() : ((SV.kb.month||'') + ' 2026'));
   setText('crossChannelMonth', rm.current ? `${rm.current} ${rm.year||''}`.trim() : '\u2014');
   const demand = renderDemand();
-  renderDeflStory();
+  renderDeflStory(demand);
   renderSupportImpact();
   renderExpansionNext();
-  const hl = {}; k.headline.forEach(h=>hl[h.label]=h);
-  // FIXED 9/18/2026: this block was hardcoded to July on two separate
-  // metrics, both silently shown under an "August" reporting-month header.
-  // Widget No-Handoff Containment used w.byMonth['Jul'] (81.5%) instead of
-  // the current reporting month (August: 86.0%). Autoresponder Deflection
-  // used e.funnelJul \u2014 July's pilot-scale funnel (576 inbound, 110 sent,
-  // 73 deflected, 66.4%) \u2014 instead of August's real, corrected Outcomes
-  // data (57 sent, 8 solved, 14.0%). Both now read the current reporting
-  // month dynamically.
-  const curAbbr = (k.reportingMonth && k.reportingMonth.currentAbbr) || 'Sep';
-  const cw = w.byMonth[curAbbr] || {};   // no silent fallback to another month
-  const wFirstRead = !!(w.firstRead && w.firstRead[curAbbr]);
-  const curContainment = cw.deflectionNH!=null ? cw.deflectionNH : null;
-  const wPrevAbbr = k.reportingMonth && k.reportingMonth.priorAbbr;
-  const prevContainment = wPrevAbbr && w.byMonth[wPrevAbbr] ? w.byMonth[wPrevAbbr].deflectionNH : null;
-  const sf = e.supportFunnel || {};
-  const sfIdxOv = (sf.months||[]).indexOf(curAbbr);
-  const sfSent = sfIdxOv>=0 ? sf.sent[sfIdxOv] : null;
-  const sfSolved = sfIdxOv>=0 ? sf.solved[sfIdxOv] : null;
-  const sfSolveRate = sfIdxOv>=0 ? sf.solveRate[sfIdxOv] : null;
-  const kbRateArr = k.kbSuccess.rate, kbRateLast = kbRateArr.length-1;
-  const dsd = deflStoryData();
-  const dsdLast = dsd.length-1;
-  // FIXED 9/18/2026: all four tiles below were hardcoded status:'good'
-  // regardless of whether the metric actually improved \u2014 KB and Widget
-  // now compare against their real prior month. Autoresponder Deflection
-  // is deliberately NOT colored on its own MoM trend: even an improving
-  // solve rate would be misleading here, since the L1-touch comparison
-  // (Support impact tab) shows the autoresponder increasing L1 load, not
-  // reducing it \u2014 reach improving doesn't mean the program is working.
-  const wStatusOv = (!wFirstRead && curContainment!=null && prevContainment!=null) ? (curContainment>=prevContainment?'good':'bad') : 'neutral';
-  const deflShareStatusOv = (dsdLast>0 && dsd[dsdLast].share!=null && dsd[dsdLast-1].share!=null) ? (dsd[dsdLast].share>=dsd[dsdLast-1].share?'good':'bad') : 'neutral';
-  const kbSuccessStatusOv = kbRateLast>0 ? (kbRateArr[kbRateLast]>=kbRateArr[kbRateLast-1]?'good':'bad') : 'neutral';
-  const rmO = k.reportingMonth, lastScored = dsd[dsdLast], ksPending = k.kbSuccess.months.indexOf(curAbbr)<0;
-  const uncO = (e.unconfirmed||{})[curAbbr], sfPriorIdx = (sf.months||[]).indexOf(rmO.priorAbbr);
-  renderKpis('kpi-overview', [
-    demand.pending
-      ? {label:'Deflection Share', value:'\u2014', unit:'', sub:`Needs ${rmO.current}'s ${((k.ticketGroupMonths||[]).indexOf(curAbbr)<0)?'ticket volume':'autoresponder results (tickets still settling)'}${lastScored?`. ${monthFull(lastScored.m)} was ${fmtPct(lastScored.share,1)} across KB, Widget and Autoresponder`:''}; events, not deduplicated customer journeys`, status:'neutral'}
-      : {label:'Deflection Share', value:(demand.prov?'\u2265 ':'')+fmtPct(demand.selfPct,1).replace('%',''), unit:'%', sub:`${demand.prov?'At least, so far \u2014 autoresponder tickets still settling (final after '+demand.prov.finalAfter+'). ':''}${fmtNum(demand.self)} of ${fmtNum(demand.total)} ${demand.mName} events deflected — KB, Widget, and Autoresponder combined; events, not deduplicated customer journeys (no cross-channel identity resolution)`, status:deflShareStatusOv},
-    curContainment==null
-      ? {label:'Widget No-Handoff Containment', value:'\u2014', unit:'', sub:`${rmO.current} isn't loaded yet${prevContainment!=null?`; ${rmO.prior} was ${fmtPct(prevContainment,1)}`:''}`, status:'neutral'}
-      : {label:'Widget No-Handoff Containment', value:curContainment, unit:'%', sub:`${rmO.current}${wFirstRead?`, first read (${typeof w.firstRead[curAbbr]==='string'?w.firstRead[curAbbr]:'not final'})`:''}, no-handoff basis${prevContainment!=null?`; ${rmO.prior} was ${fmtPct(prevContainment,1)}`:''}`, status:wStatusOv},
-    ksPending
-      ? {label:'KB Success Rate', value:'\u2014', unit:'', sub:`Needs ${rmO.current}'s Non-Proactive tickets. ${monthFull(k.kbSuccess.months[k.kbSuccess.months.length-1])} was ${fmtPct(kbRateArr[kbRateLast],1)}`, status:'neutral'}
-      : {label:'KB Success Rate', value:k.kbSuccess.rate[k.kbSuccess.rate.length-1], unit:'%', sub:`Deflections ÷ (tickets + deflections), ${k.reportingMonth.currentAbbr} ${k.reportingMonth.year}`, status:kbSuccessStatusOv},
-    (sfIdxOv<0 && state.email.autoFunnel && state.email.autoFunnel[curAbbr] && state.email.autoFunnel[curAbbr].replied)
-      ? (()=>{ const aC2=state.email.autoFunnel[curAbbr], aP2=state.email.autoFunnel[rmO.priorAbbr], cl=aC2.outcomes.neverReplied+aC2.outcomes.solved;
-          return {label:'Autoresponder Deflection', value:fmtPct(100*cl/aC2.replied,1).replace('%',''), unit:'%', sub:`${fmtNum(cl)} of ${fmtNum(aC2.replied)} ${rmO.current} replies closed without a human so far (${aC2.final?'final':'final after '+aC2.finalAfter})${aP2?`; ${rmO.prior}: ${fmtNum(aP2.outcomes.neverReplied+aP2.outcomes.solved)} of ${fmtNum(aP2.replied)}`:''}`, status:'watch'}; })()
-    : sfIdxOv<0
-      ? {label:'Autoresponder Deflection', value:'\u2014', unit:'', sub:`${rmO.current} ${uncO?`isn't final (tickets still settling)`:`isn't loaded yet`}.${sfPriorIdx>=0?` ${rmO.prior}, the last clean read: ${sf.solved[sfPriorIdx]} of ${sf.sent[sfPriorIdx]} solved`:''}`, status:'watch'}
-      : {label:'Autoresponder Deflection', value:sfSolveRate!==null?fmtPct(sfSolveRate,1).replace('%',''):null, unit:'%', sub:`${sfSolved} of ${sfSent} ${curAbbr} sent responses needed no human follow-up at all \u2014 but FT-tagged tickets touch L1 more than non-FT tickets, so this reach is not a confirmed capacity win`, status:'watch'},
-  ]);
-  // All-period repeat-contact rate (Jun+Jul combined) — the receipt behind
-  // the widget's ~90% containment number: how many contained conversations
-  // later came back as a same-issue ticket within 7 days.
-  const rcm = (w.repeatContact && w.repeatContact.monthly) || {};
-  const rcEligAll = (rcm.eligible||[]).reduce((a,b)=>a+b,0);
-  const rcConfAll = (rcm.confirmed||[]).reduce((a,b)=>a+b,0);
-  const rcAllRate = rcEligAll ? 100*rcConfAll/rcEligAll : null;
-  const cards = [
-    {title:'Widget', big:curContainment==null ? `${rmO.current} pending` : fmtPct(curContainment,1)+' no-handoff containment'+(wFirstRead?' (first read)':''), goto:'widget', points:[
-      curContainment==null ? `${rmO.current}'s widget data isn't loaded yet.` : `${fmtNum(cw.conversations)} widget conversations in ${rmO.current}${(w.byMonth[rmO.priorAbbr]?`, ${volVs(cw.conversations, w.byMonth[rmO.priorAbbr].conversations, rmO.prior)}`:'')}; ${fmtNum(cw.handoffN)} handed off (${fmtPct(cw.handoffRate,1)}).`,
-      `Follow-up validation found ${rcAllRate===null?'~10%':'~'+fmtPct(rcAllRate,0)} of conversations the widget handled later opened a same-issue ticket within 7 days — so containment isn't simply abandoned conversations.`,
-    ]},
-    {title:'Ticket Autoresponder', big:(()=>{ const a2=(e.autoFunnel||{})[curAbbr], p2=(e.autoFunnel||{})[rmO.priorAbbr]; if(a2&&p2){ const d=volDir(a2.replied,p2.replied), pct=Math.abs(Math.round(100*(a2.replied-p2.replied)/p2.replied)); return `${fmtNum(a2.replied)} replies, ${d>0?'up '+pct+'%':(d<0?'down '+pct+'%':'flat')}`; } return sfIdxOv<0 ? `${rmO.current} pending` : fmtPct(sfSolveRate,1)+' solved'; })(), goto:'ticket', points:[
-      (()=>{ const a2=(e.autoFunnel||{})[curAbbr], p2=(e.autoFunnel||{})[rmO.priorAbbr]; if(a2){ const o=a2.outcomes; return `${fmtNum(a2.replied)} of ${fmtNum(a2.eligible)} eligible Support tickets got a reply${p2?` (${volVs(a2.replied,p2.replied,rmO.prior)})`:''}: ${fmtNum(o.handoff)} handed to a human, ${fmtNum(o.pending)} pending, ${fmtNum(o.neverReplied+o.solved)} closed without a human${a2.final?'':` \u2014 not final until after ${a2.finalAfter}`}.`; }
-        return sfIdxOv<0 ? `${rmO.current}'s results ${uncO?"aren't final yet (tickets still settling)":"aren't loaded yet"}, so they aren't shown. ${rmO.prior} is the last clean read.` : `${fmtNum(sfSolved)} of ${fmtNum(sfSent)} ${curAbbr} sent responses needed no human follow-up at all \u2014 most still get handed to a human, so this is reach, not resolution.`; })(),
-      (()=>{ const eb=(e.eligibilityByMonth||null); const n=eb?eb.months.length-1:-1; return eb
-        ? `Eligibility covers Basic + Developer (${fmtNum(eb.current.tickets[n])} tickets/mo in Aug, ${fmtPct(eb.current.pct[n],1)} of volume). Adding Business tier next: +${fmtNum(eb.business.tickets[n])} tickets/mo (${fmtPct(eb.business.pct[n],1)}), reaching ${fmtNum(eb.combined.tickets[n])}/mo combined (${fmtPct(eb.combined.pct[n],1)} of Aug volume).`
-        : `Next expansion: Developer + broader Basic eligibility. Potential eligible volume: TBD.`; })(),
-    ]},
-    {title:'KB Program', big:fmtPct(hl['Total Deflection Rate'].current,1)+' total deflection', goto:'kb', points:(()=>{
-      const rm = k.reportingMonth;
-      return [
-        `${fmtNum(hl['Article Views'].current)} article views and ${fmtNum(hl['Total Deflection Rate'].num)} deflections in ${rm.current}.`,
-      ];
-    })()},
-  ];
-  document.getElementById('overviewCards').innerHTML = cards.map(c=>`
-    <div class="card ov-card">
-      <div class="subhead">${c.title}</div>
-      <div class="big">${c.big}</div>
-      <ul>${c.points.map(p=>`<li>${p}</li>`).join('')}</ul>
-      <button class="goto-btn" data-goto="${c.goto}">Open ${c.title} →</button>
-    </div>`).join('');
-  document.querySelectorAll('#overviewCards [data-goto]').forEach(b=>b.addEventListener('click', ()=>{
-    const t = document.querySelector('.tab-btn[data-view="'+b.dataset.goto+'"]');
-    if(t) t.click();
-  }));
+  // channel rows link to their tabs
+  document.querySelectorAll('#story-overview [data-goto]').forEach(b=>b.addEventListener('click', ()=>{ const t=document.querySelector('.tab-btn[data-view="'+b.dataset.goto+'"]'); if(t) t.click(); }));
 }
 
 function checkNarrativeStaleness(){
@@ -3524,15 +3271,15 @@ function renderKbTraffic(){
   // ---- takeaway ----
   const uTotMom = mom(t.visitors.total, L), uRestMom = mom(uRest, L);
   setText('kbTqTakeaway',
-    `Total article views held roughly flat (${fmtNum(t.views.total[0])} \u2192 ${fmtNum(t.views.total[L])}), but the assumed-bot share rose from ${fmtPct(share(t.views,0),0)} in ${short(m[0])} to ${fmtPct(share(t.views,L),0)} in ${short(m[L])}. ` +
-    `${short(m[L])} unique visitors grew ${fmtPct(uTotMom,0)} on the raw count and ${fmtPct(uRestMom,0)} without assumed bots.`);
+    `Total article views held roughly flat (${fmtNum(t.views.total[0])} \u2192 ${fmtNum(t.views.total[L])}), but the flagged-traffic share rose from ${fmtPct(share(t.views,0),0)} in ${short(m[0])} to ${fmtPct(share(t.views,L),0)} in ${short(m[L])}. ` +
+    `${short(m[L])} unique visitors grew ${fmtPct(uTotMom,0)} on the raw count and ${fmtPct(uRestMom,0)} without flagged traffic.`);
 
   // ---- KPI tiles ----
   renderKpis('kbTqKpis', [
     {label:`${short(m[L])} article views (Amplitude)`, value:fmtNum(t.views.total[L]), unit:'', sub:`${mom(t.views.total,L)>=0?'+':'\u2212'}${Math.abs(mom(t.views.total,L)).toFixed(1)}% vs ${short(m[L-1])}. Separate tracker from Guide article views above`, status:'neutral'},
-    {label:'Assumed bot share of views', value:share(t.views,L).toFixed(1), unit:'%', sub:`Up from ${share(t.views,L-1).toFixed(1)}% in ${short(m[L-1])} and ${share(t.views,0).toFixed(1)}% in ${short(m[0])}`, status: share(t.views,L)>share(t.views,L-1)?'bad':'good'},
+    {label:'Flagged traffic share of views', value:share(t.views,L).toFixed(1), unit:'%', sub:`Up from ${share(t.views,L-1).toFixed(1)}% in ${short(m[L-1])} and ${share(t.views,0).toFixed(1)}% in ${short(m[0])}`, status: share(t.views,L)>share(t.views,L-1)?'bad':'good'},
     {label:`${short(m[L])} unique visitors`, value:fmtNum(t.visitors.total[L]), unit:'', sub:`${fmtNum(t.visitors.flagged[L])} assumed bot (${share(t.visitors,L).toFixed(0)}%)`, status:'watch'},
-    {label:`${short(m[L])} visitors, assumed human`, value:fmtNum(uRest[L]), unit:'', sub:`${uRestMom>=0?'+':'\u2212'}${Math.abs(uRestMom).toFixed(1)}% vs ${short(m[L-1])} (approximate; see note above)`, status:'neutral'},
+    {label:`${short(m[L])} visitors, remaining traffic`, value:fmtNum(uRest[L]), unit:'', sub:`${uRestMom>=0?'+':'\u2212'}${Math.abs(uRestMom).toFixed(1)}% vs ${short(m[L-1])} (approximate; see note above)`, status:'neutral'},
   ]);
 
   // ---- stacked chart ----
@@ -3540,8 +3287,8 @@ function renderKbTraffic(){
   charts.kbTraffic = safeChart('chartKbTraffic', {
     type:'bar',
     data:{ labels:m, datasets:[
-      { label:'Assumed human', data:vRest, backgroundColor:COLORS.blue, borderRadius:4, maxBarThickness:64, stack:'v' },
-      { label:'Assumed bot', data:t.views.flagged, backgroundColor:COLORS.red, borderRadius:4, maxBarThickness:64, stack:'v' },
+      { label:'Remaining traffic', data:vRest, backgroundColor:COLORS.blue, borderRadius:4, maxBarThickness:64, stack:'v' },
+      { label:'Flagged traffic', data:t.views.flagged, backgroundColor:COLORS.red, borderRadius:4, maxBarThickness:64, stack:'v' },
     ]},
     options:{
       plugins:{ legend:{position:'bottom', labels:{boxWidth:9, boxHeight:9, color:COLORS.text, padding:12}} },
@@ -3554,10 +3301,10 @@ function renderKbTraffic(){
   // 3rd value: true = a rise is good news; false = a rise is bad news (flagged rows), so colours invert.
   const rows = [
     ['Total article views', t.views.total, true],
-    ['Assumed bot views', t.views.flagged, false],
-    ['Assumed human views', vRest, true],
+    ['Flagged traffic views', t.views.flagged, false],
+    ['Remaining traffic views', vRest, true],
     ['Total unique visitors', t.visitors.total, true],
-    ['Assumed bot visitors', t.visitors.flagged, false],
+    ['Flagged traffic visitors', t.visitors.flagged, false],
     ['Assumed human visitors (approx.)', uRest, true],
   ];
   const tqTag = (v, goodUp) => {
@@ -3593,12 +3340,9 @@ function renderKbTraffic(){
    accident. Where the data carries its own month it is read from there (so loading new data clears the label
    by itself); otherwise it comes from state.sectionMonths. */
 const SECTION_MONTH_GETTERS = {
-  'sec-o-01a': ()=>{ const D=deflStoryData(); return D.length ? D[D.length-1].m : null; },
   'sec-w-01e': ()=>{ const c=state.widget.capacitySignal; return c&&c.months.length ? c.months[c.months.length-1] : null; },
   'sec-w-01f': ()=>{ const r=state.widget.repeatContact&&state.widget.repeatContact.monthly; return r&&r.months&&r.months.length ? r.months[r.months.length-1] : null; },
   'sec-w-01g': ()=>(state.widget.handoffReasonQA||{}).month||null,
-  'sec-w-09c': ()=>state.email.funnelMonth||null,
-  'sec-w-09g': ()=>state.email.funnelMonth||null,
   // pseudo-sections: month labels for the QA blocks, which move on their own schedule
   'sec-w-13':  ()=>{ const m=((state.widget.billingReference||{}).months||[]); const l=m[m.length-1]; return l ? l.split(' ')[0] : null; },
   'qa-email':  ()=>(state.email.handoffReasonQA||{}).month||null,
@@ -3656,7 +3400,7 @@ function renderDataChecks(){
   const hard = issues.filter(i=>!/shown as pending/.test(i));
   el.innerHTML = hard.length
     ? `<details><summary style="cursor:pointer;color:var(--amber,#C795E3)">\u26a0 ${hard.length} data check${hard.length>1?'s':''} failed</summary><ul style="margin:4px 0 0 16px;padding:0">${hard.map(i=>`<li>${i}</li>`).join('')}</ul></details>`
-    : `<span style="color:var(--muted)">\u2713 monthly data checks passed</span>`;
+    : `<span style="color:var(--muted)">\u2713 monthly input checks passed</span>`;
 }
 
 
@@ -3698,7 +3442,7 @@ function renderKbNarrative(){
     let best=0; ks.rate.forEach((r,i)=>{ if(r!=null && r>ks.rate[best]) best=i; });
     const pending = ks.months[li]!==rm.currentAbbr;
     const pend = pending ? ` ${cur} can't be scored until its Non-Proactive ticket export is loaded, since that is the denominator${rm.currentAbbr?`; its ${fmtNum(hl['Total Deflection Rate'].num)} deflections are in the headline above`:''}.` : '';
-    set('kbTk02b',`${monthFull(ks.months[li])} is the ${pending?'latest scored':'current'} month: a ${fmtPct(ks.rate[li],1)} KB success rate (${fmtNum(ks.deflections[li])} deflections against ${fmtNum(ks.tickets[li])} Non-Proactive tickets)${best!==li?`, with ${monthFull(ks.months[best])} the strongest at ${fmtPct(ks.rate[best],1)}`:', the strongest in this series'}.${pend} Consolidated 9/18/2026 onto the Non-Proactive ticket-level export (see note below): the ticket series starts at June rather than January and excludes proactive (company-initiated) tickets that no customer ever generated demand for — this raises every month's rate versus the earlier all-ticket figures.`);
+    set('kbTk02b',`${monthFull(ks.months[li])}: ${fmtNum(ks.deflections[li])} deflections against ${fmtNum(ks.tickets[li])} customer-initiated tickets, a ${fmtPct(ks.rate[li],1)} share${best!==li?` (${monthFull(ks.months[best])} was highest at ${fmtPct(ks.rate[best],1)})`:' (the highest in this series)'}.${pend} Tickets here exclude proactive (company-initiated) tickets.`);
   }
 
   // 3 — segments
@@ -3718,7 +3462,7 @@ function renderKbNarrative(){
   // 5 — content health & search
   let t5=`Total searches (all roles) ${verb(searches.mom,'rose','fell')} to ${fmtNum(searches.current)} in ${cur} from ${fmtNum(searches.prior)}, search CTR ${ctr.current<ctr.prior?'fell':'rose'} to ${fmtPct(ctr.current)} from ${fmtPct(ctr.prior)}, and tickets-after-search ${verb(taf.mom,'rose','fell')} to ${fmtNum(taf.current)} from ${fmtNum(taf.prior)}.`;
   if(unchecked && an && an.searches[0]!=null) t5+=` The change in searches is anonymous (${fmtNum(an.searches[0])} to ${fmtNum(an.searches[1])}), and so is the change in no-result searches (${fmtNum(an.noRes[0])} to ${fmtNum(an.noRes[1])}) — a pattern worth checking against the automated traffic Amplitude shows, though that is not confirmed.`;
-  if((k.contentHealth||[]).some(r=>r.current==='N/A')) t5+=' Live article inventory and new-article counts remain unavailable (source tab removed).';
+  if((k.contentHealth||[]).some(r=>r.current==='N/A')) t5+=' Live article inventory and new-article counts remain unavailable (not available this month).';
   set('kbTk05',t5);
 
   // 6 — ticket volume by group (facts only; month-agnostic)
@@ -3761,7 +3505,7 @@ function renderWidgetQaGrades(){
   renderKpis('kpi-qa-grade', tiles('grade',['Pass','Partial Pass','Fail','Incomplete'],{Pass:'good','Partial Pass':'watch',Fail:'bad',Incomplete:'neutral'}));
   renderKpis('kpi-qa-esc', tiles('escalation',['Appropriate','Partially Appropriate','Avoidable','Incomplete'],{Appropriate:'good','Partially Appropriate':'watch',Avoidable:'bad',Incomplete:'neutral'}));
   renderKpis('kpi-qa-fail', tiles('failure',['KB gap','Intent error','Hallucination','Incomplete'],{Incomplete:'neutral'}));
-  setText('qaWidgetScope', `${monthFull(g.month)} \u00b7 ${fmtNum(cur.n)} conversations graded (${g.coverage}% of the log)${pri?` \u00b7 compared with ${monthFull(g.priorMonth)}`:''}`);
+  setText('qaWidgetScope', `${monthFull(g.month)} \u00b7 ${fmtNum(cur.n)} conversations graded (${g.coverage}% of the log)${pri?` \u00b7 compared with ${monthFull(g.priorMonth)}`:''}. Grades are shown as graded. Escalation decisions are counted across all ${fmtNum(cur.n)} graded conversations, not only the ${fmtNum(((state.widget.byMonth[(state.kb.reportingMonth||{}).currentAbbr]||{}).handoffN)||0)} handoffs, so they are not a count of avoidable handoffs.`);
   const share = (o,l,n)=> n ? 100*(o[l]||0)/n : null, scor = o=>o.n-(o.grade.Incomplete||0), mv = (a,b)=> a===null||b===null ? '' : ` (${monthShort(g.priorMonth)} ${fmtPct(b,1)})`;
   const fails = ['KB gap','Intent error','Hallucination'].map(l=>({l, n:cur.failure[l]||0})).sort((a,b)=>b.n-a.n)[0];
   const bits = [
