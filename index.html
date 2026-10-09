@@ -605,23 +605,6 @@
       <div class="card" id="expansionNext"></div>
     </section>
 
-    <section class="block" id="sec-o-04">
-      <div class="block-head"><h3>Data status — <span id="dataStatusMonth">—</span></h3><div class="note">What is loaded for the reporting month and what is still pending. Built from the data itself, so it updates each month without editing.</div></div>
-      <div class="card story" id="dataStatus"></div>
-    <details class="card" id="refreshGuide" style="margin-top:12px;">
-      <summary style="cursor:pointer;font-weight:600;">How to refresh this dashboard each month</summary>
-      <ol style="margin:10px 0 0 18px;padding:0;line-height:1.6;color:var(--muted);font-size:13.5px;">
-        <li><b style="color:var(--text)">KB Scorecard.</b> Append one value, in the same position, to <code>momMonths</code> and to every array in <code>momSeries</code>, <code>roleSeries</code> and <code>searchSeries</code>. Then set <code>reportingMonth</code> (current, prior, abbreviations, year, as-of date). The KB headline, support impact, search &amp; findability, segments, KB success, story cards and KB commentary are all derived, so nothing else is retyped.</li>
-        <li><b style="color:var(--text)">KB traffic (Amplitude).</b> Add the month to <code>KB_TRAFFIC</code> (months, views, visitors, guideViews).</li>
-        <li><b style="color:var(--text)">Ticket volume.</b> From the Non-Proactive export, append the month to <code>ticketGroupMonths</code> and one value to every group in <code>ticketGroups</code>. This unlocks the overall deflection share, KB success rate, capacity signal and the ticket-volume sections.</li>
-        <li><b style="color:var(--text)">Widget.</b> Add the month to <code>widget.byMonth</code> and append to <code>widget.monthly</code>. Add its <code>rawSignals</code>. Mark it in <code>firstRead</code> until the final pull and QA are done, then remove it. Append to the capacity signal and repeat-contact tracker once tickets and validation are loaded.</li>
-        <li><b style="color:var(--text)">Autoresponder.</b> Only when the month is confirmed as Support only: append it to <code>supportFunnel</code>, set <code>funnelMonth</code>, and remove the month from <code>email.unconfirmed</code>.</li>
-        <li><b style="color:var(--text)">QA reviews.</b> Replace the widget and email handoff-reason and KB-update blocks and set each block's <code>month</code>. Their section labels clear on their own. Rewrite any commentary that is flagged "Written for &lt;older month&gt;" and update its <code>data-written</code>.</li>
-        <li><b style="color:var(--text)">Single-month sections.</b> When one is rebuilt, update its entry in <code>state.sectionMonths</code>. Use <code>state.dataNotes</code> for anything a reader should know that the data can't say (a mismatch, a blocked source), and <code>uncheckedRise</code> for a KB move that still needs checking.</li>
-        <li><b style="color:var(--text)">Check.</b> The header should read "monthly data checks passed", and the Data status panel above shows what is loaded for the month. Month keys are Jan to Dec; after December use <code>Jan '27</code>.</li>
-      </ol>
-    </details>
-    </section>
 
   </div>
 
@@ -3170,21 +3153,29 @@ function renderSupportImpact(){
   // sub-text below now says so instead of displaying a false "0 tickets."
   const excludedGroupsPresent = [...EXCLUDED_TICKET_GROUPS].some(name=>g[name]!==undefined);
   const excludedTotal = excludedGroupsPresent ? Object.keys(g).reduce((s,name)=>EXCLUDED_TICKET_GROUPS.has(name)?s+val(name):s, 0) : null;
-  const supportTech = val('Support - L1') + val('Support - L2') + val('Support - L3');
-  const billingFinance = val('Finance Billing') + val('Finance Accounts Receivable');
-  const cs = val('CS'), tamAll = val('TAM') + val('TAM AMR West');
-  const supportRelated = supportTech + cs + tamAll; // CSE ICP intentionally excluded (and already out of the total)
-  const pct = n => allDemand ? +(100*n/allDemand).toFixed(1) : null;
+  // Every group in the data lands in exactly one bucket, so the shares always add up to 100%. A new TAM queue is picked up automatically.
+  const isTech = name => /^Support - L[123]$/.test(name), isTam = name => /^TAM\b/.test(name);
+  const live = Object.keys(g).filter(name=>!EXCLUDED_TICKET_GROUPS.has(name));
+  const sumOf = fn => live.filter(fn).reduce((t,name)=>t+val(name),0);
+  const supportTech = sumOf(isTech), cs = sumOf(name=>name==='CS'), tam = sumOf(isTam);
+  const other = allDemand - supportTech - cs - tam;
+  const pct = n => allDemand ? (100*n/allDemand).toFixed(1) : null;   // always one decimal, so 8.0% doesn't read as 8%
   const siStale = !!(curAbbr && k.ticketGroupMonths.indexOf(curAbbr)<0);
   setText('supportImpactMonth', siStale ? `${monthLabel} ${rm.year||''} (latest available; ${rm.current} pending)`.replace('  ',' ') : ((rm.current && rm.year) ? `${rm.current} ${rm.year}` : monthLabel));
-  renderKpis('kpi-support-impact', [
-    {label:'All Demand', value:fmtNum(allDemand), unit:'', sub:`Total ticket volume, ${monthLabel} — excludes CSE ICP, Unassigned, Other (14 groups), and Finance Licensing/Provisioning (${excludedTotal===null?'not loaded in this source, count unavailable':fmtNum(excludedTotal)+' tickets'})`, status:'neutral'},
-    {label:'Support / Technical', value:pct(supportTech), unit:'%', sub:`${fmtNum(supportTech)} tickets — Support L1+L2+L3`, status:'neutral'},
-    {label:'Billing / Finance', value:pct(billingFinance), unit:'%', sub:`${fmtNum(billingFinance)} tickets — Finance Billing + Accounts Receivable`, status:'neutral'},
-    {label:'Support-related Demand', value:pct(supportRelated), unit:'%', sub:`${fmtNum(supportRelated)} tickets — Support L1-L3 + CS + TAM`, status:'neutral'},
-  ]);
+  // The Finance / Billing queues are an aside (shown in the Billing reference on the Ticket tab), not part of this view.
+  const refG = (k.referenceTickets && k.referenceTickets.groups) || {}, refIdx = k.referenceTickets ? k.referenceTickets.months.indexOf(curAbbr||monthLabel) : -1;
+  const financeN = refIdx>=0 ? Object.keys(refG).reduce((t,name)=>t+(refG[name][refIdx]||0),0) : null;
+  const tamNames = live.filter(isTam).map(n=>n.replace(/^TAM AMR /,'')).filter(n=>n!=='TAM');
+  const tiles = [
+    {label:'All Demand', value:fmtNum(allDemand), unit:'', sub:`Customer-initiated tickets created in ${monthLabel}, across the Support, CS and TAM queues${financeN!=null?`. ${fmtNum(financeN)} Finance-queue tickets are left out (see the Billing reference on the Ticket tab)`:''}`, status:'neutral'},
+    {label:'Support / Technical', value:pct(supportTech), unit:'%', sub:`${fmtNum(supportTech)} tickets \u2014 Support L1, L2 and L3`, status:'neutral'},
+    {label:'CS', value:pct(cs), unit:'%', sub:`${fmtNum(cs)} tickets \u2014 Customer Success`, status:'neutral'},
+    {label:'TAM', value:pct(tam), unit:'%', sub:`${fmtNum(tam)} tickets \u2014 TAM${tamNames.length?` plus the ${tamNames.join(', ')} queues`:''}`, status:'neutral'},
+  ];
+  if(other>0) tiles.push({label:'Other queues', value:pct(other), unit:'%', sub:`${fmtNum(other)} tickets \u2014 groups not listed above`, status:'neutral'});
+  renderKpis('kpi-support-impact', tiles);
   const tk = document.getElementById('supportImpactTakeaway');
-  if(tk) tk.textContent = `Support/technical tickets alone are ${pct(supportTech)===null?'—':pct(supportTech)+'%'} of ${monthLabel}'s demand; adding CS and TAM brings Support-related demand to ${pct(supportRelated)===null?'—':pct(supportRelated)+'%'}. ${fmtNum(excludedTotal)} tickets (CSE ICP, Unassigned, Other (14 groups), Finance Licensing/Provisioning) are excluded from this total. This split comes from Zendesk group assignment, not a content classification — treat it as directional until demand categorization improves.`;
+  if(tk) tk.textContent = `Support/Technical tickets (L1\u2013L3) are ${pct(supportTech)===null?'\u2014':pct(supportTech)+'%'} of ${monthLabel}'s ${fmtNum(allDemand)} customer-initiated tickets; CS adds ${pct(cs)===null?'\u2014':pct(cs)+'%'} and TAM ${pct(tam)===null?'\u2014':pct(tam)+'%'}. This split comes from Zendesk group assignment, not a content classification, so treat it as directional until demand categorization improves.`;
 }
 
 /* Expansion / what's next — forward-looking roadmap content, not live
@@ -3667,38 +3658,6 @@ function renderDataChecks(){
     ? `<details><summary style="cursor:pointer;color:var(--amber,#C795E3)">\u26a0 ${hard.length} data check${hard.length>1?'s':''} failed</summary><ul style="margin:4px 0 0 16px;padding:0">${hard.map(i=>`<li>${i}</li>`).join('')}</ul></details>`
     : `<span style="color:var(--muted)">\u2713 monthly data checks passed</span>`;
 }
-/* Data status for the reporting month, derived from what is actually loaded. */
-function renderDataStatus(){
-  const host = document.getElementById('dataStatus'); if(!host) return;
-  const k=state.kb, w=state.widget, e=state.email, rm=k.reportingMonth||{}, cur=rm.currentAbbr, name=rm.current;
-  setText('dataStatusMonth', `${name||''} ${rm.year||''}`.trim());
-  const mi=k.momMonths.indexOf(cur), has=v=>v!=null;
-  const row=(cls,pill,label,why)=>`<div class="s-row"><span class="s-pill ${cls}">${pill}</span><span class="s-label">${label}</span><span class="s-why">${why}</span></div>`;
-  const rows=[];
-  rows.push(mi>=0 && has((k.momSeries['Total Deflection Rate %']||[])[mi])
-    ? row('on','loaded','KB Scorecard (Guide)',`${name} deflections, sessions, search and role detail are loaded.`)
-    : row('na','pending','KB Scorecard (Guide)',`${name} rows aren't in the KB Scorecard yet.`));
-  const t=KB_TRAFFIC, tKey=`${cur} ${rm.year}`;
-  rows.push((t.months||[]).includes(tKey)
-    ? row('on','loaded','KB traffic (Amplitude)',`${name} article views and visitors are loaded (an estimate; entered by hand).`)
-    : row('na','pending','KB traffic (Amplitude)',`${name} isn't in the Amplitude traffic table yet.`));
-  const wb=w.byMonth[cur], fr=!!(w.firstRead&&w.firstRead[cur]);
-  rows.push(wb ? row(fr?'mid':'on', fr?'first read':'loaded','Widget volume, handoffs, sentiment', fr?`${name} is a first read: shown, never judged, until the final pull and QA review are done.`:`${name} is loaded.`)
-               : row('na','pending','Widget volume, handoffs, sentiment',`${name} isn't in the widget metrics yet.`));
-  rows.push((w.qaGrades||{}).month===cur ? row('on','loaded','Widget QA review',`${name} conversations are graded (${(w.qaGrades||{}).coverage}% of the log).`)
-               : row('na','pending','Widget QA review',`${name} conversations haven't been graded${(w.qaGrades||{}).month?`; the grades shown are for ${monthFull((w.qaGrades||{}).month)}`:''}.`));
-  rows.push((e.handoffReasonQA||{}).month===cur ? row('on','loaded','Email QA review',`${name} tickets have been reviewed${((e.handoffReasonQA||{}).scope&&!/^Support/.test((e.handoffReasonQA||{}).scope))?' (all reviewed tickets; Support can\'t be isolated until Source category is filled)':''}.`)
-               : row('na','pending','Email QA review',`${name} tickets haven't been reviewed; the QA sections show ${monthFull((e.handoffReasonQA||{}).month)}.`));
-  const unc=(e.unconfirmed||{})[cur], sfHas=(e.supportFunnel.months||[]).includes(cur);
-  rows.push(sfHas ? row('on','loaded','Ticket autoresponder (Support only)',`${name} is split by queue and verified against ticket tags.`)
-        : unc ? row('mid','check first','Ticket autoresponder (Support only)',`Support-only, non-proactive: ${fmtNum(unc.sent)} replies and ${fmtNum(unc.closed)} closed without a human so far (${unc.through}). Tickets are still settling (the autoresponder re-tags a ticket as it is handed off or closed), so these are left out of the totals until the month is final.`)
-        : row('na','pending','Ticket autoresponder (Support only)',`${name} isn't loaded.`));
-  const tHas=(k.ticketGroupMonths||[]).includes(cur);
-  rows.push(tHas ? row('on','loaded','Ticket volume (Non-Proactive)',`${name} is loaded.`)
-        : row('off','pending','Ticket volume (Non-Proactive)',`Needed for the overall deflection share, the KB success rate, the capacity signal and the ticket-volume sections; they show ${monthFull((k.ticketGroupMonths||[]).slice(-1)[0])} until it is loaded.`));
-  ((state.dataNotes||{})[cur]||[]).forEach(n=>rows.push(row(n.level==='blocked'?'off':'mid', n.level==='blocked'?'blocked':'check first', n.label, n.text)));
-  host.innerHTML = rows.join('');
-}
 
 
 /* KB commentary is GENERATED from the derived tables, so it is correct for whichever month is the reporting month.
@@ -3839,7 +3798,7 @@ function renderQaNarrative(){
   set('qaTkEmailKb', qaKbText(state.email.kbGapTweak));
 }
 
-function renderAll(){ deriveKbViews(state.kb); renderChrome(); renderOverview(); renderWidgetView(); renderKbView(); renderKbTraffic(); renderKbNarrative(); renderQaNarrative(); renderWidgetQaGrades(); renderAutoFunnels(); renderMonthBadges(); renderMonthTokens(); renderCapacityText(); renderNarrativeFlags(); renderDataStatus(); renderDataChecks(); checkNarrativeStaleness(); }
+function renderAll(){ deriveKbViews(state.kb); renderChrome(); renderOverview(); renderWidgetView(); renderKbView(); renderKbTraffic(); renderKbNarrative(); renderQaNarrative(); renderWidgetQaGrades(); renderAutoFunnels(); renderMonthBadges(); renderMonthTokens(); renderCapacityText(); renderNarrativeFlags(); renderDataChecks(); checkNarrativeStaleness(); }
 renderAll();
 
 /* =========================================================================
