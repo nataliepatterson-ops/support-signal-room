@@ -567,11 +567,6 @@
       <div class="card story" id="story-overview"></div>
     </section>
 
-    <section class="block" id="sec-o-00b">
-      <div class="block-head"><h3>Ticket autoresponder — what happened to the tickets</h3><div class="note">Support, customer-initiated tickets only. Billing and proactive tickets are left out.</div></div>
-      <div class="card af-wrap" id="autoFunnelOverview"></div>
-    </section>
-
     <section class="block" id="sec-o-01">
       <div class="block-head"><h3>Cross-channel headline — <span id="crossChannelMonth">—</span></h3><div class="note">One reporting month across all channels.<span class="info-dot">i<span class="tip">Deflection here uses the log's flag basis (month-splittable); the all-period no-handoff deflection (83.3%) lives on the Widget tab.</span></span></div></div>
       <div class="kpi-row autofit" id="kpi-overview"></div>
@@ -2200,7 +2195,7 @@ function renderAutoFunnel(hostId){
     <div class="af-note">${cols.length>1?'The months are measured as of different dates, so they are not the same age; pending is the figure most affected. ':''}Each ticket is counted once, in the month it was created. "Closed, customer never replied" is an assumed resolution, the same idea as an assumed deflection.</div>`;
   host.innerHTML = `<table><tr><th></th>${head}</tr>${rows}</table>${bars}${legend}${notes}`;
 }
-function renderAutoFunnels(){ renderAutoFunnel('autoFunnelOverview'); renderAutoFunnel('autoFunnelTicket'); }
+function renderAutoFunnels(){ renderAutoFunnel('autoFunnelTicket'); }   // lives on the Ticket Autoresponder tab only
 
 function renderOverviewStory(vals){
   const el=document.getElementById('story-overview'); if(!el) return;
